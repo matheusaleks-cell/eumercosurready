@@ -1,0 +1,248 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── EMPRESAS ───────────────────────────────────────────
+model Company {
+  id                  String    @id @default(cuid())
+  name                String
+  slug                String    @unique
+  logoUrl             String?
+  bannerUrl           String?   // [NOVO] Imagem de capa
+  logoColor           String    @default("#003399")
+
+  // Localização
+  country             String
+  countryCode         String    // ex: "BR", "PT", "DE"
+  city                String?
+  region              Region    // EU | MERCOSUL
+
+  // Classificação
+  sectorId            String
+  sector              Sector    @relation(fields: [sectorId], references: [id])
+  secondarySectors    String[]  // IDs de setores secundários
+  employeesRange      String?   // ex: "10-50", "50-200", "200+"
+
+  // Sobre
+  shortDescription    String    @db.VarChar(200)
+  shortDescription_en String?   @db.VarChar(200)
+  shortDescription_es String?   @db.VarChar(200)
+  
+  fullDescription     String    @db.Text
+  fullDescription_en  String?   @db.Text
+  fullDescription_es  String?   @db.Text
+  
+  videoUrl            String?   // [NOVO] Vídeo institucional
+  keywords            String[]  // [NOVO] Palavras-chave de busca
+  foundedYear         Int?
+  certifications      String[]  // ex: ["ISO 9001", "CE Mark"]
+
+  // Oferta
+  products            Product[] // [NOVO] Relação com catálogo real
+  productsServices    String[]  // lista de nomes (legacy/fallback)
+  targetMarkets       String[]  // países ou blocos de interesse
+
+  // Contato
+  email               String?
+  phone               String?
+  whatsapp            String?
+  website             String?
+  linkedin            String?
+  instagram           String?
+  facebook            String?
+  twitter             String?
+
+  // Gestão
+  status              CompanyStatus @default(PENDING)
+  auditStatus         AuditStatus   @default(NONE)
+  featured            Boolean       @default(false)
+  views               Int           @default(0)
+  internalNotes       String?       @db.Text
+  verificationNotes   String?       @db.Text
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  publishedAt         DateTime?
+
+  viewsHistory        CompanyView[] // [NOVO] Histórico de visualizações
+  reviews             Review[]      // [NOVO] Depoimentos de parceiros
+
+  @@index([region])
+  @@index([status])
+  @@index([auditStatus])
+  @@index([views])
+  @@index([sectorId])
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  title           String
+  title_en        String?
+  title_es        String?
+  
+  slug            String?
+  
+  description     String   @db.Text
+  description_en  String?  @db.Text
+  description_es  String?  @db.Text
+  imageUrl        String?
+  category        String?
+  
+  // B2B Badges (Os 4 pilares de produto)
+  isReadyToShip   Boolean  @default(false)
+  isLowMOQ        Boolean  @default(false)
+  isCertified     Boolean  @default(false)
+  isSustainable   Boolean  @default(false)
+  
+  // Dados Técnicos de Exportação
+  moq             String?
+  incoterms       String?
+  leadTime        String?
+  portOfOrigin    String?  // [NOVO]
+  productionCapacity String? // [NOVO]
+  
+  type            ProductType @default(PRODUCT) // [NOVO] Diferenciar produto/serviço
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([companyId])
+}
+
+enum ProductType {
+  PRODUCT
+  SERVICE
+}
+
+enum AuditStatus {
+  NONE
+  BRONZE
+  SILVER
+  GOLD
+}
+
+enum Region {
+  EU
+  MERCOSUL
+}
+
+enum CompanyStatus {
+  ACTIVE    // visível no front
+  INACTIVE  // oculta do front, mantida no banco
+  PENDING   // aguardando aprovação
+  DRAFT     // rascunho, não publicado
+  FEATURED  // destaque no topo do grid
+}
+
+// ─── SETORES ────────────────────────────────────────────
+model Sector {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  name_en     String?
+  name_es     String?
+  slug        String    @unique
+  icon        String    // emoji ou nome de ícone
+  description String?
+  active      Boolean   @default(true)
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+
+  companies   Company[]
+}
+
+// ─── SOLICITAÇÕES DE CADASTRO ───────────────────────────
+model ContactRequest {
+  id              String          @id @default(cuid())
+  companyName     String
+  country         String
+  countryCode     String?
+  sector          String          // texto livre
+  responsibleName String
+  email           String
+  phone           String?
+  website         String?
+  description     String          @db.Text
+  message         String?         @db.Text
+  logoUrl         String?         // [NOVO] Upload no cadastro
+  bannerUrl       String?         // [NOVO] Upload no cadastro
+
+  status          RequestStatus   @default(PENDING)
+  rejectionReason String?
+  reviewedAt      DateTime?
+  reviewedById    String?
+  reviewedBy      AdminUser?      @relation(fields: [reviewedById], references: [id])
+
+  // Se aprovada, referência à empresa criada
+  companyId       String?
+
+  createdAt       DateTime        @default(now())
+}
+
+
+enum RequestStatus {
+  PENDING   // aguardando análise
+  APPROVED  // aprovada, empresa criada
+  REJECTED  // recusada
+}
+
+// ─── USUÁRIOS ADMIN ─────────────────────────────────────
+model AdminUser {
+  id                  String    @id @default(cuid())
+  name                String
+  username            String    @unique // [NOVO] Login por usuário
+  email               String?   @unique
+  passwordHash        String
+  role                AdminRole @default(EDITOR)
+  active              Boolean   @default(true)
+  needsPasswordChange Boolean   @default(true) // [NOVO] Forçar troca de senha
+  createdAt           DateTime  @default(now())
+  lastLogin           DateTime?
+
+  reviewedRequests ContactRequest[]
+}
+
+enum AdminRole {
+  SUPER_ADMIN   // acesso total
+  EDITOR        // pode criar/editar empresas, não pode gerenciar usuários
+}
+
+// ─── CONFIGURAÇÕES DA PLATAFORMA ────────────────────────
+model PlatformSetting {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+model CompanyView {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([companyId])
+  @@index([createdAt])
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  author      String   // Nome do parceiro (ex: João Silva)
+  rating      Int      @default(5)
+  comment     String   @db.Text
+  date        DateTime @default(now())
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
+}

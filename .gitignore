@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# project specific
+/scratch
+/IMAGENS
+/temp_extracted
+/temp_docx
+*.docx
+*.pdf
+docx_text.txt
+temp.zip
+

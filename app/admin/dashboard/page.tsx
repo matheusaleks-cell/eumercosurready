@@ -27,7 +27,7 @@ export default async function DashboardPage() {
   const topCompanies = await getTopCompanies(5)
   
   // Buscar solicitações pendentes reais
-  let pendingRequests = []
+  let pendingRequests: any[] = []
   try {
     pendingRequests = await prisma.contactRequest.findMany({
       where: { status: 'PENDING' },
@@ -39,8 +39,8 @@ export default async function DashboardPage() {
   }
 
   // Buscar atividades recentes (Empresas e Produtos)
-  let recentCompanies = []
-  let recentProducts = []
+  let recentCompanies: any[] = []
+  let recentProducts: any[] = []
   let totalProducts = 0
 
   try {

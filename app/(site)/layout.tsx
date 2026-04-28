@@ -23,11 +23,16 @@ const inter = Inter({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await prisma.platformSetting.findMany();
-  const config = settings.reduce((acc, curr) => {
-    acc[curr.key] = curr.value;
-    return acc;
-  }, {} as Record<string, string>);
+  let config: Record<string, string> = {};
+  try {
+    const settings = await prisma.platformSetting.findMany();
+    config = settings.reduce((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {} as Record<string, string>);
+  } catch (error) {
+    console.error("Erro ao carregar metadata:", error);
+  }
 
   const title = config['META_TITLE'] || config['PLATFORM_NAME'] || "EU-Mercosur Ready";
   const description = config['META_DESCRIPTION'] || "Conectando empresas prontas para negócios internacionais.";
@@ -51,11 +56,16 @@ export default async function PublicLayout({
   const cookieStore = await cookies()
   const language = (cookieStore.get('mr-language')?.value as Language) || 'pt'
   
-  const settings = await prisma.platformSetting.findMany();
-  const config = settings.reduce((acc, curr) => {
-    acc[curr.key] = curr.value;
-    return acc;
-  }, {} as Record<string, string>);
+  let config: Record<string, string> = {};
+  try {
+    const settings = await prisma.platformSetting.findMany();
+    config = settings.reduce((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {} as Record<string, string>);
+  } catch (error) {
+    console.error("Erro ao carregar configurações do layout:", error);
+  }
 
   const primaryColor = config['PRIMARY_COLOR'] || '#0B1F3A';
   const secondaryColor = config['SECONDARY_COLOR'] || '#C8943A';

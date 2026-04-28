@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next'
+export const dynamic = 'force-dynamic'
 import prisma from '@/lib/prisma'
 import { countriesData } from '@/lib/countries-data'
 

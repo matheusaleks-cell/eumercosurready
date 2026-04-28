@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import { useSession } from 'next-auth/react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { Toaster } from 'sonner'
 import { usePathname } from 'next/navigation'
@@ -18,7 +18,15 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isLoginPage = pathname === '/admin/login'
+  const { data: session, status } = useSession()
+  
+  // Se estiver carregando a sessão, mostra um estado neutro
+  if (status === 'loading') return null
+
+  // Define se é página de login: 
+  // 1. Pelo caminho físico /admin/login
+  // 2. Se não houver sessão ativa (o middleware já garante que o conteúdo será o login)
+  const isLoginPage = pathname === '/admin/login' || !session
 
   return (
     <div className={`${inter.variable} antialiased font-sans bg-gray-50 admin-theme min-h-screen`}>

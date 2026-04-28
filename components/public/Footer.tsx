@@ -17,11 +17,16 @@ export const Footer = async () => {
   }
 
   // Buscar configurações para links sociais
-  const settings = await prisma.platformSetting.findMany();
-  const config = settings.reduce((acc, curr) => {
-    acc[curr.key] = curr.value;
-    return acc;
-  }, {} as Record<string, string>);
+  let config: Record<string, string> = {};
+  try {
+    const settings = await prisma.platformSetting.findMany();
+    config = settings.reduce((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {} as Record<string, string>);
+  } catch (error) {
+    console.error("Erro ao carregar configurações no Footer:", error);
+  }
 
   const socialLinks = [
     { key: 'SOCIAL_LINKEDIN', icon: Share2, label: 'LinkedIn' },

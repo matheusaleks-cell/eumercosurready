@@ -23,14 +23,13 @@ export default function AdminLayout({
   // Se estiver carregando a sessão, mostra um estado neutro
   if (status === 'loading') return null
 
-  // Define se é página de login: 
-  // 1. Pelo caminho físico /admin/login
-  // 2. Se não houver sessão ativa (o middleware já garante que o conteúdo será o login)
-  const isLoginPage = pathname === '/admin/login' || !session
+  // A barra lateral deve aparecer em todas as páginas do admin, 
+  // EXCETO na página de login propriamente dita.
+  const isLoginPage = pathname.includes('/login') || pathname === '/admin'
 
   return (
     <div className={`${inter.variable} antialiased font-sans bg-gray-50 admin-theme min-h-screen`}>
-      {isLoginPage ? (
+      {isLoginPage && !session ? (
         children
       ) : (
         <div className="flex min-h-screen">

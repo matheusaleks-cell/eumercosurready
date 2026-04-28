@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   title: "EU-Mercosur Ready | B2B Trade Hub",
   description: "Conectando empresas prontas para negócios internacionais entre Europa e Mercosul.",
   icons: {
-    icon: "/logo-mia-navy.png",
-    shortcut: "/logo-mia-navy.png",
-    apple: "/logo-mia-navy.png",
+    icon: "/logo-mia-navy.png?v=2",
+    shortcut: "/logo-mia-navy.png?v=2",
+    apple: "/logo-mia-navy.png?v=2",
   },
 };
 

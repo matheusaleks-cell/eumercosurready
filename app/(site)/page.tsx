@@ -7,8 +7,7 @@ import prisma from '@/lib/prisma'
 export const revalidate = 0 // Força renderização dinâmica para testes
 
 export default async function HomePage() {
-  // Buscar todas as empresas publicadas no banco de dados real
-  let companiesData: any[] = []
+  let dbError = null
   try {
     companiesData = await prisma.company.findMany({
       where: {}, // Removido filtro de status para teste de conexão
@@ -45,8 +44,9 @@ export default async function HomePage() {
         { name: 'asc' }
       ]
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro crítico ao carregar empresas:", error)
+    dbError = error.message || "Erro desconhecido de conexão"
     companiesData = []
   }
 
@@ -80,6 +80,13 @@ export default async function HomePage() {
       <HeroSection />
       
       <main className="flex-grow">
+        {dbError && (
+          <div className="container-custom py-4">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-lg text-xs font-mono">
+              <strong>DEBUG DB ERROR:</strong> {dbError}
+            </div>
+          </div>
+        )}
         {/* Restaurando o container para que os filtros não fiquem gigantes */}
         <div className="container-custom relative z-30">
           <BusinessesSection initialCompanies={safeCompanies as any} />

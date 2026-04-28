@@ -121,7 +121,8 @@ export async function createRequest(formData: FormData) {
 // Versão interna sem revalidatePath repetido para uso no createRequest
 async function internalPromote(requestId: string) {
     const request = await prisma.contactRequest.findUnique({ where: { id: requestId } })
-    if (!request || request.companyId) return
+    if (!request) return null
+    if (request.companyId) return request.companyId
 
     const countryInfo = countriesList.find(c => c.code === request.countryCode)
     const region = countryInfo?.bloc === 'Mercosul' ? 'MERCOSUL' : 'EU'
@@ -135,7 +136,7 @@ async function internalPromote(requestId: string) {
       }
     })
     if (!sector) sector = await prisma.sector.findFirst()
-    if (!sector) return
+    if (!sector) return null
 
     const baseSlug = request.companyName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
     let slug = baseSlug
@@ -156,7 +157,7 @@ async function internalPromote(requestId: string) {
         where: { id: requestId },
         data: { status: 'APPROVED', companyId: companyExists.id, reviewedAt: new Date() }
       })
-      return
+      return companyExists.id
     }
 
     const company = await prisma.company.create({
@@ -183,6 +184,8 @@ async function internalPromote(requestId: string) {
       where: { id: requestId },
       data: { status: 'APPROVED', companyId: company.id, reviewedAt: new Date() }
     })
+
+    return company.id
 }
 
 export async function getRequests() {
@@ -260,10 +263,10 @@ export async function promoteToCompany(requestId: string) {
   if (!session) return { success: false, error: 'Não autorizado' }
 
   try {
-    await internalPromote(requestId)
+    const companyId = await internalPromote(requestId)
     revalidatePath('/admin/solicitacoes')
     revalidatePath('/admin/empresas')
-    return { success: true }
+    return { success: true, companyId }
   } catch (error) {
     console.error('Promotion error:', error)
     return { success: false, error: 'Falha ao converter solicitação em empresa' }

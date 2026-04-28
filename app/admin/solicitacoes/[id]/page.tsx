@@ -58,7 +58,7 @@ export default function RequestDetailPage({ params }: PageProps) {
     setActionLoading(true)
     
     if (status === 'APPROVED') {
-      const result = await promoteToCompany(id)
+      const result = await promoteToCompany(id) as any
       if (result.success && result.companyId) {
         alert('Solicitação aprovada! Empresa criada como rascunho. Vamos finalizar o perfil agora?')
         router.push(`/admin/empresas/${result.companyId}`)

@@ -84,7 +84,9 @@ export default async function HomePage() {
       
       <main className="flex-grow">
         <BusinessesSection initialCompanies={safeCompanies as any} />
-      <CallToAction />
-    </main>
+        <OpportunitiesSection />
+        <CallToAction />
+      </main>
+    </div>
   )
 }

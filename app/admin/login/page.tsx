@@ -62,15 +62,15 @@ export default function LoginPage() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="inline-flex items-center justify-center relative w-24 h-24 mb-8 bg-gradient-to-b from-white/10 to-white/5 rounded-3xl p-5 backdrop-blur-2xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] group"
+            className="inline-flex items-center justify-center relative w-32 h-16 mb-8 bg-gradient-to-b from-white/10 to-white/5 rounded-2xl p-4 backdrop-blur-2xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] group"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-[#C8943A]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#C8943A]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
             <Image 
-              src="/logo-mercosur.png" 
-              alt="EU-Mercosur Ready" 
+              src="/logo-mia-white.png" 
+              alt="Made In Atlantic" 
               fill 
-              sizes="96px"
-              className="object-contain p-4 drop-shadow-2xl transition-transform duration-700 group-hover:scale-110"
+              sizes="128px"
+              className="object-contain p-2 drop-shadow-2xl transition-transform duration-700 group-hover:scale-105"
               priority
             />
           </motion.div>

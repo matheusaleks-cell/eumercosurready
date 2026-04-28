@@ -26,16 +26,14 @@ export function AdminSidebar() {
     <>
       <aside className="w-64 bg-[#0B1F3A] text-white flex flex-col shrink-0">
         <div className="p-6">
-          <div className="flex justify-center mb-12">
-            <div className="relative w-24 h-24 overflow-hidden rounded">
+            <div className="relative w-32 h-16 overflow-hidden rounded">
               <Image 
-                src="/logo-mercosur.png" 
-                alt="Logo" 
+                src="/logo-mia-white.png" 
+                alt="Made In Atlantic" 
                 fill 
-                className="object-contain scale-125"
+                className="object-contain"
               />
             </div>
-          </div>
 
           <nav className="space-y-1">
             {menuItems.map((item) => (

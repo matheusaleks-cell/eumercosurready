@@ -11,7 +11,9 @@ export default async function HomePage() {
   let companiesData: any[] = []
   try {
     companiesData = await prisma.company.findMany({
-      where: {}, // Removido filtro de status para teste de conexão
+      where: {
+        status: 'ACTIVE'
+      },
       select: {
         id: true,
         name: true,
@@ -81,13 +83,6 @@ export default async function HomePage() {
       <HeroSection />
       
       <main className="flex-grow">
-        {dbError && (
-          <div className="container-custom py-4">
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-lg text-xs font-mono">
-              <strong>DEBUG DB ERROR:</strong> {dbError}
-            </div>
-          </div>
-        )}
         {/* Restaurando o container para que os filtros não fiquem gigantes */}
         <div className="container-custom relative z-30">
           <BusinessesSection initialCompanies={safeCompanies as any} />

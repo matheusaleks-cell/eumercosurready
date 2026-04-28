@@ -60,10 +60,10 @@ export const Navbar = () => {
         <div className="flex items-center justify-between">
           {/* Logo sobressaindo */}
           <Link href="/" className="group relative z-50 flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
-            <div className="relative w-32 h-10 md:w-40 md:h-12 transition-transform duration-500 group-hover:scale-105 drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
+            <div className="relative w-16 h-16 md:w-20 md:h-20 -my-6 md:-my-10 transition-transform duration-500 group-hover:scale-105 drop-shadow-[0_8px_20px_rgba(0,0,0,0.4)]">
               <Image 
-                src="/logo-mia-white.png" 
-                alt="Made In Atlantic" 
+                src="/logo-mercosur.png" 
+                alt="EU-Mercosur Ready" 
                 fill 
                 className="object-contain"
                 priority
@@ -192,10 +192,10 @@ export const Navbar = () => {
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
                 <div className="flex items-center gap-3">
-                  <div className="relative w-24 h-8">
-                    <Image src="/logo-mia-white.png" alt="Made In Atlantic" fill className="object-contain" />
+                  <div className="relative w-10 h-10">
+                    <Image src="/logo-mercosur.png" alt="Logo" fill className="object-contain scale-125" />
                   </div>
-                  <span className="font-display font-bold text-white text-xs tracking-widest opacity-40 uppercase">MENU</span>
+                  <span className="font-display font-bold text-white text-sm tracking-tight">MENU</span>
                 </div>
                 <button 
                   onClick={() => setIsMobileMenuOpen(false)}

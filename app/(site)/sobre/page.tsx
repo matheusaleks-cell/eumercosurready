@@ -20,7 +20,7 @@ export default function SobrePage() {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
-    transition: { duration: 0.6, ease: "easeOut" }
+    transition: { duration: 0.6, ease: "easeOut" as any }
   }
 
   const levels = [
@@ -116,7 +116,7 @@ export default function SobrePage() {
                <motion.h1 
                  initial={{ opacity: 0, filter: 'blur(30px)', scale: 0.95 }}
                  animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
-                 transition={{ duration: 1.5, delay: 0.6, ease: "easeOut" }}
+                 transition={{ duration: 1.5, delay: 0.6, ease: "easeOut" as any }}
                  className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white leading-[1.1] tracking-tight"
                >
                  {t(
@@ -296,7 +296,7 @@ export default function SobrePage() {
                initial={{ opacity: 0, scale: 0.95 }}
                whileInView={{ opacity: 1, scale: 1 }}
                whileHover={{ scale: 1.02, y: -10 }}
-               transition={{ duration: 0.5, ease: "easeOut" }}
+               transition={{ duration: 0.5, ease: "easeOut" as any }}
                className="relative group max-w-lg mx-auto"
              >
                {/* Brilho de Fundo Dinâmico */}

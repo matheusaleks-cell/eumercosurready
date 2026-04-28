@@ -142,7 +142,7 @@ export const HeroSection = () => {
             <motion.h1 
               initial={{ opacity: 0, filter: 'blur(10px)', y: 20 }}
               animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.8, ease: "easeOut" as any }}
               className="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-6 leading-tight justify-center tracking-tight"
             >
               {t('O Acordo EU-Mercosul já começou.', 'The EU-Mercosur Agreement has begun.', 'El Acuerdo EU-Mercosur ya ha começado.')}<br/>
@@ -152,7 +152,7 @@ export const HeroSection = () => {
             <motion.p 
               initial={{ opacity: 0, filter: 'blur(10px)', y: 20 }}
               animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" as any }}
               className="max-w-3xl mx-auto text-base md:text-lg text-gray-200 mb-8 font-body justify-center leading-relaxed"
             >
               {t(

@@ -1,4 +1,5 @@
 import React from 'react'
+export const dynamic = 'force-dynamic'
 import { getUsers, deleteUser, toggleUserStatus } from '@/lib/actions/users'
 import { 
   Users, 

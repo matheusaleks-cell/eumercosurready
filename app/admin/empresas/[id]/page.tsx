@@ -1,4 +1,5 @@
 import React from 'react'
+export const dynamic = 'force-dynamic'
 import prisma from '@/lib/prisma'
 import CompanyTabs from '@/components/admin/CompanyTabs'
 import { ArrowLeft, ExternalLink } from 'lucide-react'

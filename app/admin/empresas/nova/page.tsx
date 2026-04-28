@@ -1,4 +1,5 @@
 import React from 'react'
+export const dynamic = 'force-dynamic'
 import prisma from '@/lib/prisma'
 import CompanyForm from '@/components/admin/CompanyForm'
 import { ArrowLeft } from 'lucide-react'

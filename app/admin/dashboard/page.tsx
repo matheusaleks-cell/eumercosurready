@@ -17,6 +17,7 @@ import {
   Package,
   ArrowUpRight
 } from 'lucide-react'
+export const dynamic = 'force-dynamic'
 import { getDashboardStats, getTopCompanies } from '@/lib/actions/analytics'
 import prisma from '@/lib/prisma'
 import Link from 'next/link'

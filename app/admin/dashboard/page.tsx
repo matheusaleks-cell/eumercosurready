@@ -23,7 +23,8 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 export default async function DashboardPage() {
-  const statsData = await getDashboardStats()
+  const rawStats = await getDashboardStats()
+  const statsData = (rawStats as any).totalCompanies !== undefined ? rawStats as any : { totalCompanies: 0, pendingRequests: 0, activeSectors: 0 }
   const topCompanies = await getTopCompanies(5)
   
   // Buscar solicitações pendentes reais

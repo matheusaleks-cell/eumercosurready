@@ -8,43 +8,49 @@ export const revalidate = 0 // Força renderização dinâmica para testes
 
 export default async function HomePage() {
   // Buscar todas as empresas publicadas no banco de dados real
-  const companiesData = await prisma.company.findMany({
-    where: {
-      status: 'ACTIVE'
-    },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      logoUrl: true,
-      bannerUrl: true,
-      logoColor: true,
-      country: true,
-      countryCode: true,
-      region: true,
-      shortDescription: true,
-      shortDescription_en: true,
-      shortDescription_es: true,
-      status: true,
-      auditStatus: true,
-      featured: true,
-      createdAt: true,
-      updatedAt: true,
-      publishedAt: true,
-      sector: {
-        select: {
-          id: true,
-          name: true,
-          name_en: true,
-          name_es: true
+  let companiesData: any[] = []
+  try {
+    companiesData = await prisma.company.findMany({
+      where: {
+        status: 'ACTIVE'
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        logoUrl: true,
+        bannerUrl: true,
+        logoColor: true,
+        country: true,
+        countryCode: true,
+        region: true,
+        shortDescription: true,
+        shortDescription_en: true,
+        shortDescription_es: true,
+        status: true,
+        auditStatus: true,
+        featured: true,
+        createdAt: true,
+        updatedAt: true,
+        publishedAt: true,
+        sector: {
+          select: {
+            id: true,
+            name: true,
+            name_en: true,
+            name_es: true
+          }
         }
-      }
-    },
-    orderBy: [
-      { featured: 'desc' }, // Destaques primeiro
-      { name: 'asc' }
-    ]
-  })
+      },
+      orderBy: [
+        { featured: 'desc' }, // Destaques primeiro
+        { name: 'asc' }
+      ]
+    })
+  } catch (error) {
+    console.error("Erro crítico ao carregar empresas:", error)
+    companiesData = []
+  }
 
   // Evitar vazamento de dados sensíveis ou Date objectos que quebram o Client Component
   // Serializamos a data e excluímos notas internas

@@ -53,28 +53,37 @@ export default async function HomePage() {
   }
 
   // Evitar vazamento de dados sensíveis ou Date objectos que quebram o Client Component
-  // Serializamos a data e excluímos notas internas
+  // Passamos apenas o necessário para o visual, garantindo que tudo seja serializável
   const safeCompanies = companiesData.map(c => ({
-    ...c,
-    createdAt: c.createdAt.toISOString(),
-    updatedAt: c.updatedAt.toISOString(),
-    publishedAt: c.publishedAt?.toISOString() || null,
-    internalNotes: undefined,
-    verificationNotes: undefined
+    id: c.id,
+    name: c.name,
+    slug: c.slug,
+    logoUrl: c.logoUrl,
+    bannerUrl: c.bannerUrl,
+    logoColor: c.logoColor,
+    country: c.country,
+    countryCode: c.countryCode,
+    region: c.region,
+    shortDescription: c.shortDescription,
+    shortDescription_en: c.shortDescription_en,
+    shortDescription_es: c.shortDescription_es,
+    status: c.status,
+    auditStatus: c.auditStatus,
+    featured: c.featured,
+    sector: c.sector ? {
+      id: c.sector.id,
+      name: c.sector.name,
+      name_en: c.sector.name_en,
+      name_es: c.sector.name_es
+    } : null
   }))
+
   return (
-    <main className="min-h-screen">
+    <div className="flex flex-col">
       <HeroSection />
       
-      {/* Sistema de Vitrine com Filtros Funcionais Premium */}
-      <div className="container-custom relative z-30">
+      <main className="flex-grow">
         <BusinessesSection initialCompanies={safeCompanies as any} />
-      </div>
-
-      {/* Seção Interativa: Conheça as Oportunidades */}
-      <OpportunitiesSection />
-
-      {/* Seção de Chamada para Ação (CTA) Personalizada */}
       <CallToAction />
     </main>
   )

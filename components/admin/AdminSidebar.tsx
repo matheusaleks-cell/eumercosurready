@@ -50,9 +50,9 @@ export function AdminSidebar() {
                 </div>
                 {item.dynamicBadge ? (
                   <RequestBadge />
-                ) : item.badge && (
+                ) : (item as any).badge && (
                   <span className="bg-[#C8943A] text-[#0B1F3A] text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    {item.badge}
+                    {(item as any).badge}
                   </span>
                 )}
               </Link>

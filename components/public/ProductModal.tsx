@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ArrowRight, CheckCircle2, ShieldCheck, Zap, Truck, Leaf, Package, Globe } from 'lucide-react'
+import { X, ArrowRight, CheckCircle2, ShieldCheck, Zap, Truck, Leaf, Package, Globe, MapPin } from 'lucide-react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { SafeImage } from './SafeImage'

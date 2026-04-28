@@ -58,6 +58,7 @@ export async function createUser(data: {
       data: {
         name: data.name,
         email: data.email,
+        username: data.email.split('@')[0], // Fallback username
         passwordHash,
         role: data.role,
         active: true

@@ -1,3 +1,4 @@
-import { useLanguage as useLang } from '@/components/public/LanguageContext'
+import { useLanguage as useLang, type Language as LangType } from '@/components/public/LanguageContext'
 
 export const useLanguage = useLang
+export type Language = LangType

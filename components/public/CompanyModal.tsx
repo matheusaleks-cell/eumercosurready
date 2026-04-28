@@ -156,7 +156,7 @@ export const CompanyModal = ({ isOpen, onClose, company }: CompanyModalProps) =>
                     </div>
                     
                     <div className="space-y-3">
-                      {company.reviews.map(review => (
+                      {company.reviews.map((review: any) => (
                         <div key={review.id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-bold text-[var(--color-navy)]">{review.userName}</span>

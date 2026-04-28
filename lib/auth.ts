@@ -52,10 +52,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ session, token }) {
       if (token) {
-        (session.user as any).id = token.id
-        (session.user as any).username = token.username
-        (session.user as any).role = token.role
-        (session.user as any).needsPasswordChange = token.needsPasswordChange
+        const t = token as any
+        ;(session.user as any).id = t.id
+        ;(session.user as any).username = t.username
+        ;(session.user as any).role = t.role
+        ;(session.user as any).needsPasswordChange = t.needsPasswordChange
       }
       return session
     },

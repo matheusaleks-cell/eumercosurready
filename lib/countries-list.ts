@@ -3,6 +3,8 @@
 export interface Country {
   code: string;
   name: string;
+  name_en?: string;
+  name_es?: string;
   bloc: 'EU' | 'Mercosul';
 }
 

@@ -25,7 +25,7 @@ export async function translateText(text: string, targetLang: TargetLanguage, so
       options.formality = 'more';
     }
 
-    const result = await translator.translateText(text, sourceLang, targetLang, options);
+    const result = await translator!.translateText(text, sourceLang, targetLang, options);
     return result.text;
   } catch (error: any) {
     console.error('DeepL Translation Error:', error);

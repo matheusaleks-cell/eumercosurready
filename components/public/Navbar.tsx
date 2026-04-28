@@ -32,7 +32,7 @@ export const Navbar = () => {
     }
   }, [isMobileMenuOpen])
 
-  const menuVariants = {
+  const menuVariants: any = {
     closed: { x: "100%", transition: { type: "spring", stiffness: 300, damping: 30 } },
     open: { x: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
   }

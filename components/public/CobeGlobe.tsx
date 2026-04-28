@@ -50,11 +50,11 @@ export const CobeGlobe = () => {
         { location: [41.9028, 12.4964], size: 0.08 }, // Roma
         { location: [50.8503, 4.3517], size: 0.05 }, // Bruxelas
       ],
-      onRender: (state) => {
+      onRender: (state: any) => {
         state.phi = phi
         phi += 0.005
       }
-    })
+    } as any)
 
     // Garante que o canvas apareça suavemente
     setTimeout(() => {

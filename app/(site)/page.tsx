@@ -8,6 +8,7 @@ export const revalidate = 0 // Força renderização dinâmica para testes
 
 export default async function HomePage() {
   let dbError = null
+  let companiesData: any[] = []
   try {
     companiesData = await prisma.company.findMany({
       where: {}, // Removido filtro de status para teste de conexão

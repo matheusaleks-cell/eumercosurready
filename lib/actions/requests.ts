@@ -10,20 +10,27 @@ import { z } from 'zod'
 
 const RequestSchema = z.object({
   companyName: z.string().min(2, 'Nome da empresa é obrigatório').max(100),
-  countryCode: z.string().min(2).max(5),
-  sector: z.string().min(2).max(50),
-  website: z.string().url('Website inválido').or(z.literal('')).optional().nullable(),
+  countryCode: z.string().min(2).max(10),
+  sector: z.string().min(2).max(100),
+  website: z.string().or(z.literal('')).optional().nullable(),
   responsibleName: z.string().min(2, 'Nome do responsável é obrigatório').max(100),
   email: z.string().email('E-mail inválido'),
-  ddi: z.string().min(1).max(4),
-  ddd: z.string().min(2).max(3),
-  phoneNum: z.string().min(8).max(15),
-  linkedin: z.string().url('LinkedIn inválido').or(z.literal('')).optional().nullable(),
+  ddi: z.string().min(1).max(5),
+  ddd: z.string().optional().or(z.literal('')).nullable(),
+  phoneNum: z.string().min(5).max(20),
+  linkedin: z.string().or(z.literal('')).optional().nullable(),
   instagram: z.string().or(z.literal('')).optional().nullable(),
-  description: z.string().min(10, 'Descrição muito curta').max(2000),
-  logoUrl: z.string().url().optional().nullable(),
-  bannerUrl: z.string().url().optional().nullable(),
+  description: z.string().min(10, 'Descrição muito curta').max(5000),
+  logoUrl: z.string().optional().nullable(),
+  bannerUrl: z.string().optional().nullable(),
 })
+
+/** Função auxiliar para garantir que a URL tenha o protocolo https:// */
+function fixUrl(url: string | null | undefined) {
+  if (!url || url === '') return url
+  if (url.startsWith('http://') || url.startsWith('https://')) return url
+  return `https://${url}`
+}
 
 export async function createRequest(formData: FormData) {
   try {
@@ -31,13 +38,13 @@ export async function createRequest(formData: FormData) {
       companyName: formData.get('companyName') as string,
       countryCode: formData.get('country') as string,
       sector: formData.get('sector') as string,
-      website: formData.get('website') as string,
+      website: fixUrl(formData.get('website') as string),
       responsibleName: formData.get('responsibleName') as string,
       email: formData.get('email') as string,
       ddi: formData.get('ddi') as string,
       ddd: formData.get('ddd') as string,
       phoneNum: formData.get('phone') as string,
-      linkedin: formData.get('linkedin') as string,
+      linkedin: fixUrl(formData.get('linkedin') as string),
       instagram: formData.get('instagram') as string,
       description: formData.get('description') as string,
       logoUrl: formData.get('logoUrl') as string,
@@ -76,8 +83,10 @@ export async function createRequest(formData: FormData) {
       }
     }
 
-    // Formatar telefone: +DDI (DDD) NUMERO
-    const phone = `+${validated.ddi} (${validated.ddd}) ${validated.phoneNum}`
+    // Formatar telefone: +DDI (DDD) NUMERO - Se não tiver DDD, coloca apenas +DDI NUMERO
+    const phone = validated.ddd 
+      ? `+${validated.ddi} (${validated.ddd}) ${validated.phoneNum}`
+      : `+${validated.ddi} ${validated.phoneNum}`
 
     const request = await prisma.contactRequest.create({
       data: {

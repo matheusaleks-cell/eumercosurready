@@ -29,7 +29,7 @@ const CompanySchema = z.object({
   email: z.string().email().optional().or(z.literal('')).nullable(),
   phone: z.string().optional().nullable(),
   whatsapp: z.string().optional().nullable(),
-  website: z.string().url().optional().or(z.literal('')).nullable(),
+  website: z.string().optional().or(z.literal('')).nullable(),
   linkedin: z.string().optional().nullable(),
   instagram: z.string().optional().nullable(),
   facebook: z.string().optional().nullable(),
@@ -45,7 +45,7 @@ const CompanySchema = z.object({
   verificationNotes: z.string().optional().nullable(),
 })
 
-/** Converte strings vazias em null para campos opcionais de URL/texto */
+/** Converte strings vazias em null para campos opcionais de URL/texto e formata URLs */
 function cleanOptionalFields(data: Record<string, any>) {
   const fieldsToClean = [
     'logoUrl', 'bannerUrl', 'city', 'videoUrl', 'email', 'phone', 'whatsapp', 
@@ -54,19 +54,29 @@ function cleanOptionalFields(data: Record<string, any>) {
     'shortDescription_en', 'shortDescription_es', 'fullDescription_en', 'fullDescription_es'
   ]
   const cleaned = { ...data }
+  
   for (const field of fieldsToClean) {
     if (cleaned[field] === '' || cleaned[field] === undefined) {
       cleaned[field] = null
     }
   }
 
-  // Limpeza de WhatsApp (remover parênteses, espaços e traços)
-  if (cleaned.whatsapp) {
-    // Mantém o + se existir, remove o resto que não for número
-    const hasPlus = cleaned.whatsapp.startsWith('+')
-    const digits = cleaned.whatsapp.replace(/\D/g, '')
-    cleaned.whatsapp = (hasPlus ? '+' : '') + digits
+  // Formatação automática de Website (adiciona https:// se não tiver)
+  if (cleaned.website && !cleaned.website.startsWith('http')) {
+    cleaned.website = `https://${cleaned.website}`
   }
+
+  // Limpeza de Telefone e WhatsApp (mais flexível para internacional)
+  // Removemos espaços, parênteses e traços, mas mantemos o + inicial
+  const cleanPhone = (val: string | null) => {
+    if (!val) return null
+    const hasPlus = val.startsWith('+')
+    const digits = val.replace(/\D/g, '')
+    return (hasPlus ? '+' : '') + digits
+  }
+
+  if (cleaned.phone) cleaned.phone = cleanPhone(cleaned.phone)
+  if (cleaned.whatsapp) cleaned.whatsapp = cleanPhone(cleaned.whatsapp)
 
   return cleaned
 }

@@ -11,9 +11,7 @@ export default async function HomePage() {
   let companiesData: any[] = []
   try {
     companiesData = await prisma.company.findMany({
-      where: {
-        status: 'ACTIVE'
-      },
+      where: {}, // Removido filtro de status para teste de conexão
       select: {
         id: true,
         name: true,

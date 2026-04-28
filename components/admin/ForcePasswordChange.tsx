@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Lock, ShieldCheck, AlertCircle, Loader2, Save } from 'lucide-react'
 import { updateAdminPassword } from '@/lib/actions/auth'
+import { signOut } from 'next-auth/react'
 
 export function ForcePasswordChange({ username }: { username: string }) {
   const [password, setPassword] = useState('')
@@ -31,8 +32,9 @@ export function ForcePasswordChange({ username }: { username: string }) {
       const result = await updateAdminPassword(password)
       if (result.success) {
         setSuccess(true)
+        // Forçamos o logout para que o usuário logue com a senha nova e a sessão seja atualizada
         setTimeout(() => {
-          window.location.reload()
+          signOut({ callbackUrl: '/admin/login' })
         }, 2000)
       } else {
         setError(result.error || 'Erro ao atualizar senha.')

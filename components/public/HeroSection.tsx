@@ -2,21 +2,12 @@
 
 import React, { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
-import NextImage from 'next/image'
-import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react'
-import { User } from 'lucide-react'
-import BlurText from '../animations/BlurText'
+import { motion, useScroll, useTransform } from 'motion/react'
 import { useLanguage } from '@/hooks/use-language'
-import { CobeGlobe } from './CobeGlobe'
-
-const TOTAL_FRAMES = 100
 
 export const HeroSection = () => {
   const { t } = useLanguage()
   const containerRef = useRef<HTMLDivElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [images, setImages] = useState<HTMLImageElement[]>([])
-  const [isLoaded, setIsLoaded] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -32,82 +23,9 @@ export const HeroSection = () => {
   const canvasOpacity = useTransform(scrollYProgress, [0, 0.2, 1], [0.5, 1, 1])
   const canvasBlur = useTransform(scrollYProgress, [0, 0.15, 1], ["blur(12px)", "blur(0px)", "blur(0px)"])
   
-  // Revelação cinemática: Sincronizada para aparecer no final da sequência de frames, antes de subir
   const contentOpacity = useTransform(scrollYProgress, [0, 0.45, 0.6], [0, 0, 1])
   const contentY = useTransform(scrollYProgress, [0.45, 0.6], [30, 0])
   const contentScale = useTransform(scrollYProgress, [0.45, 0.6], [0.96, 1])
-
-  // Transição do fundo da navegação (invisível até sair)
-  // Como o usuário quer que suma com o Hero, o background aparece apenas na transição final de saída
-  const navBgOpacity = useTransform(scrollYProgress, [0.75, 0.9], [0, 1])
-  const navBorderOpacity = useTransform(scrollYProgress, [0.75, 0.9], [0, 1])
-
-  const getFramePath = (index: number) => {
-    return `/hero-new/Container_descend_onto_202604252339_${index.toString().padStart(3, '0')}.png`
-  }
-
-  useEffect(() => {
-    const loadedImages: HTMLImageElement[] = []
-    let loadedCount = 0
-
-    const preloadImages = () => {
-      const timeout = setTimeout(() => setIsLoaded(true), 1000)
-
-      for (let i = 1; i <= TOTAL_FRAMES; i++) {
-        const img = new window.Image()
-        img.src = getFramePath(i)
-        
-        const handleLoad = () => {
-          loadedCount++
-          if (loadedCount === TOTAL_FRAMES) {
-            clearTimeout(timeout)
-            setIsLoaded(true)
-          }
-        }
-        img.onload = handleLoad
-        img.onerror = handleLoad
-        loadedImages.push(img)
-      }
-      setImages(loadedImages)
-    }
-    preloadImages()
-  }, [])
-
-  useEffect(() => {
-    if (!canvasRef.current || images.length === 0) return
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const renderFrame = (index: number) => {
-      const img = images[index]
-      if (!img) return
-      const ratio = Math.max(canvas.width / img.width, canvas.height / img.height)
-      const newWidth = img.width * ratio
-      const newHeight = img.height * ratio
-      const x = (canvas.width - newWidth) / 2
-      const y = (canvas.height - newHeight) / 2
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.drawImage(img, x, y, newWidth, newHeight)
-    }
-
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth * (window.devicePixelRatio || 1)
-      canvas.height = window.innerHeight * (window.devicePixelRatio || 1)
-      renderFrame(Math.min(TOTAL_FRAMES - 1, Math.floor(scrollYProgress.get() * TOTAL_FRAMES)))
-    }
-
-    window.addEventListener('resize', resizeCanvas)
-    resizeCanvas()
-    const unsubscribe = scrollYProgress.on("change", (latest) => {
-      renderFrame(Math.min(TOTAL_FRAMES - 1, Math.floor(latest * TOTAL_FRAMES)))
-    })
-    renderFrame(0)
-    return () => {
-      window.removeEventListener('resize', resizeCanvas)
-      unsubscribe()
-    }
-  }, [images, scrollYProgress])
 
   return (
     <div ref={containerRef} className="relative h-[300vh] bg-[var(--color-navy)]">
@@ -115,19 +33,21 @@ export const HeroSection = () => {
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-[var(--color-navy)]/95 via-[var(--color-navy)]/40 to-[var(--color-navy)]/95 pointer-events-none" />
         
         {mounted && (
-          <>
-            <motion.canvas
-              ref={canvasRef}
-              className="absolute inset-0 w-full h-full"
-              style={{ opacity: canvasOpacity, filter: canvasBlur, display: isLoaded ? 'block' : 'none' }}
-            />
-            
-            {!isLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center text-white/20 text-xs font-display tracking-widest uppercase animate-pulse">
-                {t('Carregando...', 'Loading...', 'Cargando...')}
-              </div>
-            )}
-          </>
+          <motion.div 
+            style={{ opacity: canvasOpacity, filter: canvasBlur }}
+            className="absolute inset-0 w-full h-full"
+          >
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+              poster="/hero-new/Container_descend_onto_202604252339_001.png"
+            >
+              <source src="/hero-video.mp4" type="video/mp4" />
+            </video>
+          </motion.div>
         )}
 
         {mounted && (

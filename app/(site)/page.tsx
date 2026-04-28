@@ -53,7 +53,6 @@ export default async function HomePage() {
   }
 
   // Evitar vazamento de dados sensíveis ou Date objectos que quebram o Client Component
-  // Passamos apenas o necessário para o visual, garantindo que tudo seja serializável
   const safeCompanies = companiesData.map(c => ({
     id: c.id,
     name: c.name,
@@ -83,7 +82,11 @@ export default async function HomePage() {
       <HeroSection />
       
       <main className="flex-grow">
-        <BusinessesSection initialCompanies={safeCompanies as any} />
+        {/* Restaurando o container para que os filtros não fiquem gigantes */}
+        <div className="container-custom relative z-30">
+          <BusinessesSection initialCompanies={safeCompanies as any} />
+        </div>
+        
         <OpportunitiesSection />
         <CallToAction />
       </main>

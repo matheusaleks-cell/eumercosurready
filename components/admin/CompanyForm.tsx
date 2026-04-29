@@ -125,8 +125,8 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
       fullDescription_es: 'Con más de 25 años de experiencia, nuestra empresa transforma el mercado de exportación a través de innovaciones disruptivas e un compromiso inquebrantable con la sostenibilidad y la calidad internacional.',
     })
     
-    setWhatsappParts({ country: '55', ddd: '11', number: '98888-7777' })
-    setPhoneParts({ country: '55', ddd: '11', number: '4004-1234' })
+    setWhatsappParts({ ddi: '55', number: '(11) 98888-7777' })
+    setPhoneParts({ ddi: '55', number: '(11) 4004-1234' })
     
     setSelectedRegion('MERCOSUL')
     setSelectedCountry('Brasil')

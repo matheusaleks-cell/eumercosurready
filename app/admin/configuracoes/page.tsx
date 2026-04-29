@@ -15,6 +15,7 @@ export default function ConfiguracoesPage() {
   const [success, setSuccess] = useState(false)
   const [settings, setSettings] = useState<Record<string, string>>({})
   const [uploadingFavicon, setUploadingFavicon] = useState(false)
+  const [uploadSuccess, setUploadSuccess] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -31,23 +32,36 @@ export default function ConfiguracoesPage() {
     const file = e.target.files?.[0]
     if (!file) return
 
+    // Validação básica de tamanho (max 2MB para favicon)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('A imagem é muito grande. Use um ícone de até 2MB.')
+      return
+    }
+
     setUploadingFavicon(true)
+    setUploadSuccess(false)
+    
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('upload_preset', 'ml_default') // Preset padrão do Cloudinary
+    formData.append('upload_preset', 'ml_default')
 
     try {
       const response = await fetch(
         `https://api.cloudinary.com/v1_1/drfpffb2x/image/upload`,
         { method: 'POST', body: formData }
       )
+      
+      if (!response.ok) throw new Error('Falha no servidor de imagens')
+      
       const data = await response.json()
       if (data.secure_url) {
         setSettings(prev => ({ ...prev, PLATFORM_FAVICON: data.secure_url }))
+        setUploadSuccess(true)
+        setTimeout(() => setUploadSuccess(false), 5000)
       }
     } catch (error) {
       console.error('Erro no upload do favicon:', error)
-      alert('Erro ao subir imagem')
+      alert('Erro ao subir imagem. Verifique sua conexão ou tente outro formato.')
     } finally {
       setUploadingFavicon(false)
     }
@@ -150,16 +164,27 @@ export default function ConfiguracoesPage() {
                     type="file" 
                     accept="image/*" 
                     onChange={handleFaviconUpload}
-                    className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                    disabled={uploadingFavicon}
+                    className="absolute inset-0 opacity-0 cursor-pointer z-10 disabled:cursor-not-allowed"
                   />
                   <div className={cn(
                     inputClasses, 
-                    "flex items-center gap-2 cursor-pointer bg-gray-50",
-                    uploadingFavicon && "opacity-50"
+                    "flex items-center gap-2 cursor-pointer bg-gray-50 transition-all",
+                    uploadingFavicon && "opacity-50",
+                    uploadSuccess && "border-green-500 bg-green-50"
                   )}>
-                    {uploadingFavicon ? <Loader2 size={16} className="animate-spin text-[var(--color-gold)]" /> : <ImagePlus size={16} className="text-gray-400" />}
-                    <span className="text-xs text-gray-500 font-medium">
-                      {uploadingFavicon ? 'Subindo ícone...' : 'Alterar Favicon...'}
+                    {uploadingFavicon ? (
+                      <Loader2 size={16} className="animate-spin text-[var(--color-gold)]" />
+                    ) : uploadSuccess ? (
+                      <CheckCircle2 size={16} className="text-green-500" />
+                    ) : (
+                      <ImagePlus size={16} className="text-gray-400" />
+                    )}
+                    <span className={cn(
+                      "text-xs font-medium",
+                      uploadSuccess ? "text-green-600" : "text-gray-500"
+                    )}>
+                      {uploadingFavicon ? 'Subindo ícone...' : uploadSuccess ? 'Ícone carregado com sucesso!' : 'Alterar Favicon...'}
                     </span>
                   </div>
                 </div>

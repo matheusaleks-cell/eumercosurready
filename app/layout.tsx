@@ -4,6 +4,9 @@ import "./globals.css";
 
 import { getPublicSettings } from "@/lib/actions/settings";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicSettings();
   const favicon = settings['PLATFORM_FAVICON'] || "/favicon.jpeg";

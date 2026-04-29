@@ -38,6 +38,8 @@ export async function updateSettings(data: Record<string, string>) {
 
     await Promise.all(promises)
     
+    // Revalidar o site inteiro para aplicar o novo favicon/meta-dados
+    revalidatePath("/", "layout")
     revalidatePath("/admin/configuracoes")
     return { success: true }
   } catch (error) {

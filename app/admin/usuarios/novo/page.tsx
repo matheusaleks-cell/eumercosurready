@@ -87,6 +87,14 @@ export default function NovoUsuarioPage() {
           </div>
 
           <div className="space-y-1">
+            <label className={labelClasses}>Nome de Usuário (Login)</label>
+            <div className="relative">
+              <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 opacity-50" size={16} />
+              <input name="username" className={inputClasses} placeholder="Ex: joaosilva" required />
+            </div>
+          </div>
+
+          <div className="space-y-1">
             <label className={labelClasses}>E-mail de Acesso</label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />

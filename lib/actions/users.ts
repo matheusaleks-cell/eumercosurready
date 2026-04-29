@@ -32,6 +32,7 @@ export async function getUsers() {
 
 export async function createUser(data: {
   name: string
+  username: string
   email: string
   password: string
   role: AdminRole
@@ -42,13 +43,22 @@ export async function createUser(data: {
   }
 
   try {
-    // Verificar se já existe
-    const existing = await prisma.adminUser.findUnique({
+    // Verificar se já existe e-mail
+    const existingEmail = await prisma.adminUser.findUnique({
       where: { email: data.email }
     })
 
-    if (existing) {
+    if (existingEmail) {
       return { success: false, error: "Este e-mail já está cadastrado." }
+    }
+
+    // Verificar se já existe username
+    const existingUsername = await prisma.adminUser.findUnique({
+      where: { username: data.username.toLowerCase() }
+    })
+
+    if (existingUsername) {
+      return { success: false, error: "Este nome de usuário já está em uso." }
     }
 
     const salt = await bcrypt.genSalt(10)
@@ -58,7 +68,7 @@ export async function createUser(data: {
       data: {
         name: data.name,
         email: data.email,
-        username: data.email.split('@')[0], // Fallback username
+        username: data.username.toLowerCase(),
         passwordHash,
         role: data.role,
         active: true

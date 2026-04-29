@@ -104,8 +104,11 @@ export async function translateSingleText(text: string, targetLang: 'en-US' | 'e
   try {
     const translated = await translateText(text, targetLang)
     return { success: true, text: translated }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Single Translation Error:', error)
-    return { success: false, error: 'Falha na tradução' }
+    if (error.message === 'DEEPL_API_KEY_MISSING') {
+      return { success: false, error: 'Chave do DeepL não configurada no servidor' }
+    }
+    return { success: false, error: 'Falha na tradução automática' }
   }
 }

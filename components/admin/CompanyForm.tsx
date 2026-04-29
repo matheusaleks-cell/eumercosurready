@@ -709,7 +709,11 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
                       btn.classList.add('animate-pulse')
                       if (!formValues.shortDescription) return
                       const res = await translateSingleText(formValues.shortDescription, 'en-US')
-                      if (res.success) handleFieldChange('shortDescription_en', res.text || '')
+                      if (res.success) {
+                        handleFieldChange('shortDescription_en', res.text || '')
+                      } else {
+                        toast.error(res.error || 'Erro na tradução')
+                      }
                       btn.classList.remove('animate-pulse')
                     }}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-50 text-blue-500 hover:bg-blue-100 rounded-lg transition-all border border-blue-100 shadow-sm group/spark"
@@ -745,7 +749,11 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
                       btn.classList.add('animate-pulse')
                       if (!formValues.shortDescription) return
                       const res = await translateSingleText(formValues.shortDescription, 'es')
-                      if (res.success) handleFieldChange('shortDescription_es', res.text || '')
+                      if (res.success) {
+                        handleFieldChange('shortDescription_es', res.text || '')
+                      } else {
+                        toast.error(res.error || 'Erro na tradução')
+                      }
                       btn.classList.remove('animate-pulse')
                     }}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-amber-50 text-amber-500 hover:bg-amber-100 rounded-lg transition-all border border-amber-100 shadow-sm group/spark"
@@ -805,7 +813,11 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
                       btn.classList.add('animate-pulse')
                       if (!formValues.fullDescription) return
                       const res = await translateSingleText(formValues.fullDescription, 'en-US')
-                      if (res.success) handleFieldChange('fullDescription_en', res.text || '')
+                      if (res.success) {
+                        handleFieldChange('fullDescription_en', res.text || '')
+                      } else {
+                        toast.error(res.error || 'Erro na tradução')
+                      }
                       btn.classList.remove('animate-pulse')
                     }}
                     className="absolute right-2 top-4 p-2 bg-blue-50 text-blue-500 hover:bg-blue-100 rounded-lg transition-all border border-blue-100 shadow-sm group/spark"
@@ -840,7 +852,11 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
                       btn.classList.add('animate-pulse')
                       if (!formValues.fullDescription) return
                       const res = await translateSingleText(formValues.fullDescription, 'es')
-                      if (res.success) handleFieldChange('fullDescription_es', res.text || '')
+                      if (res.success) {
+                        handleFieldChange('fullDescription_es', res.text || '')
+                      } else {
+                        toast.error(res.error || 'Erro na tradução')
+                      }
                       btn.classList.remove('animate-pulse')
                     }}
                     className="absolute right-2 top-4 p-2 bg-amber-50 text-amber-500 hover:bg-amber-100 rounded-lg transition-all border border-amber-100 shadow-sm group/spark"

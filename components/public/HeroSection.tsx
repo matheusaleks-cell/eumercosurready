@@ -2,12 +2,13 @@
 
 import React, { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'motion/react'
 import { useLanguage } from '@/hooks/use-language'
 
 export const HeroSection = () => {
   const { t } = useLanguage()
   const containerRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -19,18 +20,26 @@ export const HeroSection = () => {
     offset: ["start start", "end end"]
   })
 
+  // Sincroniza o vídeo com o scroll
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (videoRef.current && videoRef.current.duration) {
+      // Avança ou volta o vídeo baseado no progresso (0 a 1)
+      videoRef.current.currentTime = latest * videoRef.current.duration
+    }
+  })
+
   // Efeitos de Scroll
-  const canvasOpacity = useTransform(scrollYProgress, [0, 0.2, 1], [0.5, 1, 1])
-  const canvasBlur = useTransform(scrollYProgress, [0, 0.15, 1], ["blur(12px)", "blur(0px)", "blur(0px)"])
+  const canvasOpacity = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0.4, 1, 1, 0.4])
+  const canvasBlur = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], ["blur(10px)", "blur(0px)", "blur(0px)", "blur(10px)"])
   
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.45, 0.6], [0, 0, 1])
-  const contentY = useTransform(scrollYProgress, [0.45, 0.6], [30, 0])
-  const contentScale = useTransform(scrollYProgress, [0.45, 0.6], [0.96, 1])
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.4, 0.6, 0.85, 0.95], [0, 0, 1, 1, 0])
+  const contentY = useTransform(scrollYProgress, [0.4, 0.6, 0.85, 0.95], [40, 0, 0, -40])
+  const contentScale = useTransform(scrollYProgress, [0.4, 0.6], [0.95, 1])
 
   return (
-    <div ref={containerRef} className="relative h-[300vh] bg-[var(--color-navy)]">
+    <div ref={containerRef} className="relative h-[400vh] bg-[var(--color-navy)]">
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-[var(--color-navy)]/95 via-[var(--color-navy)]/40 to-[var(--color-navy)]/95 pointer-events-none" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-[var(--color-navy)]/95 via-[var(--color-navy)]/30 to-[var(--color-navy)]/95 pointer-events-none" />
         
         {mounted && (
           <motion.div 
@@ -38,14 +47,13 @@ export const HeroSection = () => {
             className="absolute inset-0 w-full h-full"
           >
             <video
-              autoPlay
-              loop
+              ref={videoRef}
               muted
               playsInline
+              preload="auto"
               className="w-full h-full object-cover"
-              poster="/hero-new/Container_descend_onto_202604252339_001.png"
             >
-              <source src="/hero-video.mp4" type="video/mp4" />
+              <source src="/videos/hero-scroll.mp4" type="video/mp4" />
             </video>
           </motion.div>
         )}

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { getSettings, updateSettings } from '@/lib/actions/settings'
+import { uploadImage } from '@/lib/actions/upload'
 import { 
   Settings, Save, Mail, Globe, Bell, Info, 
   CheckCircle2, Search, Palette, Share2, Zap,
@@ -32,7 +33,6 @@ export default function ConfiguracoesPage() {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Validação básica de tamanho (max 2MB para favicon)
     if (file.size > 2 * 1024 * 1024) {
       alert('A imagem é muito grande. Use um ícone de até 2MB.')
       return
@@ -43,25 +43,20 @@ export default function ConfiguracoesPage() {
     
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('upload_preset', 'ml_default')
 
     try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/drfpffb2x/image/upload`,
-        { method: 'POST', body: formData }
-      )
+      const result = await uploadImage(formData)
       
-      if (!response.ok) throw new Error('Falha no servidor de imagens')
-      
-      const data = await response.json()
-      if (data.secure_url) {
-        setSettings(prev => ({ ...prev, PLATFORM_FAVICON: data.secure_url }))
+      if (result.success && result.url) {
+        setSettings(prev => ({ ...prev, PLATFORM_FAVICON: result.url as string }))
         setUploadSuccess(true)
         setTimeout(() => setUploadSuccess(false), 5000)
+      } else {
+        throw new Error(result.error || 'Erro no servidor')
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro no upload do favicon:', error)
-      alert('Erro ao subir imagem. Verifique sua conexão ou tente outro formato.')
+      alert(error.message || 'Erro ao subir imagem. Tente novamente.')
     } finally {
       setUploadingFavicon(false)
     }

@@ -127,6 +127,8 @@ export async function createRequest(formData: FormData) {
   }
 }
 
+import { translateText } from '@/lib/deepl'
+
 // Versão interna sem revalidatePath repetido para uso no createRequest
 async function internalPromote(requestId: string) {
     const request = await prisma.contactRequest.findUnique({ where: { id: requestId } })
@@ -169,6 +171,17 @@ async function internalPromote(requestId: string) {
       return companyExists.id
     }
 
+    // TRADUÇÃO AUTOMÁTICA (DeepL)
+    const shortDescPt = request.description.substring(0, 195) + '...'
+    const fullDescPt = request.description
+
+    const [shortEn, shortEs, fullEn, fullEs] = await Promise.all([
+      translateText(shortDescPt, 'en-US'),
+      translateText(shortDescPt, 'es'),
+      translateText(fullDescPt, 'en-US'),
+      translateText(fullDescPt, 'es')
+    ])
+
     const company = await prisma.company.create({
       data: {
         name: request.companyName,
@@ -177,8 +190,12 @@ async function internalPromote(requestId: string) {
         country: request.country,
         countryCode: request.countryCode || 'BR',
         region: region as any,
-        shortDescription: request.description.substring(0, 195) + '...',
-        fullDescription: request.description,
+        shortDescription: shortDescPt,
+        shortDescription_en: shortEn,
+        shortDescription_es: shortEs,
+        fullDescription: fullDescPt,
+        fullDescription_en: fullEn,
+        fullDescription_es: fullEs,
         email: request.email,
         phone: request.phone,
         website: request.website,

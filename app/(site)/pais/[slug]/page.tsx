@@ -207,16 +207,16 @@ export default async function CountryProfilePage({ params }: PageProps) {
               </div>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold leading-tight">
                 {t(
-                  `O mercado de ${country.name} busca fornecedores de excelência. Eles vão encontrar você ou seu concorrente?`,
-                  `The ${t(country.name, country.name_en, country.name_es)} market is looking for excellent suppliers. Will they find you or your competitor?`,
-                  `El mercado de ${t(country.name, country.name_en, country.name_es)} busca proveedores de excelencia. ¿Le encontrarán a usted o a su competidor?`
+                  country.ctaTitle || `O mercado de ${country.name} busca fornecedores de excelência. Eles vão encontrar você ou seu concorrente?`,
+                  country.ctaTitle_en || `The ${t(country.name, country.name_en, country.name_es)} market is looking for excellent suppliers. Will they find you or your competitor?`,
+                  country.ctaTitle_es || `El mercado de ${t(country.name, country.name_en, country.name_es)} busca proveedores de excelencia. ¿Le encontrarán a usted o a su competidor?`
                 )}
               </h2>
               <p className="text-gray-300 font-body text-lg">
                 {t(
-                  'Expanda as fronteiras da sua empresa. O mercado europeu valoriza marcas preparadas e com documentação validada. Posicione-se como um parceiro de alta confiabilidade.',
-                  'Expand your company\'s frontiers. The European market values prepared brands with validated documentation. Position yourself as a highly reliable partner.',
-                  'Expanda las fronteras de su empresa. El mercado europeo valora las marcas preparadas y con documentación validada. Posiciónese como un socio de alta confiabilidad.'
+                  country.ctaDescription || 'Expanda as fronteiras da sua empresa. O mercado europeu valoriza marcas preparadas e com documentação validada. Posicione-se como um parceiro de alta confiabilidade.',
+                  country.ctaDescription_en || 'Expand your company\'s frontiers. The European market values prepared brands with validated documentation. Position yourself as a highly reliable partner.',
+                  country.ctaDescription_es || 'Expanda las fronteras de su empresa. El mercado europeo valora las marcas preparadas y con documentación validada. Posiciónese como un socio de alta confiabilidad.'
                 )}
               </p>
             </div>

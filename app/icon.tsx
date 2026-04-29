@@ -11,8 +11,8 @@ export const contentType = 'image/png'
  
 // Icon generation
 export default function Icon() {
-  // Lendo o logo
-  const logoPath = path.join(process.cwd(), 'public', 'logo.png')
+  // Lendo o novo logo específico
+  const logoPath = path.join(process.cwd(), 'public', 'favicon-logo.png')
   const logoData = fs.readFileSync(logoPath)
   const logoBase64 = `data:image/png;base64,${logoData.toString('base64')}`
 
@@ -25,15 +25,15 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#002855', // Fundo Azul Marinho para dar contraste
-          borderRadius: '20%', // Bordas arredondadas estilo app
-          padding: '4px', // Espaço interno para o logo não bater nas bordas
+          background: '#002855', // Fundo Azul Marinho
+          borderRadius: '20%',
+          padding: '2px', // Padding reduzido para o logo aparecer maior
         }}
       >
         <img
           src={logoBase64}
-          width="24" // Reduzido um pouco para caber no padding
-          height="24"
+          width="28"
+          height="28"
           style={{
             objectFit: 'contain',
           }}

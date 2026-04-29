@@ -63,18 +63,7 @@ export const FloatingContact = ({ phone, whatsapp, email, companyName, language 
               <ArrowUp size={20} />
             </motion.button>
 
-            {email && (
-              <motion.button
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 50 }}
-                onClick={handleEmail}
-                className="bg-[var(--color-navy)] text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-3 font-display font-bold text-sm hover:bg-[var(--color-navy-light)] transition-all group"
-              >
-                <Mail size={18} className="group-hover:rotate-12 transition-transform" />
-                {t('Enviar E-mail', 'Send Email', 'Enviar Correo')}
-              </motion.button>
-            )}
+
 
             {targetNumber && (
               <motion.button

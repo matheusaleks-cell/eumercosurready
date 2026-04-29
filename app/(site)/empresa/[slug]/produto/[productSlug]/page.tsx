@@ -270,16 +270,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </a>
               )}
 
-              {/* Email Action */}
-              {company.email && (
-                <a 
-                  href={`mailto:${company.email}?subject=${encodeURIComponent(st(`Interesse no produto: ${translatedTitle}`, `Interest in product: ${translatedTitle}`, `Interés en el producto: ${translatedTitle}`))}&body=${encodeURIComponent(st(`Olá, vi seu produto ${translatedTitle} na plataforma EU-Mercosur Ready e gostaria de mais informações.`, `Hello, I saw your product ${translatedTitle} on the EU-Mercosur Ready platform and would like more information.`, `Hola, vi su producto ${translatedTitle} en la plataforma EU-Mercosur Ready y me gustaría más información.`))}`}
-                  className="flex-1 px-8 py-5 border-2 border-gray-200 rounded-2xl font-display font-bold text-[var(--color-navy)] hover:border-[var(--color-navy)] transition-all flex items-center justify-center gap-2 group"
-                >
-                  <Mail size={20} /> 
-                  <span className="hidden sm:inline">{st('Enviar E-mail', 'Send Email', 'Enviar Correo')}</span>
-                </a>
-              )}
+
             </div>
 
             {/* Selos de Confiança */}

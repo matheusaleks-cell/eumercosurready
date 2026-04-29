@@ -9,9 +9,10 @@ import {
   Building2, Globe, Tag, Info, Mail, Phone, Globe2, 
   Link2, Check, AlertCircle, Save, Image as ImageIcon,
   Video, Hash, Upload, X, CheckCircle2, MessageSquare, Star, Trash2, Plus,
-  Sparkles, Languages, ExternalLink, FlaskConical
+  Sparkles, Languages, ExternalLink, FlaskConical, ChevronRight
 } from 'lucide-react'
 import { translateSingleText } from '@/lib/actions/translation'
+import { countriesList } from '@/lib/countries-list'
 import { cn } from '@/lib/utils'
 
 interface CompanyFormProps {
@@ -37,15 +38,17 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
     fullDescription_es: initialData?.fullDescription_es || '',
   })
 
-  // Lógica para telefones segmentados
+  // Lógica para telefones internacionais unificados
   const parsePhone = (phoneStr: string) => {
-    if (!phoneStr) return { country: '55', ddd: '', number: '' }
-    // Tenta extrair +XX (XX) XXXXX-XXXX
-    const match = phoneStr.match(/\+(\d+)\s*\((\d+)\)\s*(.*)/)
+    if (!phoneStr) return { ddi: '55', number: '' }
+    
+    // Tenta extrair +DDI (RESTO)
+    // Formatos possíveis: +55 (11) 99999-9999 ou +351 912345678
+    const match = phoneStr.match(/\+(\d+)\s*(.*)/)
     if (match) {
-      return { country: match[1], ddd: match[2], number: match[3] }
+      return { ddi: match[1], number: match[2] }
     }
-    return { country: '55', ddd: '', number: phoneStr }
+    return { ddi: '55', number: phoneStr }
   }
 
   const [whatsappParts, setWhatsappParts] = useState(parsePhone(initialData?.whatsapp))
@@ -343,8 +346,8 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
       instagram: formatUrl(data.instagram),
       facebook: formatUrl(data.facebook),
       twitter: formatUrl(data.twitter),
-      whatsapp: whatsappParts.ddd && whatsappParts.number ? `+${whatsappParts.country} (${whatsappParts.ddd}) ${whatsappParts.number}` : '',
-      phone: phoneParts.ddd && phoneParts.number ? `+${phoneParts.country} (${phoneParts.ddd}) ${phoneParts.number}` : '',
+      whatsapp: whatsappParts.number ? `+${whatsappParts.ddi} ${whatsappParts.number}` : '',
+      phone: phoneParts.number ? `+${phoneParts.ddi} ${phoneParts.number}` : '',
       logoUrl, 
       bannerUrl, 
       country: selectedCountry,
@@ -1003,24 +1006,19 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
           <div className="space-y-1">
             <label className={labelClasses}>WhatsApp Internacional</label>
             <div className="flex gap-2">
-              <div className="relative w-20 shrink-0">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">+</span>
-                <input 
-                  type="text" 
-                  value={whatsappParts.country}
-                  onChange={(e) => setWhatsappParts(p => ({ ...p, country: e.target.value.replace(/\D/g, '') }))}
-                  className={cn(inputClasses, "pl-6 px-2 text-center")} 
-                  placeholder="55" 
-                />
-              </div>
-              <div className="w-16 shrink-0">
-                <input 
-                  type="text" 
-                  value={whatsappParts.ddd}
-                  onChange={(e) => setWhatsappParts(p => ({ ...p, ddd: e.target.value.replace(/\D/g, '').substring(0, 3) }))}
-                  className={cn(inputClasses, "px-2 text-center")} 
-                  placeholder="DDD" 
-                />
+              <div className="relative w-28 shrink-0">
+                <select 
+                  value={whatsappParts.ddi}
+                  onChange={(e) => setWhatsappParts(p => ({ ...p, ddi: e.target.value }))}
+                  className={cn(inputClasses, "pl-3 pr-8 appearance-none text-xs")}
+                >
+                  {countriesList.sort((a,b) => a.name.localeCompare(b.name)).map(c => (
+                    <option key={`wa-${c.code}-${c.ddi}`} value={c.ddi}>
+                      +{c.ddi} ({c.code})
+                    </option>
+                  ))}
+                </select>
+                <ChevronRight className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 rotate-90" size={14} />
               </div>
               <div className="flex-1">
                 <input 
@@ -1028,7 +1026,7 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
                   value={whatsappParts.number}
                   onChange={(e) => setWhatsappParts(p => ({ ...p, number: e.target.value }))}
                   className={inputClasses} 
-                  placeholder="99999-9999" 
+                  placeholder="Número com DDD/Área" 
                 />
               </div>
             </div>
@@ -1052,24 +1050,19 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
           <div className="space-y-1">
             <label className={labelClasses}>Telefone Corporativo (Fixo)</label>
             <div className="flex gap-2">
-              <div className="relative w-20 shrink-0">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">+</span>
-                <input 
-                  type="text" 
-                  value={phoneParts.country}
-                  onChange={(e) => setPhoneParts(p => ({ ...p, country: e.target.value.replace(/\D/g, '') }))}
-                  className={cn(inputClasses, "pl-6 px-2 text-center")} 
-                  placeholder="55" 
-                />
-              </div>
-              <div className="w-16 shrink-0">
-                <input 
-                  type="text" 
-                  value={phoneParts.ddd}
-                  onChange={(e) => setPhoneParts(p => ({ ...p, ddd: e.target.value.replace(/\D/g, '').substring(0, 3) }))}
-                  className={cn(inputClasses, "px-2 text-center")} 
-                  placeholder="DDD" 
-                />
+              <div className="relative w-28 shrink-0">
+                <select 
+                  value={phoneParts.ddi}
+                  onChange={(e) => setPhoneParts(p => ({ ...p, ddi: e.target.value }))}
+                  className={cn(inputClasses, "pl-3 pr-8 appearance-none text-xs")}
+                >
+                  {countriesList.sort((a,b) => a.name.localeCompare(b.name)).map(c => (
+                    <option key={`ph-${c.code}-${c.ddi}`} value={c.ddi}>
+                      +{c.ddi} ({c.code})
+                    </option>
+                  ))}
+                </select>
+                <ChevronRight className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 rotate-90" size={14} />
               </div>
               <div className="flex-1">
                 <input 
@@ -1077,7 +1070,7 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
                   value={phoneParts.number}
                   onChange={(e) => setPhoneParts(p => ({ ...p, number: e.target.value }))}
                   className={inputClasses} 
-                  placeholder="4004-0000" 
+                  placeholder="Número com DDD/Área" 
                 />
               </div>
             </div>

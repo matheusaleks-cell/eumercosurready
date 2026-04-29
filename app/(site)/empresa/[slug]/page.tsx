@@ -160,7 +160,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
 
   // Buscar configurações para o WhatsApp de suporte
   const settingsResult = await getSettings()
-  const consultantWhatsapp = settingsResult.settings?.['CONTACT_WHATSAPP'] || '5511999999999'
+  const consultantWhatsapp = settingsResult.settings?.['CONTACT_WHATSAPP'] || '' // Removido número de teste
 
   // Analytics reativado para gerar métricas de tração
   await incrementCompanyView(company.id)
@@ -467,6 +467,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
                     {t('Solicitar Cotação Agora', 'Request Quote Now', 'Solicitar Cotización Ahora')}
                   </a>
                 )}
+                {consultantWhatsapp && (
                 <a 
                   href={`https://wa.me/${consultantWhatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(t(
                     `Olá! Gostaria de falar com um consultor sobre a empresa ${company.name} na plataforma EU-Mercosur Ready.`,
@@ -479,6 +480,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
                 >
                   {t('Falar com Consultor', 'Speak with Consultant', 'Hablar con un Consultor')}
                 </a>
+                )}
               </div>
               <p className="relative z-10 text-[10px] text-white/40 uppercase tracking-[0.3em] font-bold">
                 {t('Transação Segura', 'Secure Transaction', 'Transacción Segura')} • EU-Mercosur Ready Protocol

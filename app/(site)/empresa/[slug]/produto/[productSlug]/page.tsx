@@ -256,27 +256,30 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 className="flex-1 bg-[var(--color-navy)] text-white text-center py-5 rounded-2xl font-display font-bold hover:bg-[var(--color-navy-light)] transition-all shadow-xl flex items-center justify-center gap-3"
               >
                 {st('Solicitar Cotação', 'Request Quote', 'Solicitar Cotización')} <ArrowRight size={20} />
-              </Link>
-              
-              {/* WhatsApp Action */}
-              <a 
-                href={`https://wa.me/${company.whatsapp?.replace(/\D/g, '')}?text=${encodeURIComponent(st(`Olá! Gostaria de saber mais sobre o produto: ${translatedTitle}`, `Hi! I would like to know more about the product: ${translatedTitle}`, `¡Hola! Me gustaría saber más sobre o produto: ${translatedTitle}`))}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 px-8 py-5 border-2 border-[#25D366] text-[#25D366] rounded-2xl font-display font-bold hover:bg-[#25D366] hover:text-white transition-all flex items-center justify-center gap-2 group"
-              >
-                <MessageSquare size={20} /> 
-                <span className="hidden sm:inline">WhatsApp</span>
-              </a>
+            </Link>
+                        {/* WhatsApp Action */}
+              {company.whatsapp && (
+                <a 
+                  href={`https://wa.me/${company.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(st(`Olá! Gostaria de saber mais sobre o produto: ${translatedTitle}`, `Hi! I would like to know more about the product: ${translatedTitle}`, `¡Hola! Me gustaría saber más sobre o produto: ${translatedTitle}`))}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 px-8 py-5 border-2 border-[#25D366] text-[#25D366] rounded-2xl font-display font-bold hover:bg-[#25D366] hover:text-white transition-all flex items-center justify-center gap-2 group"
+                >
+                  <MessageSquare size={20} /> 
+                  <span className="hidden sm:inline">WhatsApp</span>
+                </a>
+              )}
 
               {/* Email Action */}
-              <a 
-                href={`mailto:${company.email}?subject=${encodeURIComponent(st(`Interesse no produto: ${translatedTitle}`, `Interest in product: ${translatedTitle}`, `Interés en el producto: ${translatedTitle}`))}&body=${encodeURIComponent(st(`Olá, vi seu produto ${translatedTitle} na plataforma EU-Mercosur Ready e gostaria de mais informações.`, `Hello, I saw your product ${translatedTitle} on the EU-Mercosur Ready platform and would like more information.`, `Hola, vi su producto ${translatedTitle} en la plataforma EU-Mercosur Ready y me gustaría más información.`))}`}
-                className="flex-1 px-8 py-5 border-2 border-gray-200 rounded-2xl font-display font-bold text-[var(--color-navy)] hover:border-[var(--color-navy)] transition-all flex items-center justify-center gap-2 group"
-              >
-                <Mail size={20} /> 
-                <span className="hidden sm:inline">{st('Enviar E-mail', 'Send Email', 'Enviar Correo')}</span>
-              </a>
+              {company.email && (
+                <a 
+                  href={`mailto:${company.email}?subject=${encodeURIComponent(st(`Interesse no produto: ${translatedTitle}`, `Interest in product: ${translatedTitle}`, `Interés en el producto: ${translatedTitle}`))}&body=${encodeURIComponent(st(`Olá, vi seu produto ${translatedTitle} na plataforma EU-Mercosur Ready e gostaria de mais informações.`, `Hello, I saw your product ${translatedTitle} on the EU-Mercosur Ready platform and would like more information.`, `Hola, vi su producto ${translatedTitle} en la plataforma EU-Mercosur Ready y me gustaría más información.`))}`}
+                  className="flex-1 px-8 py-5 border-2 border-gray-200 rounded-2xl font-display font-bold text-[var(--color-navy)] hover:border-[var(--color-navy)] transition-all flex items-center justify-center gap-2 group"
+                >
+                  <Mail size={20} /> 
+                  <span className="hidden sm:inline">{st('Enviar E-mail', 'Send Email', 'Enviar Correo')}</span>
+                </a>
+              )}
             </div>
 
             {/* Selos de Confiança */}

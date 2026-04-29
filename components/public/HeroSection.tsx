@@ -106,8 +106,18 @@ export const HeroSection = () => {
               transition={{ duration: 0.8, ease: "easeOut" as any }}
               className="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-6 leading-tight justify-center tracking-tight"
             >
-              {t('O Acordo EU-Mercosul já começou.', 'The EU-Mercosur Agreement has begun.', 'El Acuerdo EU-Mercosur ya ha começado.')}<br/>
-              <span className="text-[var(--color-gold-light)]">{t('Sua empresa está pronta?', 'Is your company ready?', '¿Su empresa está lista?')}</span>
+              {t(
+                'Fornecedores verificados.', 
+                'Verified suppliers.', 
+                'Proveedores verificados.'
+              )}<br/>
+              <span className="text-[var(--color-gold-light)]">
+                {t(
+                  'Prontos para fazer negócios no eixo UE-Mercosul', 
+                  'Ready to do business on the EU-Mercosur axis', 
+                  'Listos para hacer negocio en eje EU-Mercosur'
+                )}
+              </span>
             </motion.h1>
             
             <motion.p 
@@ -117,9 +127,9 @@ export const HeroSection = () => {
               className="max-w-3xl mx-auto text-base md:text-lg text-gray-200 mb-8 font-body justify-center leading-relaxed"
             >
               {t(
-                'Enquanto o mercado global se reposiciona, os líderes garantem seu espaço. Posicione sua marca na maior vitrine B2B transcontinental e seja encontrado por parceiros estratégicos.',
-                'As the global market repositions itself, leaders secure their space. Position your brand in the largest transcontinental B2B showcase and be found by strategic partners.',
-                'Mientras el mercado global se reposiciona, los líderes aseguran su espacio. Posicione su marca en el mayor escaparate B2B transcontinental y sea encontrado por socios estratégicos.'
+                'Acesse um ecossistema curado de empresas europeias e do Mercosul, validadas e acompanhadas pela equipe da Made In Atlantic. Sem ruído, sem intermediários desnecessários, apenas empresas preparadas, prontas para operar no Corredor UE-Mercosul.',
+                'Access a curated ecosystem of European and Mercosur companies, validated and accompanied by the Made In Atlantic team. No noise, no unnecessary intermediaries, only prepared companies, ready to operate in the EU-Mercosur Corridor.',
+                'Acceda a un ecosistema curado de empresas europeas y del Mercosur, validadas y acompañadas por el equipo de Made In Atlantic. Sin ruido, sin intermediarios innecesarios, solo empresas preparadas, listas para operar en el Corredor EU-Mercosur.'
               )}
             </motion.p>
 
@@ -144,7 +154,11 @@ export const HeroSection = () => {
               viewport={{ once: true }}
               className="mt-4 text-[10px] text-gray-400 uppercase tracking-widest"
             >
-              {t('Sujeito à aprovação do comitê de compliance (KYB)', 'Subject to approval by the compliance committee (KYB)', 'Sujeto a la aprobación del comité de cumplimiento (KYB)')}
+              {t(
+                'Todas as empresas foram validadas pelo nosso comitê de conformidade (KYB)', 
+                'All companies have been validated by our compliance committee (KYB)', 
+                'Todas las empresas han sido validadas por nuestro comité de cumplimiento (KYB)'
+              )}
             </motion.p>
           </motion.div>
         )}

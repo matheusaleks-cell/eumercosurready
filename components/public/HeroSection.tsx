@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform, useMotionValueEvent } from 'motion/react'
+import { motion, useScroll, useTransform, useSpring } from 'motion/react'
 import { useLanguage } from '@/hooks/use-language'
 
 export const HeroSection = () => {
@@ -10,34 +10,64 @@ export const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [mounted, setMounted] = useState(false)
+  const [videoDuration, setVideoDuration] = useState(0)
+  const isSeeking = useRef(false) // Trava para evitar sobrecarga de pedidos
 
   useEffect(() => {
     setMounted(true)
-  }, [])
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  })
-
-  // Sincroniza o vídeo com o scroll
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (videoRef.current && videoRef.current.duration) {
-      // Avança ou volta o vídeo baseado no progresso (0 a 1)
-      videoRef.current.currentTime = latest * videoRef.current.duration
+    if (videoRef.current) {
+      videoRef.current.play().then(() => {
+        videoRef.current?.pause()
+      }).catch(() => {})
     }
+  }, [mounted])
+
+  const { scrollYProgress } = useScroll()
+
+  // Mola de alta sensibilidade para suavizar o input do mouse
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 300,
+    damping: 60,
+    mass: 0.5
   })
+
+  // Loop de renderização que só atualiza o vídeo se o navegador estiver "livre"
+  useEffect(() => {
+    if (!mounted || videoDuration === 0) return
+
+    const updateVideo = () => {
+      if (videoRef.current && !isSeeking.current) {
+        const progress = smoothProgress.get()
+        // Mapeamos os primeiros 35% do site para o vídeo (Hero)
+        const videoSectionProgress = Math.min(progress / 0.35, 1)
+        const targetTime = videoSectionProgress * videoDuration
+
+        if (Math.abs(videoRef.current.currentTime - targetTime) > 0.04) {
+          isSeeking.current = true
+          videoRef.current.currentTime = targetTime
+        }
+      }
+      requestAnimationFrame(updateVideo)
+    }
+
+    const frameId = requestAnimationFrame(updateVideo)
+    return () => cancelAnimationFrame(frameId)
+  }, [mounted, videoDuration, smoothProgress])
+
+  const handleMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    setVideoDuration(e.currentTarget.duration)
+  }
 
   // Efeitos de Scroll
-  const canvasOpacity = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0.4, 1, 1, 0.4])
-  const canvasBlur = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], ["blur(10px)", "blur(0px)", "blur(0px)", "blur(10px)"])
+  const canvasOpacity = useTransform(scrollYProgress, [0, 0.1, 0.25, 0.35], [0.4, 1, 1, 0.4])
+  const canvasBlur = useTransform(scrollYProgress, [0, 0.1, 0.25, 0.35], ["blur(10px)", "blur(0px)", "blur(0px)", "blur(10px)"])
   
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.4, 0.6, 0.85, 0.95], [0, 0, 1, 1, 0])
-  const contentY = useTransform(scrollYProgress, [0.4, 0.6, 0.85, 0.95], [40, 0, 0, -40])
-  const contentScale = useTransform(scrollYProgress, [0.4, 0.6], [0.95, 1])
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.15, 0.25, 0.35], [0, 0, 1, 0])
+  const contentY = useTransform(scrollYProgress, [0.15, 0.25], [40, 0])
+  const contentScale = useTransform(scrollYProgress, [0.15, 0.25], [0.95, 1])
 
   return (
-    <div ref={containerRef} className="relative h-[400vh] bg-[var(--color-navy)]">
+    <div ref={containerRef} className="relative h-[350vh] bg-[var(--color-navy)]">
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-[var(--color-navy)]/95 via-[var(--color-navy)]/30 to-[var(--color-navy)]/95 pointer-events-none" />
         
@@ -51,7 +81,10 @@ export const HeroSection = () => {
               muted
               playsInline
               preload="auto"
-              className="w-full h-full object-cover"
+              onLoadedMetadata={handleMetadata}
+              onSeeking={() => { isSeeking.current = true }}
+              onSeeked={() => { isSeeking.current = false }}
+              className="w-full h-full object-cover will-change-[contents]"
             >
               <source src="/videos/hero-scroll.mp4" type="video/mp4" />
             </video>

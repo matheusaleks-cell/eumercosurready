@@ -110,7 +110,7 @@ export const Footer = async () => {
             <h4 className="text-white font-display font-bold mb-6">{t('Plataforma', 'Platform', 'Plataforma')}</h4>
             <ul className="space-y-4 text-sm font-body">
               <li><Link href="/" className="hover:text-[var(--color-gold)] transition-colors">{t('Vitrine de Empresas', 'Company Showcase', 'Escaparate de Empresas')}</Link></li>
-              <li><Link href="/sobre" className="hover:text-[var(--color-gold)] transition-colors">{t('Sobre', 'About', 'Sobre')}</Link></li>
+              <li><Link href="/sobre" className="hover:text-[var(--color-gold)] transition-colors">{t('Sobre Nós', 'About Us', 'Sobre Nosotros')}</Link></li>
               <li><Link href="/solicitar-cadastro" className="hover:text-[var(--color-gold)] transition-colors">{t('Cadastrar Negócio', 'Register Business', 'Registrar Negocio')}</Link></li>
             </ul>
           </div>
@@ -145,14 +145,7 @@ export const Footer = async () => {
                 'Este ecosistema es una iniciativa para facilitar el networking B2B e a internacionalización de empresas en el eje atlántico.'
               )}
             </p>
-            <Link 
-              href="https://madeinatlantic.com" 
-              target="_blank"
-              className="inline-flex items-center gap-2 p-3 bg-white/5 border border-white/10 rounded-[var(--radius-md)] text-xs font-bold text-white hover:bg-white/10 transition-all uppercase tracking-widest"
-            >
-              {t('Visitar Portal Oficial', 'Visit Official Portal', 'Visitar Portal Oficial')}
-              <ArrowUpRight size={14} />
-            </Link>
+
           </div>
         </div>
         

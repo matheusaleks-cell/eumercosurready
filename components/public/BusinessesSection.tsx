@@ -1,7 +1,8 @@
 // components/public/BusinessesSection.tsx
 'use client'
 
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { AdvancedFilters } from './AdvancedFilters'
 import { CompanyGrid } from './CompanyGrid'
 import { useLanguage } from '@/hooks/use-language'
@@ -18,11 +19,51 @@ interface BusinessesSectionProps {
 
 export const BusinessesSection = ({ initialCompanies = [] }: BusinessesSectionProps) => {
   const { language } = useLanguage()
+  const searchParams = useSearchParams()
+  
   const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    origin: '',
-    segment: ''
+    search: searchParams.get('search') || '',
+    origin: searchParams.get('origin') || '',
+    segment: searchParams.get('segment') || ''
   })
+
+  // Sincronizar filtros com a URL se eles mudarem externamente
+  useEffect(() => {
+    const origin = searchParams.get('origin') || ''
+    const search = searchParams.get('search') || ''
+    const segment = searchParams.get('segment') || ''
+    
+    // Atualiza o estado dos filtros para refletir a URL
+    setFilters(prev => {
+      if (prev.origin !== origin || prev.search !== search || prev.segment !== segment) {
+        return { origin, search, segment }
+      }
+      return prev
+    })
+    
+    // Se houver origem ou se viemos de uma página de país, rolar para a seção
+    if ((origin || window.location.hash === '#partners-section') && typeof window !== 'undefined') {
+      const scrollToSection = () => {
+        const element = document.getElementById('partners-section')
+        if (element) {
+          const offset = 100 // Ajuste para não ficar colado no topo
+          const elementPosition = element.getBoundingClientRect().top
+          const offsetPosition = elementPosition + window.pageYOffset - offset
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          })
+        }
+      }
+
+      // Tentar imediatamente e depois de um pequeno delay para garantir renderização
+      scrollToSection()
+      const timer = setTimeout(scrollToSection, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [searchParams])
+
   const [activeQuickFilters, setActiveQuickFilters] = useState<string[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const ITEMS_PER_PAGE = 9
@@ -39,7 +80,8 @@ export const BusinessesSection = ({ initialCompanies = [] }: BusinessesSectionPr
         (company.sector?.name || '').toLowerCase().includes(searchTerm)
 
       // 2. Filtro de Origem (Dropdown)
-      const originMatch = !filters.origin || company.countryCode === filters.origin
+      const originMatch = !filters.origin || 
+        (company.countryCode && company.countryCode.toUpperCase() === filters.origin.toUpperCase())
 
       // 3. Filtro de Segmento (Dropdown)
       const segmentMap: Record<string, string> = {

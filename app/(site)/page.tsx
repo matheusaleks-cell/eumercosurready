@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react'
 import { HeroSection } from '@/components/public/HeroSection'
 import { BusinessesSection } from '@/components/public/BusinessesSection'
 import { OpportunitiesSection } from '@/components/public/OpportunitiesSection'
@@ -85,7 +86,9 @@ export default async function HomePage() {
       <main className="flex-grow">
         {/* Restaurando o container para que os filtros não fiquem gigantes */}
         <div className="container-custom relative z-30">
-          <BusinessesSection initialCompanies={safeCompanies as any} />
+          <Suspense fallback={<div className="py-20 text-center text-gray-500 italic">Carregando listagem de empresas...</div>}>
+            <BusinessesSection initialCompanies={safeCompanies as any} />
+          </Suspense>
         </div>
         
         <OpportunitiesSection />

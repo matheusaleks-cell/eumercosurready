@@ -143,7 +143,7 @@ export const Navbar = () => {
               </AnimatePresence>
             </div>
 
-            <Link href="/sobre" className="text-sm font-bold text-gray-300 hover:text-[var(--color-gold)] transition-colors tracking-wide uppercase text-[11px]">{t('Sobre', 'About', 'Sobre')}</Link>
+            <Link href="/sobre" className="text-sm font-bold text-gray-300 hover:text-[var(--color-gold)] transition-colors tracking-wide uppercase text-[11px]">{t('Sobre Nós', 'About Us', 'Sobre Nosotros')}</Link>
             
             <div className="w-[1px] h-4 bg-white/10" />
 
@@ -259,7 +259,7 @@ export const Navbar = () => {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Info className="text-[var(--color-gold)]" size={24} />
-                      {t('Sobre', 'About', 'Sobre')}
+                      {t('Sobre Nós', 'About Us', 'Sobre Nosotros')}
                     </Link>
                   </motion.div>
                 </nav>

@@ -61,97 +61,8 @@ export default function SobrePage() {
 
   return (
     <div className="bg-[#fcfaf7] min-h-screen">
-      {/* 1. Hero / Identidade Dupla */}
-       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 bg-[var(--color-navy)] overflow-hidden min-h-[85vh] flex items-center">
-         {/* Imagem de Fundo com Transparência */}
-         <div className="absolute inset-0 z-0">
-           <Image 
-             src="/hero-sobre-bg.jpg" 
-             alt="Background" 
-             fill 
-             className="object-cover opacity-30 grayscale-[20%]"
-             priority
-           />
-           <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-navy)]/95 via-[var(--color-navy)]/80 to-[var(--color-navy)]" />
-         </div>
-        
-        <div className="container-custom relative z-10">
-          <motion.div 
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 1 }}
-             transition={{ duration: 1.5 }}
-             className="flex flex-col items-center text-center space-y-12 w-full"
-           >
-            {/* Logo MIA + | + Insignia */}
-            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-              <motion.div 
-                 initial={{ opacity: 0, filter: 'blur(20px)', y: 20 }}
-                 animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                 transition={{ duration: 0.8, delay: 0.2 }}
-                 className="flex flex-col items-center gap-2"
-               >
-                 <div className="relative px-6 py-2">
-                   <Image src="/logo-made-in-atlantic.avif" alt="Made In Atlantic" width={150} height={60} className="object-contain" />
-                 </div>
-                 <span className="text-[var(--color-gold)] text-[10px] font-bold uppercase tracking-[0.3em]">{t("A Empresa (B2B, BDaaS)", "The Company (B2B, BDaaS)", "La Empresa (B2B, BDaaS)")}</span>
-               </motion.div>
-
-              <div className="hidden md:block w-[1px] h-20 bg-white/20" />
-              <div className="block md:hidden w-20 h-[1px] bg-white/20" />
-
-              <motion.div 
-                 initial={{ opacity: 0, filter: 'blur(20px)', y: 20 }}
-                 animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                 transition={{ duration: 0.8, delay: 0.4 }}
-                 className="flex flex-col items-center gap-2"
-               >
-                 <div className="relative px-8 py-4 flex items-center justify-center">
-                    <Image src="/logo-mercosur.png" alt="EU-Mercosur Ready" width={150} height={150} className="object-contain" />
-                 </div>
-                 <span className="text-[var(--color-gold)] text-[10px] font-bold uppercase tracking-[0.3em]">{t("A Linha de Negócio / Ecossistema", "The Business Line / Ecosystem", "La Línea de Negocio / Ecosistema")}</span>
-               </motion.div>
-            </div>
-
-             <div className="max-w-4xl space-y-10">
-               <motion.h1 
-                 initial={{ opacity: 0, filter: 'blur(30px)', scale: 0.95 }}
-                 animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
-                 transition={{ duration: 1.5, delay: 0.6, ease: "easeOut" as any }}
-                 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white leading-[1.1] tracking-tight"
-               >
-                 {t(
-                   "Made In Atlantic é a empresa.",
-                   "Made In Atlantic is the company.",
-                   "Made In Atlantic es la empresa."
-                 )}<br/>
-                 <span className="text-[var(--color-gold-light)] italic">
-                   {t(
-                     "EU-Mercosur Ready é o ecossistema que construímos.",
-                     "EU-Mercosur Ready is the ecosystem we built.",
-                     "EU-Mercosur Ready es el ecosistema que construimos."
-                   )}
-                 </span>
-               </motion.h1>
-               
-               <motion.p 
-                 initial={{ opacity: 0, filter: 'blur(15px)', y: 20 }}
-                 animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                 transition={{ duration: 1.2, delay: 1.2 }}
-                 className="text-xl md:text-2xl text-gray-300 font-body max-w-3xl mx-auto leading-relaxed"
-               >
-                 {t(
-                   "Resolvemos a pergunta \"o que é o quê?\" em 3 segundos: isolamos a complexidade do comércio transatlântico para criar um corredor de negócios fluido e seguro.",
-                   "We solve the \"what is what?\" question in 3 seconds: we isolate the complexity of transatlantic trade to create a fluid and secure business corridor.",
-                   "Resolvemos la pregunta \"¿qué es qué?\" en 3 segundos: aislamos la complejidad del comercio transatlántico para crear un corredor de negocios fluido y seguro."
-                 )}
-               </motion.p>
-             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 2. O que é a Made In Atlantic (A Empresa) */}
-      <section className="py-24 md:py-32 bg-white relative overflow-hidden border-t border-gray-100">
+      {/* Seção Principal Unificada */}
+      <section className="pt-40 pb-24 md:pt-48 md:pb-32 bg-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none" />
         <div className="container-custom relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
@@ -316,9 +227,6 @@ export default function SobrePage() {
                 </div>
 
                  <div className="space-y-4 relative z-10">
-                   <h4 className="text-3xl md:text-4xl font-display font-bold text-white uppercase tracking-tighter italic group-hover:text-[var(--color-gold-light)] transition-colors duration-300">
-                     {t("O Cavalo de Tração", "The Workhorse", "El Caballo de Tracción")}
-                   </h4>
                    <p className="text-gray-300 text-lg max-w-md mx-auto leading-relaxed opacity-90">
                      {t(
                        "A linha de negócio que gera tração, visibilidade e transações reais no corredor transatlântico.", 
@@ -338,14 +246,6 @@ export default function SobrePage() {
         <div className="container-custom">
           <div className="max-w-4xl mx-auto text-center space-y-16">
             <motion.div {...fadeInUp} className="space-y-6">
-              <h2 className="text-4xl md:text-5xl font-display font-bold text-[var(--color-navy)]">{t("Por que a combinação funciona?", "Why does the combination work?", "¿Por qué funciona la combinación?")}</h2>
-              <p className="text-xl text-gray-600 font-body leading-relaxed">
-                {t(
-                  "A Made In Atlantic constrói a ponte (BDaaS, desenvolvimento comercial) e o EU-Mercosur Ready é o ecossistema visível onde esse trabalho se materializa. Isso dá coerência a ter duas marcas em um mesmo site, segmentando o tráfego e evitando confusão desde o primeiro segundo.",
-                  "Made In Atlantic builds the bridge (BDaaS, commercial development) and EU-Mercosur Ready is the visible ecosystem where this work materializes. This gives coherence to having two brands on the same site, segmenting traffic and avoiding confusion from the very first second.",
-                  "Made In Atlantic construye el puente (BDaaS, desarrollo comercial) y EU-Mercosur Ready es el ecosistema visible donde este trabajo se materializa. Esto da coherencia a tener dos marcas en un mismo sitio, segmentando el tráfico y evitando la confusión desde el primer segundo."
-                )}
-              </p>
             </motion.div>
 
             {/* CTAs Diferenciados - Sugestão Adicional */}
@@ -400,9 +300,7 @@ export default function SobrePage() {
                 <Image src="/logo-mercosur.png" alt="Logo" width={150} height={150} className="object-contain" />
              </div>
            </div>
-           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.5em]">
-             {t('Conectando Continentes', 'Connecting Continents', 'Conectando Continentes')} • {t('Fortalecendo Negócios', 'Empowering Business', 'Fortaleciendo Negocios')} • {t('Desde 2024', 'Since 2024', 'Desde 2024')}
-           </p>
+
         </div>
       </section>
     </div>

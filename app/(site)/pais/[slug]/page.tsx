@@ -220,9 +220,16 @@ export default async function CountryProfilePage({ params }: PageProps) {
                 )}
               </p>
             </div>
-            <div className="shrink-0">
-              <Link href="/solicitar-cadastro" className="btn-premium whitespace-nowrap">
+            <div className="flex flex-col gap-4 w-full sm:w-auto shrink-0">
+              <Link href="/solicitar-cadastro" className="btn-premium whitespace-nowrap text-center justify-center">
                 <span>{t(`Destacar minha empresa para ${country.name}`, `Highlight my company for ${t(country.name, country.name_en, country.name_es)}`, `Destacar mi empresa para ${t(country.name, country.name_en, country.name_es)}`)}</span>
+              </Link>
+              <Link 
+                href={`/?origin=${country.id}#partners-section`} 
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full border border-white/20 bg-white/5 text-white font-bold hover:bg-white/10 transition-all text-sm uppercase tracking-widest"
+              >
+                <Briefcase className="mr-2" size={18} />
+                <span>{t(`Ver Empresas da ${country.name}`, `View Companies from ${t(country.name, country.name_en, country.name_es)}`, `Ver Empresas de ${t(country.name, country.name_en, country.name_es)}`)}</span>
               </Link>
             </div>
           </div>

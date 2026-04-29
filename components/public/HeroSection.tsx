@@ -62,9 +62,9 @@ export const HeroSection = () => {
   const canvasOpacity = useTransform(scrollYProgress, [0, 0.1, 0.25], [0.4, 1, 1])
   const canvasBlur = useTransform(scrollYProgress, [0, 0.1, 0.25], ["blur(10px)", "blur(0px)", "blur(0px)"])
   
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.15, 0.25], [0, 0, 1])
-  const contentY = useTransform(scrollYProgress, [0.15, 0.25], [40, 0])
-  const contentScale = useTransform(scrollYProgress, [0.15, 0.25], [0.95, 1])
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.05, 0.12], [0, 1, 1])
+  const contentY = useTransform(scrollYProgress, [0, 0.12], [20, 0])
+  const contentScale = useTransform(scrollYProgress, [0, 0.12], [0.98, 1])
 
   return (
     <div ref={containerRef} className="relative h-[300vh] bg-[var(--color-navy)]">

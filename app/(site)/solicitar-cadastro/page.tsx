@@ -29,59 +29,12 @@ export default function SolicitarCadastroPage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  const [logoUrl, setLogoUrl] = useState('')
-  const [bannerUrl, setBannerUrl] = useState('')
-  const [logoPreview, setLogoPreview] = useState('')
-  const [bannerPreview, setBannerPreview] = useState('')
-  const [isUploadingLogo, setIsUploadingLogo] = useState(false)
-  const [isUploadingBanner, setIsUploadingBanner] = useState(false)
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'banner') => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    if (type === 'logo') setLogoUrl('')
-    else setBannerUrl('')
-
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      if (type === 'logo') setLogoPreview(reader.result as string)
-      else setBannerPreview(reader.result as string)
-    }
-    reader.readAsDataURL(file)
-
-    if (type === 'logo') setIsUploadingLogo(true)
-    else setIsUploadingBanner(true)
-
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-      
-      const result = await uploadImage(formData)
-      
-      if (result.success && result.url) {
-        if (type === 'logo') setLogoUrl(result.url)
-        else setBannerUrl(result.url)
-      } else {
-        setError(result.error || t('Falha no upload da imagem', 'Image upload failed', 'Falla en la carga de la imagen'))
-        if (type === 'logo') setLogoPreview('')
-        else setBannerPreview('')
-      }
-    } catch (err) {
-      console.error('Upload error:', err)
-      setError(t('Erro crítico no upload da imagem', 'Critical error during image upload', 'Error crítico al cargar la imagen'))
-    } finally {
-      if (type === 'logo') setIsUploadingLogo(false)
-      else setIsUploadingBanner(false)
-    }
-  }
-
-  // Organização por Bloco Econômico
-  const mercosulCountries = countriesList.filter(c => c.bloc === 'Mercosul')
-  const euCountries = countriesList.filter(c => c.bloc === 'EU')
+  const [selectedDdi, setSelectedDdi] = useState('55')
 
   const { t } = useLanguage()
+
+  const mercosulCountries = countriesList.filter(c => c.bloc === 'Mercosul')
+  const euCountries = countriesList.filter(c => c.bloc === 'EU')
 
   const steps = [
     {
@@ -111,16 +64,13 @@ export default function SolicitarCadastroPage() {
     
     const formData = new FormData(e.currentTarget)
     
-    // Lógica para o setor 'Outro'
     const sectorSelect = formData.get('sectorSelect') as string
     const sectorOther = formData.get('sectorOther') as string
     const finalSector = sectorSelect === 'outro' ? sectorOther : sectorSelect
     formData.set('sector', finalSector)
 
-    // Adiciona as URLs ao formData
-    if (logoUrl) formData.set('logoUrl', logoUrl)
-    if (bannerUrl) formData.set('bannerUrl', bannerUrl)
-
+    formData.set('ddd', '') 
+    
     try {
       const result = await createRequest(formData)
 
@@ -182,7 +132,6 @@ export default function SolicitarCadastroPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-16 items-start">
           
-          {/* Lado Esquerdo: Instruções e Explicação */}
           <div className="w-full lg:w-5/12 space-y-12">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -201,9 +150,7 @@ export default function SolicitarCadastroPage() {
               </p>
             </motion.div>
 
-            {/* Steps Visual */}
             <div className="space-y-8 relative">
-              {/* Linha conectora vertical */}
               <div className="absolute left-6 top-8 bottom-8 w-[2px] bg-gray-200 z-0 hidden sm:block" />
               
               {steps.map((step, index) => (
@@ -225,7 +172,6 @@ export default function SolicitarCadastroPage() {
               ))}
             </div>
 
-            {/* Trust Badge */}
             <div className="p-6 bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-100 flex items-center gap-4">
                <div className="w-12 h-12 bg-[var(--color-gold)]/10 rounded-full flex items-center justify-center">
                   <Search className="text-[var(--color-gold)]" size={24} />
@@ -240,7 +186,6 @@ export default function SolicitarCadastroPage() {
             </div>
           </div>
 
-          {/* Lado Direito: Formulário */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -248,7 +193,6 @@ export default function SolicitarCadastroPage() {
             className="w-full lg:w-7/12"
           >
             <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl border border-gray-100 relative overflow-hidden">
-              {/* Decorative Glow */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--color-gold)]/5 blur-[80px] -mr-32 -mt-32" />
               
               <h2 className="text-2xl font-display font-bold text-[var(--color-navy)] mb-8 flex items-center gap-3">
@@ -264,57 +208,6 @@ export default function SolicitarCadastroPage() {
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Upload Logo e Banner */}
-                  <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-gray-100">
-                    <div className="space-y-3">
-                      <label className="text-xs font-bold text-[var(--color-navy)] uppercase tracking-wider">{t('Logo da Empresa', 'Company Logo', 'Logotipo de la Empresa')}</label>
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden shrink-0 relative group">
-                          {logoPreview ? (
-                            <>
-                              <img src={logoPreview} className="w-full h-full object-contain p-1" />
-                              <button type="button" onClick={() => {setLogoPreview(''); setLogoUrl('')}} className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                <X size={16} />
-                              </button>
-                            </>
-                          ) : (
-                            <ImageIcon className="text-gray-300" size={24} />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <label className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-xs font-bold transition-all cursor-pointer ${logoUrl ? "text-green-600 border-green-200 bg-green-50" : "bg-white border-gray-200 hover:bg-gray-50 text-[var(--color-navy)]"}`}>
-                            {isUploadingLogo ? <div className="w-3.5 h-3.5 border-2 border-green-600/30 border-t-green-600 rounded-full animate-spin" /> : logoUrl ? <CheckCircle2 size={14} /> : <Upload size={14} />}
-                            {isUploadingLogo ? t('Enviando...', 'Uploading...', 'Enviando...') : logoUrl ? t('Logo Pronto ✓', 'Logo Ready ✓', 'Logo Listo ✓') : t('Escolher Logo', 'Choose Logo', 'Elegir Logo')}
-                            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'logo')} disabled={isUploadingLogo || loading} />
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <label className="text-xs font-bold text-[var(--color-navy)] uppercase tracking-wider">{t('Banner de Capa (Opcional)', 'Cover Banner (Optional)', 'Banner de Portada (Opcional)')}</label>
-                      <div className="space-y-3">
-                        <div className="w-full h-16 rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
-                          {bannerPreview ? (
-                            <>
-                              <img src={bannerPreview} className="w-full h-full object-cover" />
-                              <button type="button" onClick={() => {setBannerPreview(''); setBannerUrl('')}} className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                <X size={16} />
-                              </button>
-                            </>
-                          ) : (
-                            <ImageIcon className="text-gray-300" size={24} />
-                          )}
-                        </div>
-                        <label className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-xs font-bold transition-all cursor-pointer ${bannerUrl ? "text-green-600 border-green-200 bg-green-50" : "bg-white border-gray-200 hover:bg-gray-50 text-[var(--color-navy)]"}`}>
-                          {isUploadingBanner ? <div className="w-3.5 h-3.5 border-2 border-green-600/30 border-t-green-600 rounded-full animate-spin" /> : bannerUrl ? <CheckCircle2 size={14} /> : <Upload size={14} />}
-                          {isUploadingBanner ? t('Enviando...', 'Uploading...', 'Enviando...') : bannerUrl ? t('Banner Pronto ✓', 'Banner Ready ✓', 'Banner Listo ✓') : t('Escolher Banner', 'Choose Banner', 'Elegir Banner')}
-                          <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'banner')} disabled={isUploadingBanner || loading} />
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Nome da Empresa */}
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-[var(--color-navy)] uppercase tracking-wider">{t('Nome da Empresa', 'Company Name', 'Nombre de la Empresa')}</label>
@@ -335,7 +228,15 @@ export default function SolicitarCadastroPage() {
                     <label className="text-xs font-bold text-[var(--color-navy)] uppercase tracking-wider">{t('País sede', 'Headquarters Country', 'País Sede')}</label>
                     <div className="relative">
                       <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                      <select name="country" required className="w-full pl-12 pr-10 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50 focus:border-[var(--color-gold)] transition-all font-body text-sm appearance-none">
+                      <select 
+                        name="country" 
+                        required 
+                        onChange={(e) => {
+                          const country = countriesList.find(c => c.code === e.target.value)
+                          if (country) setSelectedDdi(country.ddi)
+                        }}
+                        className="w-full pl-12 pr-10 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50 focus:border-[var(--color-gold)] transition-all font-body text-sm appearance-none"
+                      >
                         <option value="">{t('Selecione o país', 'Select country', 'Seleccione el país')}</option>
                         <optgroup label="Mercosul">
                           {mercosulCountries.map(c => (
@@ -442,38 +343,35 @@ export default function SolicitarCadastroPage() {
                     </div>
                   </div>
 
-                  {/* Telefone com DDI, DDD e Número Separados */}
+                  {/* Telefone Reformulado */}
                   <div className="space-y-2 md:col-span-2">
                     <label className="text-xs font-bold text-[var(--color-navy)] uppercase tracking-wider">{t('Telefone / WhatsApp (Obrigatório)', 'Phone / WhatsApp (Required)', 'Teléfono / WhatsApp (Obligatorio)')}</label>
                     <div className="flex gap-3">
-                      <div className="relative w-20">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">+</span>
-                        <input 
+                      {/* Seletor de DDI */}
+                      <div className="relative w-32 shrink-0">
+                        <select 
                           name="ddi"
-                          type="text" 
-                          required
-                          maxLength={4}
-                          placeholder="55"
-                          className="w-full pl-6 pr-2 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50 focus:border-[var(--color-gold)] transition-all font-body text-sm text-center"
-                        />
+                          value={selectedDdi}
+                          onChange={(e) => setSelectedDdi(e.target.value)}
+                          className="w-full pl-3 pr-8 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50 focus:border-[var(--color-gold)] transition-all font-body text-sm appearance-none"
+                        >
+                          {countriesList.sort((a,b) => a.name.localeCompare(b.name)).map(c => (
+                            <option key={`${c.code}-${c.ddi}`} value={c.ddi}>
+                              +{c.ddi} ({c.code})
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 rotate-90" size={14} />
                       </div>
-                      <div className="relative w-20">
-                        <input 
-                          name="ddd"
-                          type="text" 
-                          required
-                          maxLength={3}
-                          placeholder="DDD"
-                          className="w-full px-2 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50 focus:border-[var(--color-gold)] transition-all font-body text-sm text-center"
-                        />
-                      </div>
+
+                      {/* Campo de Número Único */}
                       <div className="relative flex-1">
                         <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <input 
                           name="phone"
                           type="tel" 
                           required
-                          placeholder="99999-9999"
+                          placeholder={t('Número com DDD (se houver)', 'Number with area code', 'Número con código de área')}
                           className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50 focus:border-[var(--color-gold)] transition-all font-body text-sm"
                         />
                       </div>

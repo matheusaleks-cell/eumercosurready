@@ -29,12 +29,13 @@ export default function NovoUsuarioPage() {
     const formData = new FormData(e.currentTarget)
     const data = {
       name: formData.get('name') as string,
+      username: formData.get('username') as string,
       email: formData.get('email') as string,
       password: formData.get('password') as string,
       role: formData.get('role') as any,
     }
 
-    if (!data.name || !data.email || !data.password) {
+    if (!data.name || !data.username || !data.email || !data.password) {
       setError('Por favor, preencha todos os campos.')
       setLoading(false)
       return

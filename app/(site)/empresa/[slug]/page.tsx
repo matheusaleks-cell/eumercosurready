@@ -520,22 +520,22 @@ export default async function CompanyProfilePage({ params }: PageProps) {
                   }
 
                   return (
-                    <div key={idx} className="p-2 md:p-6 rounded-[var(--radius-lg)] bg-white border border-[var(--color-border)] shadow-sm hover:border-[var(--color-gold)] transition-all duration-300 group flex flex-col items-center text-center space-y-4 min-h-[160px] justify-center overflow-hidden">
+                    <div key={idx} className="p-4 md:p-6 rounded-[var(--radius-lg)] bg-white border border-[var(--color-border)] shadow-sm hover:border-[var(--color-gold)] transition-all duration-300 group flex flex-col items-center text-center space-y-4 min-h-[180px] justify-center overflow-hidden">
                       <div className={cn(
-                        "w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-sm",
+                        "w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-sm shrink-0",
                         isVerification ? "bg-amber-50 text-amber-600" : "text-[var(--color-navy)] group-hover:bg-[var(--color-gold)] group-hover:text-white"
                       )}>
                         <StatIcon size={24} />
                       </div>
-                      <div className="space-y-1 w-full">
+                      <div className="space-y-1 w-full flex-1 flex flex-col justify-center">
                         <span className={cn(
-                          "font-display font-black leading-tight block px-1 whitespace-nowrap",
-                          (stat.value as string).length > 12 ? "text-sm" : (stat.value as string).length > 8 ? "text-lg" : "text-xl",
+                          "font-display font-black leading-tight block px-2 break-words",
+                          (stat.value as string).length > 20 ? "text-xs" : (stat.value as string).length > 12 ? "text-sm" : "text-lg",
                           isVerification ? getVerificationColor(stat.value as string) : "text-[var(--color-navy)]"
                         )}>
                           {stat.value}
                         </span>
-                        <p className="text-[10px] text-[var(--color-text-muted)] font-bold uppercase tracking-widest leading-tight">{stat.label}</p>
+                        <p className="text-[10px] text-[var(--color-text-muted)] font-bold uppercase tracking-widest leading-tight mt-1">{stat.label}</p>
                       </div>
                     </div>
                   )

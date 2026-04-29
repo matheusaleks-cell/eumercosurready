@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og'
- 
+import fs from 'fs'
+import path from 'path'
+
 // Image metadata
 export const size = {
   width: 32,
@@ -9,31 +11,35 @@ export const contentType = 'image/png'
  
 // Icon generation
 export default function Icon() {
+  // Lendo o logo do sistema de arquivos para converter em base64 e garantir que apareça
+  const logoPath = path.join(process.cwd(), 'public', 'logo.png')
+  const logoData = fs.readFileSync(logoPath)
+  const logoBase64 = `data:image/png;base64,${logoData.toString('base64')}`
+
   return new ImageResponse(
     (
       // ImageResponse JSX element
       <div
         style={{
-          fontSize: 16,
-          background: '#002855', // Navy color from your project
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'white',
-          borderRadius: '20%',
-          fontWeight: 'bold',
-          border: '1px solid #c5a059', // Gold color
+          background: 'transparent',
         }}
       >
-        EM
+        <img
+          src={logoBase64}
+          width="32"
+          height="32"
+          style={{
+            objectFit: 'contain',
+          }}
+        />
       </div>
     ),
-    // ImageResponse options
     {
-      // For convenience, we can re-use the exported icons size metadata
-      // config to also set the ImageResponse's width and height.
       ...size,
     }
   )

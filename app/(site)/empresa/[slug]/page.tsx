@@ -341,7 +341,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
                 </div>
                 <h2 className="text-3xl font-display font-bold text-[var(--color-navy)]">{t('Sobre a Empresa', 'About the Company', 'Sobre la Empresa')}</h2>
               </div>
-              <p className="text-lg text-[var(--color-text-muted)] leading-relaxed font-body">
+              <p className="text-lg text-[var(--color-text-muted)] leading-relaxed font-body whitespace-pre-wrap">
                 {t(company.fullDescription, (company as any).fullDescription_en, (company as any).fullDescription_es)}
               </p>
               {(company as any).videoUrl && (

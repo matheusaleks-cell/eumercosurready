@@ -59,15 +59,15 @@ export const HeroSection = () => {
   }
 
   // Efeitos de Scroll
-  const canvasOpacity = useTransform(scrollYProgress, [0, 0.1, 0.25, 0.35], [0.4, 1, 1, 0.4])
-  const canvasBlur = useTransform(scrollYProgress, [0, 0.1, 0.25, 0.35], ["blur(10px)", "blur(0px)", "blur(0px)", "blur(10px)"])
+  const canvasOpacity = useTransform(scrollYProgress, [0, 0.1, 0.25], [0.4, 1, 1])
+  const canvasBlur = useTransform(scrollYProgress, [0, 0.1, 0.25], ["blur(10px)", "blur(0px)", "blur(0px)"])
   
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.15, 0.25, 0.35], [0, 0, 1, 0])
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.15, 0.25], [0, 0, 1])
   const contentY = useTransform(scrollYProgress, [0.15, 0.25], [40, 0])
   const contentScale = useTransform(scrollYProgress, [0.15, 0.25], [0.95, 1])
 
   return (
-    <div ref={containerRef} className="relative h-[350vh] bg-[var(--color-navy)]">
+    <div ref={containerRef} className="relative h-[300vh] bg-[var(--color-navy)]">
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-[var(--color-navy)]/95 via-[var(--color-navy)]/30 to-[var(--color-navy)]/95 pointer-events-none" />
         

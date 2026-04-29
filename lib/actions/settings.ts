@@ -45,3 +45,15 @@ export async function updateSettings(data: Record<string, string>) {
     return { success: false, error: "Falha ao salvar configurações" }
   }
 }
+
+export async function getPublicSettings() {
+  try {
+    const settings = await prisma.platformSetting.findMany()
+    return settings.reduce((acc, curr) => {
+      acc[curr.key] = curr.value
+      return acc
+    }, {} as Record<string, string>)
+  } catch (error) {
+    return {}
+  }
+}

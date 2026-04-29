@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { getSettings, updateSettings } from '@/lib/actions/settings'
 import { 
   Settings, Save, Mail, Globe, Bell, Info, 
-  CheckCircle2, Search, Palette, Share2, Zap
+  CheckCircle2, Search, Palette, Share2, Zap,
+  ImagePlus, Loader2
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -13,6 +14,7 @@ export default function ConfiguracoesPage() {
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
   const [settings, setSettings] = useState<Record<string, string>>({})
+  const [uploadingFavicon, setUploadingFavicon] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -25,15 +27,41 @@ export default function ConfiguracoesPage() {
     load()
   }, [])
 
+  async function handleFaviconUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadingFavicon(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('upload_preset', 'ml_default') // Preset padrão do Cloudinary
+
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/drfpffb2x/image/upload`,
+        { method: 'POST', body: formData }
+      )
+      const data = await response.json()
+      if (data.secure_url) {
+        setSettings(prev => ({ ...prev, PLATFORM_FAVICON: data.secure_url }))
+      }
+    } catch (error) {
+      console.error('Erro no upload do favicon:', error)
+      alert('Erro ao subir imagem')
+    } finally {
+      setUploadingFavicon(false)
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setSaving(true)
     setSuccess(false)
 
     const formData = new FormData(e.currentTarget)
-    const data: Record<string, string> = {}
+    const data: Record<string, string> = { ...settings }
     formData.forEach((value, key) => {
-      data[key] = value as string
+      if (value) data[key] = value as string
     })
 
     const result = await updateSettings(data)
@@ -107,6 +135,37 @@ export default function ConfiguracoesPage() {
             <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Identidade & Branding</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-1">
+              <label className={labelClasses}>Favicon da Plataforma (Ícone da Aba)</label>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded border border-gray-100 flex items-center justify-center bg-gray-50 overflow-hidden shrink-0 shadow-inner">
+                  {settings['PLATFORM_FAVICON'] ? (
+                    <img src={settings['PLATFORM_FAVICON']} alt="Favicon" className="w-8 h-8 object-contain" />
+                  ) : (
+                    <Globe size={20} className="text-gray-300" />
+                  )}
+                </div>
+                <div className="relative flex-1">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleFaviconUpload}
+                    className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                  />
+                  <div className={cn(
+                    inputClasses, 
+                    "flex items-center gap-2 cursor-pointer bg-gray-50",
+                    uploadingFavicon && "opacity-50"
+                  )}>
+                    {uploadingFavicon ? <Loader2 size={16} className="animate-spin text-[var(--color-gold)]" /> : <ImagePlus size={16} className="text-gray-400" />}
+                    <span className="text-xs text-gray-500 font-medium">
+                      {uploadingFavicon ? 'Subindo ícone...' : 'Alterar Favicon...'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-[9px] text-gray-400 mt-2">* Use uma imagem quadrada (.png ou .ico) para melhor resultado.</p>
+            </div>
             <div className="space-y-1">
               <label className={labelClasses}>Cor Primária (Navy)</label>
               <div className="flex gap-2">

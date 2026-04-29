@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 import { translateSingleText } from '@/lib/actions/translation'
 import { cn } from '@/lib/utils'
-import { toast } from 'react-hot-toast'
+import { toast } from 'sonner'
 
 interface ProductManagerProps {
   companyId: string

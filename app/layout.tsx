@@ -15,6 +15,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: settings['META_TITLE'] || "EU-Mercosur Ready | B2B Trade Hub",
     description: settings['META_DESCRIPTION'] || "Conectando empresas prontas para negócios internacionais entre Europa e Mercosul.",
+    icons: {
+      icon: faviconUrl,
+    }
   };
 }
 

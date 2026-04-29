@@ -9,17 +9,19 @@ export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicSettings();
-  const favicon = settings['PLATFORM_FAVICON'] || "/favicon.jpeg";
-  // Cache-busting usando timestamp para forçar atualização no navegador
-  const iconUrl = `${favicon}${favicon.includes('?') ? '&' : '?'}v=${Date.now()}`;
+  const faviconUrl = settings['PLATFORM_FAVICON'] || "/favicon.ico";
+  const version = Date.now();
 
   return {
     title: settings['META_TITLE'] || "EU-Mercosur Ready | B2B Trade Hub",
     description: settings['META_DESCRIPTION'] || "Conectando empresas prontas para negócios internacionais entre Europa e Mercosul.",
     icons: {
-      icon: iconUrl,
-      shortcut: iconUrl,
-      apple: iconUrl,
+      icon: [
+        { url: faviconUrl, href: faviconUrl },
+        { url: `${faviconUrl}?v=${version}`, href: `${faviconUrl}?v=${version}` }
+      ],
+      shortcut: faviconUrl,
+      apple: faviconUrl,
     },
   };
 }
@@ -31,6 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className="antialiased" suppressHydrationWarning>
         <SessionProvider>
           {children}

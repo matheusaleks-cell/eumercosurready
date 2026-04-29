@@ -2,9 +2,10 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, Share2, Globe, MessageCircle, Send } from 'lucide-react'
+import { ArrowUpRight, Linkedin, Instagram, Facebook, Twitter, Globe, MessageCircle, Send } from 'lucide-react'
 import prisma from '@/lib/prisma'
 import { cookies } from 'next/headers'
+import { cn } from '@/lib/utils'
 
 export const Footer = async () => {
   const cookieStore = await cookies()
@@ -29,10 +30,10 @@ export const Footer = async () => {
   }
 
   const socialLinks = [
-    { key: 'SOCIAL_LINKEDIN', icon: Share2, label: 'LinkedIn' },
-    { key: 'SOCIAL_INSTAGRAM', icon: Globe, label: 'Instagram' },
-    { key: 'SOCIAL_FACEBOOK', icon: MessageCircle, label: 'Facebook' },
-    { key: 'SOCIAL_TWITTER', icon: Send, label: 'Twitter' },
+    { key: 'SOCIAL_LINKEDIN', icon: Linkedin, label: 'LinkedIn', color: 'hover:bg-[#0077B5]' },
+    { key: 'SOCIAL_INSTAGRAM', icon: Instagram, label: 'Instagram', color: 'hover:bg-[#E1306C]' },
+    { key: 'SOCIAL_FACEBOOK', icon: Facebook, label: 'Facebook', color: 'hover:bg-[#1877F2]' },
+    { key: 'SOCIAL_TWITTER', icon: Twitter, label: 'Twitter', color: 'hover:bg-black' },
   ];
 
   return (
@@ -65,7 +66,10 @@ export const Footer = async () => {
                   key={social.key}
                   href={config[social.key]} 
                   target="_blank"
-                  className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[var(--color-gold)] hover:text-[var(--color-navy)] transition-all"
+                  className={cn(
+                    "w-10 h-10 rounded-full bg-white/5 flex items-center justify-center transition-all hover:text-white",
+                    social.color
+                  )}
                   title={social.label}
                 >
                   <social.icon size={18} />

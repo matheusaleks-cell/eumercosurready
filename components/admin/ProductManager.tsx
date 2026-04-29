@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { translateSingleText } from '@/lib/actions/translation'
 import { cn } from '@/lib/utils'
+import { toast } from 'react-hot-toast'
 
 interface ProductManagerProps {
   companyId: string
@@ -151,14 +152,22 @@ export default function ProductManager({ companyId, products }: ProductManagerPr
     if (!confirm(`Deseja traduzir automaticamente os títulos e descrições de todos os ${products.length} itens para EN e ES?`)) return
     
     setIsTranslatingAll(true)
+    const toastId = toast.loading('Traduzindo catálogo...')
     try {
+      let successCount = 0
       for (const product of products) {
         const updates: any = {}
         
         // Título
         if (!product.title_en) {
           const res = await translateSingleText(product.title, 'en-US')
-          if (res.success) updates.title_en = res.text
+          if (res.success) {
+            updates.title_en = res.text
+          } else if (res.error === 'DEEPL_API_KEY_MISSING') {
+            toast.error('Chave do DeepL não configurada. Verifique o arquivo .env', { id: toastId })
+            setIsTranslatingAll(false)
+            return
+          }
         }
         if (!product.title_es) {
           const res = await translateSingleText(product.title, 'es')
@@ -176,13 +185,16 @@ export default function ProductManager({ companyId, products }: ProductManagerPr
         }
         
         if (Object.keys(updates).length > 0) {
-          await updateProduct(product.id, { ...product, ...updates, companyId })
+          const res = await updateProduct(product.id, { ...product, ...updates, companyId })
+          if (res.success) successCount++
         }
       }
-      window.location.reload()
+      
+      toast.success(`${successCount} itens traduzidos com sucesso!`, { id: toastId })
+      setTimeout(() => window.location.reload(), 1500)
     } catch (err) {
       console.error('Translate all items error:', err)
-      alert('Erro ao traduzir alguns itens.')
+      toast.error('Erro ao traduzir o catálogo.', { id: toastId })
     } finally {
       setIsTranslatingAll(false)
     }
@@ -315,11 +327,25 @@ export default function ProductManager({ companyId, products }: ProductManagerPr
                     type="button" 
                     onClick={async (e) => {
                       const btn = e.currentTarget
-                      btn.classList.add('animate-spin')
                       const text = (document.getElementById('productTitle') as HTMLInputElement).value
-                      if (!text) return
+                      if (!text) {
+                        toast.error('Preencha o título original primeiro')
+                        return
+                      }
+                      
+                      btn.classList.add('animate-spin')
                       const res = await translateSingleText(text, 'en-US')
-                      if (res.success) (document.getElementById('productTitle_en') as HTMLInputElement).value = res.text || ''
+                      
+                      if (res.success) {
+                        (document.getElementById('productTitle_en') as HTMLInputElement).value = res.text || ''
+                        toast.success('Traduzido!')
+                      } else {
+                        if (res.error === 'DEEPL_API_KEY_MISSING') {
+                          toast.error('Chave do DeepL não configurada')
+                        } else {
+                          toast.error('Erro na tradução')
+                        }
+                      }
                       btn.classList.remove('animate-spin')
                     }} 
                     className="absolute right-2 top-[34px] p-2 bg-blue-50 text-blue-500 hover:bg-blue-100 rounded-lg transition-all border border-blue-100 shadow-sm"
@@ -334,11 +360,25 @@ export default function ProductManager({ companyId, products }: ProductManagerPr
                     type="button" 
                     onClick={async (e) => {
                       const btn = e.currentTarget
-                      btn.classList.add('animate-spin')
                       const text = (document.getElementById('productTitle') as HTMLInputElement).value
-                      if (!text) return
+                      if (!text) {
+                        toast.error('Preencha o título original primeiro')
+                        return
+                      }
+                      
+                      btn.classList.add('animate-spin')
                       const res = await translateSingleText(text, 'es')
-                      if (res.success) (document.getElementById('productTitle_es') as HTMLInputElement).value = res.text || ''
+                      
+                      if (res.success) {
+                        (document.getElementById('productTitle_es') as HTMLInputElement).value = res.text || ''
+                        toast.success('Traduzido!')
+                      } else {
+                        if (res.error === 'DEEPL_API_KEY_MISSING') {
+                          toast.error('Chave do DeepL não configurada')
+                        } else {
+                          toast.error('Erro na tradução')
+                        }
+                      }
                       btn.classList.remove('animate-spin')
                     }} 
                     className="absolute right-2 top-[34px] p-2 bg-amber-50 text-amber-500 hover:bg-amber-100 rounded-lg transition-all border border-amber-100 shadow-sm"
@@ -367,11 +407,25 @@ export default function ProductManager({ companyId, products }: ProductManagerPr
                     type="button" 
                     onClick={async (e) => {
                       const btn = e.currentTarget
-                      btn.classList.add('animate-spin')
                       const text = (document.getElementById('productDesc') as HTMLTextAreaElement).value
-                      if (!text) return
+                      if (!text) {
+                        toast.error('Preencha a descrição original primeiro')
+                        return
+                      }
+                      
+                      btn.classList.add('animate-spin')
                       const res = await translateSingleText(text, 'en-US')
-                      if (res.success) (document.getElementById('productDesc_en') as HTMLTextAreaElement).value = res.text || ''
+                      
+                      if (res.success) {
+                        (document.getElementById('productDesc_en') as HTMLTextAreaElement).value = res.text || ''
+                        toast.success('Traduzido!')
+                      } else {
+                        if (res.error === 'DEEPL_API_KEY_MISSING') {
+                          toast.error('Chave do DeepL não configurada')
+                        } else {
+                          toast.error('Erro na tradução')
+                        }
+                      }
                       btn.classList.remove('animate-spin')
                     }} 
                     className="absolute right-2 top-[34px] p-2 bg-blue-50 text-blue-500 hover:bg-blue-100 rounded-lg transition-all border border-blue-100 shadow-sm"
@@ -386,11 +440,25 @@ export default function ProductManager({ companyId, products }: ProductManagerPr
                     type="button" 
                     onClick={async (e) => {
                       const btn = e.currentTarget
-                      btn.classList.add('animate-spin')
                       const text = (document.getElementById('productDesc') as HTMLTextAreaElement).value
-                      if (!text) return
+                      if (!text) {
+                        toast.error('Preencha a descrição original primeiro')
+                        return
+                      }
+                      
+                      btn.classList.add('animate-spin')
                       const res = await translateSingleText(text, 'es')
-                      if (res.success) (document.getElementById('productDesc_es') as HTMLTextAreaElement).value = res.text || ''
+                      
+                      if (res.success) {
+                        (document.getElementById('productDesc_es') as HTMLTextAreaElement).value = res.text || ''
+                        toast.success('Traduzido!')
+                      } else {
+                        if (res.error === 'DEEPL_API_KEY_MISSING') {
+                          toast.error('Chave do DeepL não configurada')
+                        } else {
+                          toast.error('Erro na tradução')
+                        }
+                      }
                       btn.classList.remove('animate-spin')
                     }} 
                     className="absolute right-2 top-[34px] p-2 bg-amber-50 text-amber-500 hover:bg-amber-100 rounded-lg transition-all border border-amber-100 shadow-sm"

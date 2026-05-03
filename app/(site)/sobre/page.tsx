@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { 
   Building2, Globe2, ShieldCheck, Zap, 
   ArrowRight, CheckCircle2, Award, TrendingUp,
-  LayoutGrid, Handshake, Users, Target
+  LayoutGrid, Handshake, Users, Target, Heart
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -141,7 +141,7 @@ export default function SobrePage() {
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                          <span className="text-[9px] font-black text-[var(--color-navy)] bg-[var(--color-gold)] px-2.5 py-1 rounded-full">{t('Nível', 'Level', 'Nivel')} {level.id}</span>
+                          <span className="text-[9px] font-black text-[var(--color-navy)] bg-[var(--color-gold)] px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">{t('Nível', 'Level', 'Nivel')} {level.id}</span>
                           <h4 className="font-display font-bold text-[var(--color-navy)] text-lg">{level.title}</h4>
                         </div>
                         <p className="text-[10px] font-bold text-[var(--color-gold-light)] uppercase tracking-widest">{level.subtitle}</p>
@@ -155,6 +155,67 @@ export default function SobrePage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 2.5 Nossos Valores */}
+      <section className="py-24 bg-white relative overflow-hidden border-t border-gray-100">
+        <div className="container-custom">
+           <div className="max-w-4xl mx-auto text-center space-y-12">
+              <motion.div {...fadeInUp} className="space-y-4">
+                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--color-navy)]/10 rounded-full border border-[var(--color-navy)]/20 mb-4">
+                   <Heart size={14} className="text-[var(--color-navy)]" />
+                   <span className="text-[var(--color-navy)] font-bold text-[10px] uppercase tracking-widest">{t("Nossos Valores", "Our Values", "Nuestros Valores")}</span>
+                 </div>
+                 <h2 className="text-3xl md:text-5xl font-display font-bold text-[var(--color-navy)] leading-tight">
+                   {t("O que nos move?", "What drives us?", "¿Cuáles son nuestros valores?")}
+                 </h2>
+              </motion.div>
+              
+              <div className="grid md:grid-cols-2 gap-8 text-left">
+                 <motion.div {...fadeInUp} className="p-8 bg-gray-50 rounded-3xl border border-gray-100 hover:border-[var(--color-gold)]/30 hover:shadow-lg transition-all duration-300">
+                    <h3 className="text-xl font-bold text-[var(--color-navy)] mb-4">{t("Orgulho Regional", "Regional Pride", "Orgullo Regional")}</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {t(
+                        "Acreditamos profundamente no valor do que é produzido nas nossas terras. Num mundo que compete por preço e volume, nós apostamos na origem, na identidade e na qualidade do que fabricamos, cultivamos e inventamos em ambos os lados do Atlântico.",
+                        "We deeply believe in the value of what is produced in our lands. In a world that competes on price and volume, we bet on the origin, identity, and quality of what we manufacture, cultivate, and invent on both sides of the Atlantic.",
+                        "Creemos profundamente en el valor de lo que se produce en nuestras tierras. En un mundo que compite por precio y volumen, nosotros apostamos por el origen, la identidad y la calidad de lo que fabricamos, cultivamos e inventamos a ambos lados del Atlántico."
+                      )}
+                    </p>
+                 </motion.div>
+                 
+                 <motion.div {...fadeInUp} transition={{ delay: 0.2 }} className="p-8 bg-gray-50 rounded-3xl border border-gray-100 hover:border-[var(--color-gold)]/30 hover:shadow-lg transition-all duration-300">
+                    <h3 className="text-xl font-bold text-[var(--color-navy)] mb-4">{t("Excelência de Origem", "Excellence of Origin", "Excelencia de Origen")}</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {t(
+                        "Promovemos com orgulho o selo Made in Europe e o Made In Mercosur, porque por trás de cada produto existe uma história, uma região e um talento que merece ir longe.",
+                        "We proudly promote the Made in Europe and Made In Mercosur seals, because behind every product there is a story, a region, and a talent that deserves to go far.",
+                        "Promocionamos con orgullo el sello Made in Europe y el Made In Mercosur, porque detrás de cada producto hay una historia, una región y un talento que merece llegar lejos."
+                      )}
+                    </p>
+                 </motion.div>
+              </div>
+
+              <motion.div {...fadeInUp} transition={{ delay: 0.4 }} className="p-10 md:p-14 bg-gradient-to-br from-[var(--color-navy)] to-[var(--color-navy-mid)] rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl mt-8">
+                 <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--color-gold)]/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
+                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[80px] rounded-full -ml-20 -mb-20 pointer-events-none" />
+                 
+                 <div className="relative z-10 flex flex-col items-center text-center space-y-8">
+                    <Image src="/logo-mia-white.png" alt="Made In Atlantic" width={180} height={60} className="object-contain opacity-90" />
+                    <p className="text-2xl md:text-3xl font-display font-medium max-w-2xl leading-snug">
+                      {t(
+                        "Por isso somos Made In Atlantic. Apostamos no Corredor Atlântico.",
+                        "That is why we are Made In Atlantic. We bet on the Atlantic Corridor.",
+                        "Por eso somos Made In Atlantic. Apostamos por el Corredor Atlántico."
+                      )}
+                    </p>
+                    <Link href="/paises" className="btn-premium group flex items-center gap-3 !bg-[var(--color-gold)] !text-[var(--color-navy)] hover:scale-105 transition-transform font-bold mt-4">
+                      <span>{t("Visite nossa seção 'Países'", "Visit our 'Countries' section", "Visite nuestra sección “Países”")}</span>
+                      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                 </div>
+              </motion.div>
+           </div>
         </div>
       </section>
 
@@ -262,7 +323,7 @@ export default function SobrePage() {
                    <h4 className="text-2xl font-display font-bold text-[var(--color-navy)] leading-tight">{t("Sou empresa exportadora", "I am an exporting company", "Soy empresa exportadora")}</h4>
                    <p className="text-gray-600 text-sm leading-relaxed">{t("Leve sua marca para o outro lado do atlântico com o serviço BDaaS.", "Take your brand to the other side of the Atlantic with the BDaaS service.", "Lleve su marca al otro lado del Atlántico con el servicio BDaaS.")}</p>
                  </div>
-                 <Link href="/solicitar-cadastro" className="btn-premium w-full group/btn mt-auto !bg-[var(--color-navy)] text-white">
+                 <Link href="/solicitar-cadastro" className="btn-premium w-full group/btn flex items-center justify-center mt-auto !bg-[var(--color-navy)] text-white">
                    <span>{t("Ativar Serviço BDaaS", "Activate BDaaS Service", "Activar Servicio BDaaS")}</span>
                    <ArrowRight size={18} className="ml-2 group-hover/btn:translate-x-1 transition-transform" />
                  </Link>
@@ -280,7 +341,7 @@ export default function SobrePage() {
                    <h4 className="text-2xl font-display font-bold text-[var(--color-navy)] leading-tight">{t("Sou importador / comprador", "I am an importer / buyer", "Soy importador / comprador")}</h4>
                    <p className="text-gray-600 text-sm leading-relaxed">{t("Explore o ecossistema de empresas verificadas no diretório EU-Mercosur Ready.", "Explore the ecosystem of verified companies in the EU-Mercosur Ready directory.", "Explore el ecosistema de empresas verificadas en el directorio EU-Mercosur Ready.")}</p>
                  </div>
-                 <Link href="/" className="btn-premium w-full group/btn !bg-[var(--color-gold)] !text-[var(--color-navy)] mt-auto font-bold">
+                 <Link href="/" className="btn-premium w-full group/btn flex items-center justify-center !bg-[var(--color-gold)] !text-[var(--color-navy)] mt-auto font-bold">
                    <span>{t("Explorar Diretório", "Explore Directory", "Explorar Directorio")}</span>
                    <ArrowRight size={18} className="ml-2 group-hover/btn:translate-x-1 transition-transform" />
                  </Link>

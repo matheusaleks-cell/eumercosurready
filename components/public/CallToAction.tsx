@@ -74,11 +74,6 @@ export const CallToAction = () => {
             </div>
 
             {/* Tags Flutuantes Decorativas (Visual Premium) */}
-            <div className="hidden lg:block absolute left-20 top-20 animate-bounce transition-all duration-1000">
-               <div className="px-4 py-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10 text-xs text-white/50">
-                  {t('+1.200 Empresas Conectadas', '+1,200 Connected Companies', '+1.200 Empresas Conectadas')}
-               </div>
-            </div>
             <div className="hidden lg:block absolute right-20 bottom-20 animate-pulse">
                <div className="px-4 py-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10 text-xs text-white/50">
                   {t('Exportação Simplificada', 'Simplified Export', 'Exportación Simplificada')}

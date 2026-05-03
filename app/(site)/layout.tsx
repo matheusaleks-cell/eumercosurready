@@ -8,6 +8,7 @@ import { ReactLenis } from "lenis/react";
 import { ScrollReset } from "@/components/public/ScrollReset";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import prisma from "@/lib/prisma";
+import { FloatingContact } from "@/components/public/FloatingContact";
 import "../globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -87,6 +88,7 @@ export default async function PublicLayout({
               {children}
             </div>
             <Footer />
+            <FloatingContact />
           </div>
         </ReactLenis>
       </LanguageProvider>

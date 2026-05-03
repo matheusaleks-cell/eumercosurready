@@ -48,17 +48,17 @@ export const OpportunitiesSection = () => {
           >
             <div className="space-y-5">
               <span className="text-[var(--color-gold)] font-display font-bold uppercase tracking-[0.2em] text-[10px] bg-[var(--color-gold)]/10 px-3 py-1 rounded-full">
-                {t('Mapeamento Estratégico', 'Strategic Mapping', 'Mapeo Estratégico')}
+                {t('Países do eixo UE-Mercosul', 'EU-Mercosur Axis Countries', 'Países del eje UE-Mercosur')}
               </span>
               <h2 className="text-2xl md:text-4xl font-display font-bold text-[var(--color-navy)] leading-[1.1]">
-                {t('O mercado está mapeado.', 'The market is mapped.', 'El mercado está mapeado.')} <br /> 
-                <span className="text-[var(--color-gold)]">{t('Onde sua marca deveria estar?', 'Where should your brand be?', '¿Dónde debería estar su marca?')}</span>
+                {t('Saiba mais sobre os países ', 'Learn more about the countries ', 'Conozca más sobre los países ')}
+                <span className="text-[var(--color-gold)]">{t('do eixo UE-Mercosul.', 'of the EU-Mercosur axis.', 'del eje UE-Mercosur.')}</span>
               </h2>
               <p className="text-base md:text-lg text-gray-600 font-body leading-relaxed max-w-lg">
                 {t(
-                  'Selecione uma nação e acesse a inteligência comercial restrita. Descubra exatamente o que cada mercado importa e como antecipar seus concorrentes.',
-                  'Select a nation and access restricted business intelligence. Discover exactly what each market imports and how to anticipate your competitors.',
-                  'Seleccione una nación y acceda a inteligencia comercial restringida. Descubra exactamente qué importa cada mercado y cómo anticiparse a sus comunicadores.'
+                  'Selecione uma nação e descubra mais sobre os pontos fortes de cada uma. É aqui que sua marca deve estar.',
+                  'Select a nation and discover more about the strengths of each one. This is where your brand must be.',
+                  'Seleccione una nación y descubra más sobre los puntos fuertes de cada una. Aquí es donde su marca debe estar.'
                 )}
               </p>
             </div>

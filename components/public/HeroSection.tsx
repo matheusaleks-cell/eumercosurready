@@ -15,10 +15,25 @@ export const HeroSection = () => {
 
   useEffect(() => {
     setMounted(true)
-    if (videoRef.current) {
-      videoRef.current.play().then(() => {
-        videoRef.current?.pause()
-      }).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    if (mounted && videoRef.current) {
+      // Força o play no início para carregar o primeiro frame e ignorar policy de autoplay
+      const startVideo = async () => {
+        try {
+          await videoRef.current?.play()
+          videoRef.current?.pause()
+        } catch (e) {
+          console.warn("Autoplay was prevented:", e)
+        }
+      }
+      startVideo()
+
+      // Pega a duração caso já tenha carregado antes do listener reagir
+      if (videoRef.current.readyState >= 1) {
+        setVideoDuration(videoRef.current.duration)
+      }
     }
   }, [mounted])
 
@@ -58,6 +73,12 @@ export const HeroSection = () => {
     setVideoDuration(e.currentTarget.duration)
   }
 
+  const handleLoadedData = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (e.currentTarget.readyState >= 1) {
+      setVideoDuration(e.currentTarget.duration)
+    }
+  }
+
   // Efeitos de Scroll
   const canvasOpacity = useTransform(scrollYProgress, [0, 0.1, 0.25], [0.4, 1, 1])
   const canvasBlur = useTransform(scrollYProgress, [0, 0.1, 0.25], ["blur(10px)", "blur(0px)", "blur(0px)"])
@@ -74,14 +95,16 @@ export const HeroSection = () => {
         {mounted && (
           <motion.div 
             style={{ opacity: canvasOpacity, filter: canvasBlur }}
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-full h-full z-0"
           >
             <video
               ref={videoRef}
+              autoPlay
               muted
               playsInline
               preload="auto"
               onLoadedMetadata={handleMetadata}
+              onLoadedData={handleLoadedData}
               onSeeking={() => { isSeeking.current = true }}
               onSeeked={() => { isSeeking.current = false }}
               className="w-full h-full object-cover will-change-[contents]"

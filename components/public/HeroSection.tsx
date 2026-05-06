@@ -87,7 +87,7 @@ export const HeroSection = () => {
     <div ref={containerRef} className="relative bg-[var(--color-navy)] w-full" style={{ height: '300vh' }}>
       
       {/* Container Fixo (Sticky) */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex items-center justify-center">
         
         {/* Camada Escura de Fundo sobre o Canvas */}
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-[var(--color-navy)]/95 via-[var(--color-navy)]/30 to-[var(--color-navy)]/95 pointer-events-none" />

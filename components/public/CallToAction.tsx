@@ -46,14 +46,14 @@ export const CallToAction = () => {
 
             <div className="space-y-4 max-w-4xl">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white leading-tight">
-                {t('Apenas Empresas Preparadas', 'Only Prepared Companies', 'Sólo Empresas Preparadas')} <br className="hidden md:block" />
-                <span className="text-[var(--color-gold)]">{t('Cruzam Fronteiras.', 'Cross Borders.', 'Cruzan Fronteras.')}</span>
+                {t('Somente empresas preparadas', 'Only prepared companies', 'Sólo empresas preparadas')} <br className="hidden md:block" />
+                <span className="text-[var(--color-gold)]">{t('cruzam fronteiras.', 'cross borders.', 'cruzan fronteras.')}</span>
               </h2>
               <p className="text-base md:text-lg text-gray-300 font-body max-w-3xl mx-auto leading-relaxed">
                 {t(
-                  'Estar preparado para a aliança EU-Mercosul não é sobre ter o melhor produto. É sobre estar visível para os compradores certos, na hora certa, com a documentação auditada. Você tem a infraestrutura. Nós temos o palco global.',
-                  'Being prepared for the EU-Mercosur alliance is not about having the best product. It is about being visible to the right buyers, at the right time, with audited documentation. You have the infrastructure. We have the global stage.',
-                  'Estar preparado para la alianza UE-Mercosur no se trata de tener el mejor producto. Se trata de ser visible para os compradores adequados, en el momento adequado, con documentación auditada. Usted tiene la infraestructura. Nosotros temos el escenario global.'
+                  'Estar pronto para operar no Corredor UE-Mercosul não se resume a ter o melhor produto. Trata-se de ser visível para os compradores certos, no momento certo, e cumprir todas as aprovações, registros e adaptações necessárias. Você tem o produto, nós o guiaremos passo a passo durante todo o processo de expansão. Somos uma empresa local e atuamos no território para ajudá-lo, todos os dias do ano.',
+                  'Being ready to operate in the EU-Mercosur Corridor is not just about having the best product. It is about being visible to the right buyers, at the right time, and complying with all necessary approvals, registrations, and adaptations. You have the product, we will guide you step by step throughout the expansion process. We are a local company and act in the territory to help you, every day of the year.',
+                  'Estar listo para operar en el Corredor UE-Mercosur no se resume en tener el mejor producto. Se trata de ser visible para los compradores adecuados, en el momento adecuado, y cumplir con todas las aprobaciones, registros y adaptaciones necesarias. Usted tiene el producto, nosotros lo guiaremos paso a paso durante todo el proceso de expansión. Somos una empresa local y actuamos en el territorio para ayudarle, todos los días del año.'
                 )}
               </p>
             </div>
@@ -63,7 +63,7 @@ export const CallToAction = () => {
                 href="/solicitar-cadastro"
                 className="btn-premium flex items-center gap-3 group"
               >
-                <span>{t('Iniciar Verificação e Promover Empresa', 'Start Verification and Promote Company', 'Iniciar Verificación y Promover Empresa')}</span>
+                <span>{t('Quero promover minha empresa', 'I want to promote my company', 'Quiero promover mi empresa')}</span>
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               
@@ -71,13 +71,6 @@ export const CallToAction = () => {
                 <ShieldCheck size={18} className="text-green-500" />
                 <span>{t('Processo de verificação seguro', 'Secure verification process', 'Proceso de verificación seguro')}</span>
               </div>
-            </div>
-
-            {/* Tags Flutuantes Decorativas (Visual Premium) */}
-            <div className="hidden lg:block absolute right-20 bottom-20 animate-pulse">
-               <div className="px-4 py-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10 text-xs text-white/50">
-                  {t('Exportação Simplificada', 'Simplified Export', 'Exportación Simplificada')}
-               </div>
             </div>
           </div>
         </motion.div>

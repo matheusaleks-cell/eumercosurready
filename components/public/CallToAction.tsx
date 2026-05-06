@@ -63,7 +63,7 @@ export const CallToAction = () => {
                 href="/solicitar-cadastro"
                 className="btn-premium flex items-center gap-3 group"
               >
-                <span>{t('Iniciar Auditoria e Promover Empresa', 'Start Audit and Promote Company', 'Iniciar Auditoría y Promover Empresa')}</span>
+                <span>{t('Iniciar Verificação e Promover Empresa', 'Start Verification and Promote Company', 'Iniciar Verificación y Promover Empresa')}</span>
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               

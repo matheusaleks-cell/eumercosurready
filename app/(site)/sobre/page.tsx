@@ -209,10 +209,10 @@ export default function SobrePage() {
                         "Por eso somos Made In Atlantic. Apostamos por el Corredor Atlántico."
                       )}
                     </p>
-                    <Link href="/#oportunidades" className="btn-premium group flex items-center gap-3 !bg-[var(--color-gold)] !text-[var(--color-navy)] hover:scale-105 transition-transform font-bold mt-4">
+                    <a href="/#oportunidades" className="btn-premium group flex items-center gap-3 !bg-[var(--color-gold)] !text-[var(--color-navy)] hover:scale-105 transition-transform font-bold mt-4">
                       <span>{t("Visite nossa seção 'Países'", "Visit our 'Countries' section", "Visite nuestra sección “Países”")}</span>
                       <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                    </Link>
+                    </a>
                  </div>
               </motion.div>
            </div>

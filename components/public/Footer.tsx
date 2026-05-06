@@ -135,10 +135,10 @@ export const Footer = async () => {
             </ul>
           </div>
           
-          {/* Newsletter/Disclaimer */}
+          {/* Newsletter/Disclaimer & Grupo Oficial */}
           <div>
             <h4 className="text-white font-display font-bold mb-6">Made In Atlantic</h4>
-            <p className="text-xs font-body mb-4">
+            <p className="text-xs font-body mb-6">
               {t(
                 'Este ecossistema é uma iniciativa para facilitar o networking B2B e a internacionalização de empresas no eixo atlântico.',
                 'This ecosystem is an initiative to facilitate B2B networking and the internationalization of companies on the Atlantic axis.',
@@ -146,6 +146,29 @@ export const Footer = async () => {
               )}
             </p>
 
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 group hover:border-[#0077B5]/50 transition-colors">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-[#0077B5] flex items-center justify-center text-white shrink-0">
+                  <LinkedInIcon size={14} />
+                </div>
+                <h5 className="text-white text-sm font-bold leading-tight">{t('Nosso Grupo Oficial', 'Our Official Group', 'Nuestro Grupo Oficial')}</h5>
+              </div>
+              <p className="text-xs text-gray-400 mb-4 leading-relaxed">
+                {t(
+                  'Faça parte da nossa comunidade exclusiva no LinkedIn e conecte-se com líderes do Corredor.',
+                  'Join our exclusive LinkedIn community and connect with leaders in the Corridor.',
+                  'Únase a nuestra comunidad exclusiva en LinkedIn y conéctese con líderes del Corredor.'
+                )}
+              </p>
+              <Link 
+                href="https://www.linkedin.com/groups/18131078/"
+                target="_blank"
+                className="inline-flex items-center justify-center gap-2 w-full py-2.5 bg-white/10 group-hover:bg-[#0077B5] text-white text-xs font-bold rounded-xl transition-all"
+              >
+                <span>{t('Participar do Grupo', 'Join Group', 'Unirse al Grupo')}</span>
+                <ArrowUpRight size={14} />
+              </Link>
+            </div>
           </div>
         </div>
         

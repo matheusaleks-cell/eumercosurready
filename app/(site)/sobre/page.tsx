@@ -288,11 +288,11 @@ export default function SobrePage() {
                 </div>
 
                  <div className="space-y-4 relative z-10">
-                   <p className="text-gray-300 text-lg max-w-md mx-auto leading-relaxed opacity-90">
+                   <p className="text-gray-300 text-lg max-w-md mx-auto leading-relaxed opacity-90 whitespace-pre-wrap">
                      {t(
-                       <>Sua empresa está preparada para o Corredor UE-Mercosul?<br /><br />Oferecemos o suporte local necessário para impulsionar seus negócios.</>,
-                       <>Is your company ready for the EU-Mercosur Corridor?<br /><br />We offer the local support necessary to boost your business.</>,
-                       <>¿Está su empresa preparada para el Corredor UE-Mercosur?<br /><br />Ofrecemos el soporte local necesario para impulsar sus negocios.</>
+                       "Sua empresa está preparada para o Corredor UE-Mercosul?\n\nOferecemos o suporte local necessário para impulsionar seus negócios.",
+                       "Is your company ready for the EU-Mercosur Corridor?\n\nWe offer the local support necessary to boost your business.",
+                       "¿Está su empresa preparada para el Corredor UE-Mercosur?\n\nOfrecemos el soporte local necesario para impulsar sus negocios."
                      )}
                    </p>
                  </div>

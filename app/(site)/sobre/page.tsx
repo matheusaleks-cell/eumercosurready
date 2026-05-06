@@ -290,9 +290,9 @@ export default function SobrePage() {
                  <div className="space-y-4 relative z-10">
                    <p className="text-gray-300 text-lg max-w-md mx-auto leading-relaxed opacity-90">
                      {t(
-                       "A linha de negócio que gera tração, visibilidade e transações reais no corredor transatlântico.", 
-                       "The business line that generates traction, visibility, and real transactions in the transatlantic corridor.", 
-                       "La línea de negocio que genera tracción, visibilidad y transacciones reales en el corredor transatlántico."
+                       <>Sua empresa está preparada para o Corredor UE-Mercosul?<br /><br />Oferecemos o suporte local necessário para impulsionar seus negócios.</>,
+                       <>Is your company ready for the EU-Mercosur Corridor?<br /><br />We offer the local support necessary to boost your business.</>,
+                       <>¿Está su empresa preparada para el Corredor UE-Mercosur?<br /><br />Ofrecemos el soporte local necesario para impulsar sus negocios.</>
                      )}
                    </p>
                  </div>

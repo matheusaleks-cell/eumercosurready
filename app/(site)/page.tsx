@@ -3,6 +3,7 @@ import { HeroSection } from '@/components/public/HeroSection'
 import { BusinessesSection } from '@/components/public/BusinessesSection'
 import { OpportunitiesSection } from '@/components/public/OpportunitiesSection'
 import { CallToAction } from '@/components/public/CallToAction'
+import { HashScroll } from '@/components/public/HashScroll'
 import prisma from '@/lib/prisma'
 
 export const revalidate = 0 // Força renderização dinâmica para testes
@@ -81,6 +82,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col">
+      <HashScroll />
       <HeroSection />
       
       <main className="flex-grow">

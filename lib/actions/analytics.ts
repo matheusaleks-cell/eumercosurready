@@ -57,8 +57,8 @@ export async function updateAuditStatus(companyId: string, status: AuditStatus, 
       }
     })
   } catch (error) {
-    console.error("Erro ao atualizar status de auditoria:", error)
-    throw new Error("Falha ao atualizar auditoria.")
+    console.error("Erro ao atualizar status de verificação:", error)
+    throw new Error("Falha ao atualizar verificação.")
   }
 }
 

@@ -5,7 +5,7 @@ import {
   X, Globe, MapPin, Star, MessageSquare, ExternalLink, ShieldCheck, Link2 
 } from 'lucide-react'
 import Image from 'next/image'
-import { Company } from '@/lib/companies-data'
+import { Company, countriesData } from '@/lib/companies-data'
 import { cn } from '@/lib/utils'
 import { useLenis } from 'lenis/react'
 
@@ -106,7 +106,10 @@ export const CompanyModal = ({ isOpen, onClose, company }: CompanyModalProps) =>
                       <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-100">
                          <div className="relative w-5 h-3.5 overflow-hidden rounded-sm shadow-sm">
                             <Image 
-                              src={`/flags/${company.country.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '')}.png`} 
+                              src={(() => {
+                                const c = countriesData.find(curr => curr.id === company.countryCode);
+                                return c?.flagPath || `/flags/${company.country.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '')}.png`;
+                              })()} 
                               alt={company.country}
                               fill
                               className="object-cover"

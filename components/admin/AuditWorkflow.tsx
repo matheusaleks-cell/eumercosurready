@@ -30,7 +30,7 @@ export default function AuditWorkflow({ companyId, currentStatus, onSuccess }: A
         setIsOpen(false)
         if (onSuccess) onSuccess()
       } catch (error) {
-        alert("Erro ao atualizar auditoria.")
+        alert("Erro ao atualizar validação.")
       }
     })
   }
@@ -39,7 +39,7 @@ export default function AuditWorkflow({ companyId, currentStatus, onSuccess }: A
     { label: 'Nenhum', value: 'NONE' as AuditStatus, icon: X, color: 'text-gray-400', bg: 'bg-gray-50' },
     { label: 'Bronze (Validado)', value: 'BRONZE' as AuditStatus, icon: Shield, color: 'text-orange-600', bg: 'bg-orange-50' },
     { label: 'Prata (Entrevistado)', value: 'SILVER' as AuditStatus, icon: ShieldAlert, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Ouro (Auditado)', value: 'GOLD' as AuditStatus, icon: ShieldCheck, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'Ouro (Verificado)', value: 'GOLD' as AuditStatus, icon: ShieldCheck, color: 'text-amber-600', bg: 'bg-amber-50' },
   ]
 
   return (
@@ -48,13 +48,13 @@ export default function AuditWorkflow({ companyId, currentStatus, onSuccess }: A
         onClick={() => setIsOpen(!isOpen)}
         className="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-1"
       >
-        {isPending ? <Loader2 className="animate-spin" size={10} /> : 'Auditar'}
+        {isPending ? <Loader2 className="animate-spin" size={10} /> : 'Validar'}
       </button>
 
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-100 shadow-2xl rounded-xl p-4 z-50 animate-in zoom-in-95 duration-200">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nível de Auditoria</h4>
+            <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nível de Validação</h4>
             <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600">
               <X size={14} />
             </button>

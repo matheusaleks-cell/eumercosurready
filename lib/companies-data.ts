@@ -129,14 +129,14 @@ export const companiesData: Company[] = [
         leadTime: '4-8 semanas'
       },
       { 
-        title: 'Cybersecurity Audit', 
-        slug: 'cybersecurity-audit',
+        title: 'Cybersecurity Analysis', 
+        slug: 'cybersecurity-analysis',
         category: 'Segurança',
-        description: 'Auditoria completa de segurança digital para conformidade GDPR.',
+        description: 'Análise completa de segurança digital para conformidade GDPR.',
         imageUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800',
-        moq: '1 auditoria',
+        moq: '1 verificação',
         incoterms: ['Service'],
-        productionCapacity: '4 auditorias/mês',
+        productionCapacity: '4 análises/mês',
         leadTime: '2-4 semanas',
         isLowMOQ: true
       },

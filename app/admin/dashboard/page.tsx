@@ -141,12 +141,12 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Lado Esquerdo: Fila e Atividades */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Fila de Auditoria */}
+          {/* Fila de Validação */}
           <div className="bg-white border border-gray-100 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
               <h3 className="text-xs font-black uppercase tracking-widest text-[var(--color-navy)] flex items-center gap-2">
                 <AlertCircle size={14} className="text-amber-500" />
-                Fila de Auditoria Prioritária
+                Fila de Validação Prioritária
               </h3>
               <Link href="/admin/solicitacoes" className="text-[10px] font-bold text-[var(--color-gold)] hover:underline uppercase">Ver Todas</Link>
             </div>
@@ -180,7 +180,7 @@ export default async function DashboardPage() {
                         </td>
                         <td className="px-4 py-3 text-right">
                            <Link href={`/admin/solicitacoes/${req.id}`} className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-700">
-                             Auditar <ArrowRight size={10} />
+                             Analisar <ArrowRight size={10} />
                            </Link>
                         </td>
                       </tr>

@@ -120,7 +120,10 @@ export const CompanyCard = ({ company }: CompanyCardProps) => {
           <div className="flex items-center gap-2">
             <div className="relative w-5 h-3.5 overflow-hidden rounded-sm shadow-sm border border-gray-100 grayscale-[20%] group-hover:grayscale-0 transition-all">
               <SafeImage 
-                src={`/flags/${company.country.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '')}.png`} 
+                src={(() => {
+                  const c = countriesData.find(curr => curr.id === company.countryCode);
+                  return c?.flagPath || `/flags/${company.country.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '')}.png`;
+                })()} 
                 alt={company.country}
                 fill
                 className="object-cover"

@@ -7,7 +7,8 @@ export type TargetLanguage = 'pt-BR' | 'es' | 'en-US';
 
 export async function translateText(text: string, targetLang: TargetLanguage, sourceLang: deepl.SourceLanguageCode = 'pt') {
   if (!authKey) {
-    throw new Error('DEEPL_API_KEY_MISSING');
+    console.warn('DEEPL_API_KEY_MISSING: Returning original text without translation.');
+    return text;
   }
 
   if (!text || text.trim() === '') return '';

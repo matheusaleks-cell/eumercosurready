@@ -905,7 +905,7 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
             <div className="space-y-1">
               <label className={labelClasses}>Status de Verificação KYB</label>
               <select name="auditStatus" defaultValue={initialData?.auditStatus || 'NONE'} className={cn(inputClasses, "font-bold text-[var(--color-navy)]")}>
-                <option value="NONE">Aguardando Auditoria</option>
+                <option value="NONE">Aguardando Validação</option>
                 <option value="GOLD">Empresa Verificada</option>
               </select>
               <p className="text-[10px] text-gray-400 mt-1">Selecione 'Empresa Verificada' após validar a documentação legal.</p>

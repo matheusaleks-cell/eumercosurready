@@ -4,7 +4,7 @@
 export const COUNTRIES = [
   // União Europeia
   { code: 'PT', name: 'Portugal', flagPath: '/flags/Portugal.png', region: 'EU' },
-  { code: 'ES', name: 'Espanha', flagPath: '/flags/Espanha.png', region: 'EU' },
+  { code: 'ES', name: 'Espanha', flagPath: '/flags/Espanha.svg', region: 'EU' },
   { code: 'DE', name: 'Alemanha', flagPath: '/flags/Alemanha.png', region: 'EU' },
   { code: 'FR', name: 'França', flagPath: '/flags/Franca.png', region: 'EU' },
   { code: 'IT', name: 'Itália', flagPath: '/flags/Italia.png', region: 'EU' },

@@ -265,7 +265,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
                       <div className="absolute bottom-full left-0 mb-4 w-64 p-4 bg-white/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
                         <div className="flex items-center gap-2 mb-2 text-emerald-600">
                           <ShieldCheck size={16} />
-                          <span className="text-[10px] font-black uppercase tracking-widest">{t('Auditoria KYB Ativa', 'Active KYB Audit', 'Auditoría KYB Activa')}</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest">{t('Verificação KYB Ativa', 'Active KYB Verification', 'Verificación KYB Activa')}</span>
                         </div>
                         <p className="text-[11px] text-[var(--color-navy)] font-medium leading-relaxed normal-case tracking-normal">
                           {t(

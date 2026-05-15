@@ -51,7 +51,7 @@ export default function SolicitarCadastroPage() {
     },
     {
       id: 3,
-      title: t('Auditoria & Publicação', 'Audit & Publication', 'Auditoría y Publicación'),
+      title: t('Verificação & Publicação', 'Verification & Publication', 'Verificación y Publicación'),
       description: t('Após validação, sua empresa recebe o selo Ready e é publicada na vitrine.', 'After validation, your company receives the Ready seal and is published in the showcase.', 'Tras la validación, su empresa recibe el sello Ready y se publica en el escaparate.'),
       icon: <Award className="text-[var(--color-gold)]" size={24} />
     }

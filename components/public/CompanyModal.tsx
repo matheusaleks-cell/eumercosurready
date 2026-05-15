@@ -5,7 +5,8 @@ import {
   X, Globe, MapPin, Star, MessageSquare, ExternalLink, ShieldCheck, Link2 
 } from 'lucide-react'
 import Image from 'next/image'
-import { Company, countriesData } from '@/lib/companies-data'
+import { Company } from '@/lib/companies-data'
+import { countriesData } from '@/lib/countries-data'
 import { cn } from '@/lib/utils'
 import { useLenis } from 'lenis/react'
 

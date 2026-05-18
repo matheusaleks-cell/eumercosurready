@@ -141,8 +141,6 @@ export async function updateCompany(id: string, formData: any) {
       return { success: false, error: `O slug "${cleaned.slug}" já está em uso por outra empresa.` }
     }
 
-    console.log('Updating company:', id, cleaned.name)
-
     const company = await prisma.company.update({
       where: { id },
       data: {
@@ -158,8 +156,6 @@ export async function updateCompany(id: string, formData: any) {
         } : undefined
       }
     })
-    
-    console.log('Update successful, revalidating paths...')
     
     revalidatePath('/admin/empresas')
     revalidatePath(`/admin/empresas/${id}`)

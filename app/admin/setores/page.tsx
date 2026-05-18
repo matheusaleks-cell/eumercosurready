@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Tag, Plus, Trash2, Zap, AlertCircle, CheckCircle2, Search, Edit } from 'lucide-react'
+import { toast } from 'sonner'
+import { Tag, Plus, Trash2, Zap, AlertCircle, CheckCircle2, Search } from 'lucide-react'
 import { getSectors, createSector, deleteSector, seedInitialSectors } from '@/lib/actions/sectors'
 import { cn } from '@/lib/utils'
 import { IconRenderer } from '@/components/ui/IconRenderer'
@@ -45,6 +46,7 @@ export default function SectorsPage() {
     }
   }
 
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const [selectedIcon, setSelectedIcon] = useState('')
   const suggestedIcons = [
     'Building2', 'Briefcase', 'Globe', 'Package', 'Truck', 'Ship', 'Plane', 
@@ -53,13 +55,18 @@ export default function SectorsPage() {
   ]
 
   async function handleDelete(id: string) {
-    if (!confirm('Tem certeza? Isso pode afetar empresas vinculadas.')) return
+    if (deletingId !== id) {
+      setDeletingId(id)
+      return
+    }
+    setDeletingId(null)
+    const toastId = toast.loading('Removendo setor...')
     const result = await deleteSector(id)
     if (result.success) {
       loadSectors()
-      setMessage({ type: 'success', text: 'Setor removido!' })
+      toast.success('Setor removido!', { id: toastId })
     } else {
-      setMessage({ type: 'error', text: result.error || 'Erro ao remover' })
+      toast.error(result.error || 'Erro ao remover', { id: toastId })
     }
   }
 
@@ -230,16 +237,33 @@ export default function SectorsPage() {
                   </td>
                   <td className="px-4 py-2 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button className="p-1.5 text-gray-400 hover:text-blue-600 transition-all" title="Editar">
-                        <Edit size={14} />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(sector.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-500 transition-all"
-                        title="Excluir"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      {deletingId === sector.id ? (
+                        <>
+                          <span className="text-[10px] text-red-500 font-bold mr-1">Confirmar?</span>
+                          <button
+                            onClick={() => handleDelete(sector.id)}
+                            className="p-1.5 text-red-500 hover:text-red-700 transition-all"
+                            title="Confirmar exclusão"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                          <button
+                            onClick={() => setDeletingId(null)}
+                            className="p-1.5 text-gray-400 hover:text-gray-600 transition-all text-[10px] font-bold"
+                            title="Cancelar"
+                          >
+                            ✕
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => handleDelete(sector.id)}
+                          className="p-1.5 text-gray-400 hover:text-red-500 transition-all"
+                          title="Excluir (clique para confirmar)"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

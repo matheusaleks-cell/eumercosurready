@@ -1,18 +1,15 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { 
-  MessageSquare, 
-  Search, 
-  Filter, 
-  CheckCircle2, 
-  XCircle, 
-  Clock, 
-  MoreVertical,
+import { toast } from 'sonner'
+import {
+  MessageSquare,
+  Search,
+  CheckCircle2,
+  XCircle,
+  Clock,
   ExternalLink,
-  Building2,
   Mail,
-  Phone,
   Globe
 } from 'lucide-react'
 import { getRequests, updateRequestStatus } from '@/lib/actions/requests'
@@ -40,13 +37,14 @@ export default function SolicitacoesPage() {
   }
 
   async function handleStatusUpdate(id: string, status: 'APPROVED' | 'REJECTED') {
-    if (!confirm(`Tem certeza que deseja marcar como ${status === 'APPROVED' ? 'APROVADA' : 'RECUSADA'}?`)) return
-    
+    const label = status === 'APPROVED' ? 'aprovada' : 'recusada'
+    const toastId = toast.loading(`Marcando como ${label}...`)
     const result = await updateRequestStatus(id, status)
     if (result.success) {
+      toast.success(`Solicitação ${label} com sucesso.`, { id: toastId })
       loadRequests()
     } else {
-      alert(result.error)
+      toast.error(result.error || 'Erro ao atualizar status', { id: toastId })
     }
   }
 

@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { 
-  ArrowLeft, 
-  Building2, 
-  Globe, 
-  Mail, 
-  Phone, 
-  Calendar, 
+import { toast } from 'sonner'
+import {
+  ArrowLeft,
+  Building2,
+  Globe,
+  Mail,
+  Phone,
+  Calendar,
   User as UserIcon,
   CheckCircle2,
   XCircle,
@@ -32,6 +33,7 @@ export default function RequestDetailPage({ params }: PageProps) {
   const [request, setRequest] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
+  const [pendingAction, setPendingAction] = useState<'APPROVED' | 'REJECTED' | null>(null)
 
   useEffect(() => {
     loadRequest()
@@ -49,31 +51,30 @@ export default function RequestDetailPage({ params }: PageProps) {
   }
 
   async function handleStatusUpdate(status: 'APPROVED' | 'REJECTED') {
-    const confirmMsg = status === 'APPROVED' 
-      ? 'Deseja aprovar esta solicitação? Isso criará automaticamente um rascunho de perfil para esta empresa.' 
-      : 'Deseja recusar esta solicitação?'
-    
-    if (!confirm(confirmMsg)) return
-    
     setActionLoading(true)
-    
+    setPendingAction(null)
+
     if (status === 'APPROVED') {
+      const toastId = toast.loading('Criando empresa...')
       const result = await promoteToCompany(id) as any
       if (result.success && result.companyId) {
-        alert('Solicitação aprovada! Empresa criada como rascunho. Vamos finalizar o perfil agora?')
+        toast.success('Empresa criada como rascunho! Redirecionando...', { id: toastId })
         router.push(`/admin/empresas/${result.companyId}`)
       } else {
-        alert(result.error)
+        toast.error(result.error || 'Erro ao aprovar solicitação', { id: toastId })
+        setActionLoading(false)
       }
     } else {
+      const toastId = toast.loading('Recusando solicitação...')
       const result = await updateRequestStatus(id, 'REJECTED')
       if (result.success) {
+        toast.success('Solicitação recusada.', { id: toastId })
         loadRequest()
       } else {
-        alert(result.error)
+        toast.error(result.error || 'Erro ao recusar solicitação', { id: toastId })
       }
+      setActionLoading(false)
     }
-    setActionLoading(false)
   }
 
   if (loading) {
@@ -239,22 +240,69 @@ export default function RequestDetailPage({ params }: PageProps) {
 
             {request.status === 'PENDING' ? (
               <div className="grid grid-cols-1 gap-3">
-                <button 
-                  disabled={actionLoading}
-                  onClick={() => handleStatusUpdate('APPROVED')}
-                  className="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-                >
-                  <CheckCircle2 size={18} />
-                  Aprovar & Criar Rascunho
-                </button>
-                <button 
-                  disabled={actionLoading}
-                  onClick={() => handleStatusUpdate('REJECTED')}
-                  className="w-full py-4 bg-white/10 hover:bg-red-500 text-white rounded-2xl font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-                >
-                  <XCircle size={18} />
-                  Recusar Pedido
-                </button>
+                {pendingAction === 'APPROVED' ? (
+                  <div className="bg-green-500/20 border border-green-500/40 rounded-2xl p-4 space-y-3">
+                    <p className="text-sm font-bold text-center">Confirmar aprovação?</p>
+                    <p className="text-[11px] text-white/60 text-center">Isso criará um rascunho de perfil para esta empresa.</p>
+                    <div className="flex gap-2">
+                      <button
+                        disabled={actionLoading}
+                        onClick={() => handleStatusUpdate('APPROVED')}
+                        className="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                      >
+                        <CheckCircle2 size={16} />
+                        {actionLoading ? 'Aguarde...' : 'Confirmar'}
+                      </button>
+                      <button
+                        disabled={actionLoading}
+                        onClick={() => setPendingAction(null)}
+                        className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                ) : pendingAction === 'REJECTED' ? (
+                  <div className="bg-red-500/20 border border-red-500/40 rounded-2xl p-4 space-y-3">
+                    <p className="text-sm font-bold text-center">Confirmar recusa?</p>
+                    <div className="flex gap-2">
+                      <button
+                        disabled={actionLoading}
+                        onClick={() => handleStatusUpdate('REJECTED')}
+                        className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                      >
+                        <XCircle size={16} />
+                        {actionLoading ? 'Aguarde...' : 'Confirmar'}
+                      </button>
+                      <button
+                        disabled={actionLoading}
+                        onClick={() => setPendingAction(null)}
+                        className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      disabled={actionLoading}
+                      onClick={() => setPendingAction('APPROVED')}
+                      className="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                    >
+                      <CheckCircle2 size={18} />
+                      Aprovar & Criar Rascunho
+                    </button>
+                    <button
+                      disabled={actionLoading}
+                      onClick={() => setPendingAction('REJECTED')}
+                      className="w-full py-4 bg-white/10 hover:bg-red-500 text-white rounded-2xl font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                    >
+                      <XCircle size={18} />
+                      Recusar Pedido
+                    </button>
+                  </>
+                )}
               </div>
             ) : (
               <div className="text-center py-4 px-4 bg-white/5 rounded-2xl border border-white/10">

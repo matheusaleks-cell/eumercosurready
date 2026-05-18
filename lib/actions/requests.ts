@@ -190,9 +190,9 @@ async function internalPromote(requestId: string) {
         country: request.country,
         countryCode: request.countryCode || 'BR',
         region: region as any,
-        shortDescription: shortDescPt,
-        shortDescription_en: shortEn,
-        shortDescription_es: shortEs,
+        shortDescription: shortDescPt.substring(0, 200),
+        shortDescription_en: shortEn.substring(0, 200),
+        shortDescription_es: shortEs.substring(0, 200),
         fullDescription: fullDescPt,
         fullDescription_en: fullEn,
         fullDescription_es: fullEs,
@@ -246,22 +246,24 @@ export async function updateRequestStatus(id: string, status: 'APPROVED' | 'REJE
   if (!session) return { success: false, error: 'Não autorizado' }
 
   try {
-    const request = await prisma.contactRequest.update({
+    if (status === 'APPROVED') {
+      // internalPromote cria a empresa e já atualiza status + companyId na solicitação
+      const companyId = await internalPromote(id)
+      if (!companyId) return { success: false, error: 'Falha ao criar empresa: nenhum setor cadastrado no sistema.' }
+      revalidatePath('/admin/solicitacoes')
+      return { success: true }
+    }
+
+    await prisma.contactRequest.update({
       where: { id },
-      data: {
-        status,
-        rejectionReason,
-        reviewedAt: new Date(),
-      }
+      data: { status, rejectionReason, reviewedAt: new Date() }
     })
 
-    if (status === 'APPROVED') {
-      await internalPromote(id)
-    }
     revalidatePath('/admin/solicitacoes')
-    return { success: true, request }
-  } catch (error) {
-    return { success: false, error: 'Falha ao atualizar status' }
+    return { success: true }
+  } catch (error: any) {
+    console.error('updateRequestStatus error:', error)
+    return { success: false, error: error?.message || 'Falha ao atualizar status' }
   }
 }
 
@@ -290,11 +292,12 @@ export async function promoteToCompany(requestId: string) {
 
   try {
     const companyId = await internalPromote(requestId)
+    if (!companyId) return { success: false, error: 'Falha ao criar empresa: nenhum setor cadastrado no sistema.' }
     revalidatePath('/admin/solicitacoes')
     revalidatePath('/admin/empresas')
     return { success: true, companyId }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Promotion error:', error)
-    return { success: false, error: 'Falha ao converter solicitação em empresa' }
+    return { success: false, error: error?.message || 'Falha ao converter solicitação em empresa' }
   }
 }

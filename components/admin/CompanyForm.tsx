@@ -80,7 +80,7 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
 
   const handleTranslateAll = async () => {
     if (!formValues.shortDescription && !formValues.fullDescription) {
-      alert('Preencha os campos em Português primeiro.')
+      toast.error('Preencha os campos em Português primeiro.')
       return
     }
     

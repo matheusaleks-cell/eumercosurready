@@ -1,24 +1,64 @@
-import React from 'react'
-export const dynamic = 'force-dynamic'
+'use client'
+
+import React, { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { getUsers, deleteUser, toggleUserStatus } from '@/lib/actions/users'
-import { 
-  Users, 
-  UserPlus, 
-  Shield, 
-  ShieldCheck, 
-  Trash2, 
-  Power, 
+import {
+  Users,
+  UserPlus,
+  Shield,
+  ShieldCheck,
+  Trash2,
+  Power,
   Clock,
-  MoreVertical
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 
-export default async function UsuariosPage() {
-  const result = await getUsers()
-  const users = result.users || []
+export default function UsuariosPage() {
+  const [users, setUsers] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null)
+
+  useEffect(() => {
+    loadUsers()
+  }, [])
+
+  async function loadUsers() {
+    setLoading(true)
+    const result = await getUsers()
+    setUsers(result.users || [])
+    setLoading(false)
+  }
+
+  async function handleToggle(id: string, currentActive: boolean) {
+    const toastId = toast.loading(currentActive ? 'Desativando usuário...' : 'Ativando usuário...')
+    const result = await toggleUserStatus(id, !currentActive)
+    if (result.success) {
+      toast.success(currentActive ? 'Usuário desativado.' : 'Usuário ativado.', { id: toastId })
+      loadUsers()
+    } else {
+      toast.error(result.error || 'Erro ao alterar status', { id: toastId })
+    }
+  }
+
+  async function handleDelete(id: string) {
+    if (pendingDelete !== id) {
+      setPendingDelete(id)
+      return
+    }
+    setPendingDelete(null)
+    const toastId = toast.loading('Removendo usuário...')
+    const result = await deleteUser(id)
+    if (result.success) {
+      toast.success('Usuário removido.', { id: toastId })
+      loadUsers()
+    } else {
+      toast.error(result.error || 'Erro ao remover usuário', { id: toastId })
+    }
+  }
 
   return (
     <div className="space-y-6 admin-theme animate-in fade-in slide-in-from-bottom-2 duration-700">
@@ -31,16 +71,16 @@ export default async function UsuariosPage() {
           </h1>
           <p className="text-xs text-gray-500">Administradores e editores com acesso ao painel.</p>
         </div>
-        
-        <Link 
-          href="/admin/usuarios/novo" 
+
+        <Link
+          href="/admin/usuarios/novo"
           className="px-4 py-2 bg-[var(--color-navy)] text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#002266] transition-all flex items-center gap-2 shadow-sm"
         >
           <UserPlus size={14} /> Convidar Membro
         </Link>
       </div>
 
-      {/* Tabela Técnica */}
+      {/* Tabela */}
       <div className="bg-white border border-gray-100 shadow-sm overflow-hidden">
         <table className="w-full text-left">
           <thead>
@@ -53,7 +93,15 @@ export default async function UsuariosPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {users.length > 0 ? (
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <tr key={i} className="animate-pulse">
+                  <td colSpan={5} className="px-6 py-5">
+                    <div className="h-4 bg-gray-100 rounded w-full" />
+                  </td>
+                </tr>
+              ))
+            ) : users.length > 0 ? (
               users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50/30 transition-colors group">
                   <td className="px-6 py-4">
@@ -88,21 +136,53 @@ export default async function UsuariosPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2 text-[10px] text-gray-500">
                       <Clock size={12} />
-                      {user.lastLogin 
-                        ? format(new Date(user.lastLogin), "dd/MM/yy HH:mm")
-                        : "Nunca acessou"
-                      }
+                      {user.lastLogin
+                        ? format(new Date(user.lastLogin), "dd/MM/yy HH:mm", { locale: ptBR })
+                        : "Nunca acessou"}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {/* Note: In a real app, these would be Server Actions triggered by buttons */}
-                      <button className="p-1.5 text-gray-400 hover:text-[var(--color-navy)] transition-colors">
-                        <Power size={14} />
-                      </button>
-                      <button className="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
-                        <Trash2 size={14} />
-                      </button>
+                    <div className="flex items-center justify-end gap-2">
+                      {pendingDelete === user.id ? (
+                        <>
+                          <span className="text-[10px] text-red-500 font-bold">Confirmar?</span>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            className="p-1.5 text-red-500 hover:text-red-700 transition-colors"
+                            title="Confirmar exclusão"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                          <button
+                            onClick={() => setPendingDelete(null)}
+                            className="p-1.5 text-gray-400 hover:text-gray-600 text-[10px] font-bold"
+                          >
+                            ✕
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleToggle(user.id, user.active)}
+                            className={cn(
+                              "p-1.5 transition-colors",
+                              user.active
+                                ? "text-gray-400 hover:text-amber-500"
+                                : "text-gray-400 hover:text-green-500"
+                            )}
+                            title={user.active ? 'Desativar usuário' : 'Ativar usuário'}
+                          >
+                            <Power size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                            title="Excluir usuário (clique para confirmar)"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

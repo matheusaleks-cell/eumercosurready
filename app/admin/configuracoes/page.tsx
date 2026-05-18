@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from 'react'
 import { getSettings, updateSettings } from '@/lib/actions/settings'
 import { uploadImage } from '@/lib/actions/upload'
-import { 
-  Settings, Save, Mail, Globe, Bell, Info, 
+import { toast } from 'sonner'
+import {
+  Settings, Save, Mail, Globe, Bell, Info,
   CheckCircle2, Search, Palette, Share2, Zap,
   ImagePlus, Loader2
 } from 'lucide-react'
@@ -34,7 +35,7 @@ export default function ConfiguracoesPage() {
     if (!file) return
 
     if (file.size > 2 * 1024 * 1024) {
-      alert('A imagem é muito grande. Use um ícone de até 2MB.')
+      toast.error('A imagem é muito grande. Use um ícone de até 2MB.')
       return
     }
 
@@ -56,7 +57,7 @@ export default function ConfiguracoesPage() {
       }
     } catch (error: any) {
       console.error('Erro no upload do favicon:', error)
-      alert(error.message || 'Erro ao subir imagem. Tente novamente.')
+      toast.error(error.message || 'Erro ao subir imagem. Tente novamente.')
     } finally {
       setUploadingFavicon(false)
     }
@@ -78,7 +79,7 @@ export default function ConfiguracoesPage() {
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } else {
-      alert('Erro ao salvar configurações')
+      toast.error('Erro ao salvar configurações')
     }
     setSaving(false)
   }

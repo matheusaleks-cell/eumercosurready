@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { 
   ClipboardCheck, 
@@ -31,7 +32,7 @@ export default function SolicitarCadastroPage() {
   const [error, setError] = useState('')
   const [selectedDdi, setSelectedDdi] = useState('55')
 
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
 
   const mercosulCountries = countriesList.filter(c => c.bloc === 'Mercosul')
   const euCountries = countriesList.filter(c => c.bloc === 'EU')
@@ -431,7 +432,26 @@ export default function SolicitarCadastroPage() {
                   </div>
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-4 space-y-4">
+                  {/* Box de aceite das Políticas de Privacidade */}
+                  <div className="flex items-start gap-3 my-2">
+                    <input 
+                      type="checkbox" 
+                      id="privacyPolicy" 
+                      required 
+                      className="mt-1 h-4 w-4 rounded accent-[var(--color-gold)] border-gray-300 focus:ring-[var(--color-gold)] cursor-pointer"
+                    />
+                    <label htmlFor="privacyPolicy" className="text-xs text-[var(--color-text-muted)] font-body leading-relaxed select-none cursor-pointer">
+                      {language === 'en' ? (
+                        <>I read and agree to the <Link href="/politica-de-privacidade" target="_blank" className="underline hover:text-[var(--color-gold)] transition-colors">Privacy Policy</Link> and <Link href="/politica-de-cookies" target="_blank" className="underline hover:text-[var(--color-gold)] transition-colors">Cookies Policy</Link>.</>
+                      ) : language === 'es' ? (
+                        <>He leído y acepto la <Link href="/politica-de-privacidade" target="_blank" className="underline hover:text-[var(--color-gold)] transition-colors">Política de Privacidad</Link> y la <Link href="/politica-de-cookies" target="_blank" className="underline hover:text-[var(--color-gold)] transition-colors">Política de Cookies</Link>.</>
+                      ) : (
+                        <>Li e aceito a <Link href="/politica-de-privacidade" target="_blank" className="underline hover:text-[var(--color-gold)] transition-colors">Política de Privacidade</Link> e a <Link href="/politica-de-cookies" target="_blank" className="underline hover:text-[var(--color-gold)] transition-colors">Política de Cookies</Link>.</>
+                      )}
+                    </label>
+                  </div>
+
                   <button 
                     type="submit" 
                     disabled={loading}
@@ -446,13 +466,6 @@ export default function SolicitarCadastroPage() {
                       </>
                     )}
                   </button>
-                  <p className="text-center text-[10px] text-gray-400 mt-4 uppercase tracking-[0.2em] font-medium">
-                    {t(
-                      'Ao enviar, você concorda com nossos termos de curadoria e privacidade.',
-                      'By sending, you agree to our curation and privacy terms.',
-                      'Al enviar, usted acepta nuestros términos de curaduría y privacidad.'
-                    )}
-                  </p>
                 </div>
               </form>
             </div>

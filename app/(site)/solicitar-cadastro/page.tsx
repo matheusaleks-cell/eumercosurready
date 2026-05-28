@@ -31,6 +31,7 @@ export default function SolicitarCadastroPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [selectedDdi, setSelectedDdi] = useState('55')
+  const [privacyAccepted, setPrivacyAccepted] = useState(false)
 
   const { t, language } = useLanguage()
 
@@ -439,6 +440,8 @@ export default function SolicitarCadastroPage() {
                       type="checkbox" 
                       id="privacyPolicy" 
                       required 
+                      checked={privacyAccepted}
+                      onChange={(e) => setPrivacyAccepted(e.target.checked)}
                       className="mt-1 h-4 w-4 rounded accent-[var(--color-gold)] border-gray-300 focus:ring-[var(--color-gold)] cursor-pointer"
                     />
                     <label htmlFor="privacyPolicy" className="text-xs text-[var(--color-text-muted)] font-body leading-relaxed select-none cursor-pointer">
@@ -454,8 +457,8 @@ export default function SolicitarCadastroPage() {
 
                   <button 
                     type="submit" 
-                    disabled={loading}
-                    className="w-full py-5 bg-[var(--color-navy)] text-white font-bold rounded-2xl hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl group border border-white/10"
+                    disabled={loading || !privacyAccepted}
+                    className="w-full py-5 bg-[var(--color-navy)] text-white font-bold rounded-2xl hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl group border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[var(--color-navy)]"
                   >
                     {loading ? (
                       <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />

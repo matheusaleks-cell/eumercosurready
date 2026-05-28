@@ -21,6 +21,24 @@ import { Metadata } from 'next'
 
 import { cookies } from 'next/headers'
 
+function getPrepositionForCountry(countryId: string): string {
+  switch (countryId) {
+    case 'BR': // Brasil
+    case 'UY': // Uruguai
+    case 'PY': // Paraguai
+      return 'do'
+    case 'NL': // Países Baixos
+      return 'dos'
+    case 'PT': // Portugal
+    case 'LU': // Luxemburgo
+    case 'CY': // Chipre
+    case 'MT': // Malta
+      return 'de'
+    default:
+      return 'da'
+  }
+}
+
 interface PageProps {
   params: Promise<{ slug: string }>
 }
@@ -207,7 +225,7 @@ export default async function CountryProfilePage({ params }: PageProps) {
               </div>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold leading-tight">
                 {t(
-                  country.ctaTitle || `O mercado de ${country.name} busca fornecedores de excelência. Eles vão encontrar você ou seu concorrente?`,
+                  country.ctaTitle || `O mercado ${getPrepositionForCountry(country.id)} ${country.name} busca fornecedores de excelência. Eles vão encontrar você ou seu concorrente?`,
                   country.ctaTitle_en || `The ${t(country.name, country.name_en, country.name_es)} market is looking for excellent suppliers. Will they find you or your competitor?`,
                   country.ctaTitle_es || `El mercado de ${t(country.name, country.name_en, country.name_es)} busca proveedores de excelencia. ¿Le encontrarán a usted o a su competidor?`
                 )}
@@ -222,14 +240,14 @@ export default async function CountryProfilePage({ params }: PageProps) {
             </div>
             <div className="flex flex-col gap-4 w-full sm:w-auto shrink-0">
               <Link href="/solicitar-cadastro" className="btn-premium whitespace-nowrap text-center justify-center">
-                <span>{t(`Destacar minha empresa para ${country.name}`, `Highlight my company for ${t(country.name, country.name_en, country.name_es)}`, `Destacar mi empresa para ${t(country.name, country.name_en, country.name_es)}`)}</span>
+                <span>{t('INCLUIR MINHA EMPRESA', 'ADD MY COMPANY', 'INCLUIR MI EMPRESA')}</span>
               </Link>
               <Link 
                 href={`/?origin=${country.id}#partners-section`} 
                 className="inline-flex items-center justify-center px-8 py-4 rounded-full border border-white/20 bg-white/5 text-white font-bold hover:bg-white/10 transition-all text-sm uppercase tracking-widest"
               >
                 <Briefcase className="mr-2" size={18} />
-                <span>{t(`Ver Empresas da ${country.name}`, `View Companies from ${t(country.name, country.name_en, country.name_es)}`, `Ver Empresas de ${t(country.name, country.name_en, country.name_es)}`)}</span>
+                <span>{t(`Ver Empresas ${getPrepositionForCountry(country.id)} ${country.name}`, `View Companies from ${t(country.name, country.name_en, country.name_es)}`, `Ver Empresas de ${t(country.name, country.name_en, country.name_es)}`)}</span>
               </Link>
             </div>
           </div>
@@ -324,7 +342,7 @@ export default async function CountryProfilePage({ params }: PageProps) {
             <h3 className="text-2xl font-display font-bold text-[var(--color-navy)]">{t('Relatório Detalhado em Construção', 'Detailed Report Under Construction', 'Informe Detallado en Construcción')}</h3>
             <p className="text-gray-500 max-w-xl mx-auto">
               {t(
-                `Nossa equipe de inteligência de mercado está mapeando as oportunidades, setores e balança comercial de ${country.name}. Em breve, disponibilizaremos o relatório completo.`,
+                `Nossa equipe de inteligência de mercado está mapeando as oportunidades, setores e balança comercial ${getPrepositionForCountry(country.id)} ${country.name}. Em breve, disponibilizaremos o relatório completo.`,
                 `Our market intelligence team is mapping the opportunities, sectors, and trade balance of ${country.name}. Soon, we will provide the full report.`,
                 `Nuestro equipo de inteligencia de mercado está mapeando las oportunidades, sectores y balanza comercial de ${country.name}. Próximamente, pondremos a su disposición el informe completo.`
               )}

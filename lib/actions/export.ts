@@ -1,8 +1,12 @@
 "use server"
 
 import prisma from "@/lib/prisma"
+import { auth } from "@/lib/auth"
 
 export async function exportCompaniesToCSV() {
+  const session = await auth()
+  if (!session) return { success: false, error: "Não autorizado" }
+
   try {
     const companies = await prisma.company.findMany({
       include: { sector: true },

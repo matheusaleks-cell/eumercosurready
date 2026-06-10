@@ -68,8 +68,11 @@ export default async function PublicLayout({
     console.error("Erro ao carregar configurações do layout:", error);
   }
 
-  const primaryColor = config['PRIMARY_COLOR'] || '#0B1F3A';
-  const secondaryColor = config['SECONDARY_COLOR'] || '#C8943A';
+  const HEX_COLOR = /^#[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{3})?$/;
+  const rawPrimary = config['PRIMARY_COLOR'] || '#0B1F3A';
+  const rawSecondary = config['SECONDARY_COLOR'] || '#C8943A';
+  const primaryColor = HEX_COLOR.test(rawPrimary) ? rawPrimary : '#0B1F3A';
+  const secondaryColor = HEX_COLOR.test(rawSecondary) ? rawSecondary : '#C8943A';
 
   return (
     <div className={`${jakarta.variable} ${inter.variable} antialiased font-body bg-[var(--background)] text-[var(--foreground)]`}>

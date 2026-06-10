@@ -5,12 +5,48 @@ import bcrypt from 'bcryptjs'
 import { auth, signIn, signOut } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 import { AuthError } from 'next-auth'
+import { z } from 'zod'
+import { headers } from 'next/headers'
 
-export async function loginAction(values: any) {
+const loginSchema = z.object({
+  username: z.string().min(1).max(80),
+  password: z.string().min(1).max(128),
+})
+
+// In-memory rate limiter: max 10 attempts per IP per 15 minutes
+const loginAttempts = new Map<string, { count: number; resetAt: number }>()
+const MAX_ATTEMPTS = 10
+const WINDOW_MS = 15 * 60 * 1000
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const entry = loginAttempts.get(ip)
+  if (!entry || now > entry.resetAt) {
+    loginAttempts.set(ip, { count: 1, resetAt: now + WINDOW_MS })
+    return true
+  }
+  if (entry.count >= MAX_ATTEMPTS) return false
+  entry.count++
+  return true
+}
+
+export async function loginAction(values: unknown) {
+  const headersList = await headers()
+  const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+
+  if (!checkRateLimit(ip)) {
+    return { error: 'Muitas tentativas. Aguarde 15 minutos e tente novamente.' }
+  }
+
+  const parsed = loginSchema.safeParse(values)
+  if (!parsed.success) {
+    return { error: 'Dados de acesso inválidos.' }
+  }
+
   try {
     await signIn('credentials', {
-      username: values.username,
-      password: values.password,
+      username: parsed.data.username,
+      password: parsed.data.password,
       redirectTo: '/admin/dashboard',
     })
   } catch (error) {

@@ -10,6 +10,16 @@ export async function uploadImage(formData: FormData) {
   const file = formData.get('file') as File
   if (!file) return { success: false, error: "Nenhum arquivo enviado" }
 
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return { success: false, error: "Tipo de arquivo não permitido. Use JPEG, PNG, WebP, GIF ou AVIF." }
+  }
+
+  const MAX_SIZE_BYTES = 5 * 1024 * 1024
+  if (file.size > MAX_SIZE_BYTES) {
+    return { success: false, error: "Arquivo muito grande. O tamanho máximo é 5 MB." }
+  }
+
   try {
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)

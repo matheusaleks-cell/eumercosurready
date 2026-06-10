@@ -25,7 +25,9 @@ export async function getSettings() {
 
 export async function updateSettings(data: Record<string, string>) {
   const session = await auth()
-  if (!session) return { success: false, error: "Não autorizado" }
+  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    return { success: false, error: "Não autorizado. Apenas Super Admins podem alterar configurações." }
+  }
 
   try {
     const promises = Object.entries(data).map(([key, value]) => {

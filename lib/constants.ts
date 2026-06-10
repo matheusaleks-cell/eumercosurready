@@ -19,7 +19,6 @@ export const COUNTRIES = [
   { code: 'UY', name: 'Uruguai', flagPath: '/flags/Uruguai.png', region: 'MERCOSUL' },
   { code: 'PY', name: 'Paraguai', flagPath: '/flags/Paraguai.png', region: 'MERCOSUL' },
   { code: 'CL', name: 'Chile', flagPath: '/flags/Chile.png', region: 'MERCOSUL' },
-  { code: 'BO', name: 'Bolívia', flagPath: '/flags/Bolivia.png', region: 'MERCOSUL' },
 ]
 
 // Setores padrão (seed)

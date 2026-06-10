@@ -12,7 +12,6 @@ export interface Country {
 export const countriesList: Country[] = [
   // Mercosul
   { code: 'AR', name: 'Argentina', name_en: 'Argentina', name_es: 'Argentina', bloc: 'Mercosul', ddi: '54' },
-  { code: 'BO', name: 'Bolívia', name_en: 'Bolivia', name_es: 'Bolivia', bloc: 'Mercosul', ddi: '591' },
   { code: 'BR', name: 'Brasil', name_en: 'Brazil', name_es: 'Brasil', bloc: 'Mercosul', ddi: '55' },
   { code: 'PY', name: 'Paraguai', name_en: 'Paraguay', name_es: 'Paraguay', bloc: 'Mercosul', ddi: '595' },
   { code: 'UY', name: 'Uruguai', name_en: 'Uruguay', name_es: 'Uruguay', bloc: 'Mercosul', ddi: '598' },

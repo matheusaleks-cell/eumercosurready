@@ -185,7 +185,6 @@ export default function CompanyForm({ sectors, initialData }: CompanyFormProps) 
       { name: 'Argentina', code: 'AR' },
       { name: 'Paraguai', code: 'PY' },
       { name: 'Uruguai', code: 'UY' },
-      { name: 'Bolívia', code: 'BO' },
     ],
     EU: [
       { name: 'Portugal', code: 'PT' },

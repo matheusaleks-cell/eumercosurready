@@ -87,6 +87,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
+function getYouTubeId(url: string): string | null {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
 export default async function CompanyProfilePage({ params }: PageProps) {
   const { slug } = await params
   const cookieStore = await cookies()
@@ -344,13 +351,14 @@ export default async function CompanyProfilePage({ params }: PageProps) {
               <p className="text-lg text-[var(--color-text-muted)] leading-relaxed font-body whitespace-pre-wrap">
                 {t(company.fullDescription, (company as any).fullDescription_en, (company as any).fullDescription_es)}
               </p>
-              {(company as any).videoUrl && (
-                <div className="mt-8 rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-lg relative aspect-video bg-black/5 group cursor-pointer flex items-center justify-center">
-                  {/* Lógica simples para extrair ID do Youtube e montar iframe. */}
-                  {((company as any).videoUrl as string).includes('youtube.com') || ((company as any).videoUrl as string).includes('youtu.be') ? (
+              {(company as any).videoUrl && (() => {
+                const ytId = getYouTubeId((company as any).videoUrl);
+                return (
+                  <div className="mt-8 rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-lg relative aspect-video bg-black/5 group cursor-pointer flex items-center justify-center">
+                    {ytId ? (
                       <iframe 
                         className="w-full h-full absolute inset-0"
-                        src={`https://www.youtube.com/embed/${((company as any).videoUrl as string).match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^"&?\/\s]{11})/)?.[1]}`} 
+                        src={`https://www.youtube.com/embed/${ytId}`} 
                         title={t('Vídeo Institucional', 'Institutional Video', 'Video Institucional')}
                         frameBorder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -362,8 +370,9 @@ export default async function CompanyProfilePage({ params }: PageProps) {
                         <span className="font-bold text-sm">{t('Assistir Vídeo Institucional', 'Watch Institutional Video', 'Ver Video Institucional')}</span>
                       </a>
                     )}
-                </div>
-              )}
+                  </div>
+                );
+              })()}
             </div>
             
             {/* Galeria de Produtos / Serviços */}

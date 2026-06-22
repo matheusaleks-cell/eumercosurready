@@ -41,8 +41,8 @@ function generateSlug(title: string): string {
 /** Converte strings vazias em null para campos opcionais */
 function cleanOptionalFields(data: Record<string, any>) {
   const optionalStringFields = [
-    'imageUrl', 'category', 'moq', 'incoterms', 'leadTime', 'portOfOrigin', 
-    'productionCapacity', 'title_en', 'title_es', 'description_en', 'description_es', 'type'
+    'imageUrl', 'category', 'moq', 'incoterms', 'leadTime', 'portOfOrigin',
+    'productionCapacity', 'title_en', 'title_es', 'description_en', 'description_es'
   ]
   const cleaned = { ...data }
   for (const field of optionalStringFields) {

@@ -28,7 +28,7 @@ export async function createSector(data: { name: string, icon: string, descripti
   if (!session) return { success: false, error: 'Não autorizado' }
 
   try {
-    const slug = data.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-')
+    const slug = data.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
     
     const sector = await prisma.sector.create({
       data: {

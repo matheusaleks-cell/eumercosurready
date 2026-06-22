@@ -29,8 +29,15 @@ export async function updateSettings(data: Record<string, string>) {
     return { success: false, error: "Não autorizado. Apenas Super Admins podem alterar configurações." }
   }
 
+  const ALLOWED_SETTING_KEYS = [
+    'PLATFORM_NAME', 'PLATFORM_FAVICON', 'META_TITLE', 'META_DESCRIPTION',
+    'PRIMARY_COLOR', 'SECONDARY_COLOR', 'CONTACT_WHATSAPP', 'CONTACT_EMAIL',
+    'HERO_TITLE', 'HERO_SUBTITLE', 'AUTO_APPROVE',
+  ]
+
   try {
-    const promises = Object.entries(data).map(([key, value]) => {
+    const filteredEntries = Object.entries(data).filter(([key]) => ALLOWED_SETTING_KEYS.includes(key))
+    const promises = filteredEntries.map(([key, value]) => {
       return prisma.platformSetting.upsert({
         where: { key },
         update: { value },
@@ -50,9 +57,17 @@ export async function updateSettings(data: Record<string, string>) {
   }
 }
 
+const PUBLIC_SETTING_KEYS = [
+  'PLATFORM_NAME', 'PLATFORM_FAVICON', 'META_TITLE', 'META_DESCRIPTION',
+  'PRIMARY_COLOR', 'SECONDARY_COLOR', 'CONTACT_WHATSAPP', 'CONTACT_EMAIL',
+  'HERO_TITLE', 'HERO_SUBTITLE',
+]
+
 export async function getPublicSettings() {
   try {
-    const settings = await prisma.platformSetting.findMany()
+    const settings = await prisma.platformSetting.findMany({
+      where: { key: { in: PUBLIC_SETTING_KEYS } }
+    })
     return settings.reduce((acc, curr) => {
       acc[curr.key] = curr.value
       return acc

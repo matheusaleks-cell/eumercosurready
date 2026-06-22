@@ -49,16 +49,17 @@ export async function updateAuditStatus(companyId: string, status: AuditStatus, 
   if (!session) return { success: false, error: 'Não autorizado' }
 
   try {
-    return await prisma.company.update({
+    const company = await prisma.company.update({
       where: { id: companyId },
-      data: { 
+      data: {
         auditStatus: status,
         verificationNotes: notes
       }
     })
+    return { success: true, data: company }
   } catch (error) {
     console.error("Erro ao atualizar status de verificação:", error)
-    throw new Error("Falha ao atualizar verificação.")
+    return { success: false, error: "Falha ao atualizar verificação." }
   }
 }
 

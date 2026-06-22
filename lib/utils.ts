@@ -38,8 +38,9 @@ export function slugify(text: string) {
   return text
     .toString()
     .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
     .trim()
-    .replace(/\s+/g, "-") // Substitui espaços por -
-    .replace(/[^\w-]+/g, "") // Remove caracteres não alfanuméricos
-    .replace(/--+/g, "-") // Substitui múltiplos - por um único
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
 }

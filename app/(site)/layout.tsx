@@ -55,7 +55,8 @@ export default async function PublicLayout({
   children: React.ReactNode
 }) {
   const cookieStore = await cookies()
-  const language = (cookieStore.get('mr-language')?.value as Language) || 'pt'
+  const rawLang = cookieStore.get('mr-language')?.value
+  const language: Language = (rawLang === 'pt' || rawLang === 'en' || rawLang === 'es') ? rawLang : 'pt'
   
   let config: Record<string, string> = {};
   try {

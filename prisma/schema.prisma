@@ -185,6 +185,8 @@ model ContactRequest {
   companyId       String?
 
   createdAt       DateTime        @default(now())
+
+  @@index([email, createdAt])
 }
 
 

@@ -6,7 +6,7 @@ const translator = authKey ? new deepl.Translator(authKey) : null;
 export type TargetLanguage = 'pt-BR' | 'es' | 'en-US';
 
 export async function translateText(text: string, targetLang: TargetLanguage, sourceLang: deepl.SourceLanguageCode = 'pt') {
-  if (!authKey) {
+  if (!translator) {
     console.warn('DEEPL_API_KEY_MISSING: Returning original text without translation.');
     return text;
   }
@@ -25,7 +25,7 @@ export async function translateText(text: string, targetLang: TargetLanguage, so
       options.formality = 'more';
     }
 
-    const result = await translator!.translateText(text, sourceLang, targetLang, options);
+    const result = await translator.translateText(text, sourceLang, targetLang, options);
     return result.text;
   } catch (error: any) {
     console.error('DeepL Translation Error:', error);

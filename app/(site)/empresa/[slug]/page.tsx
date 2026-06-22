@@ -106,7 +106,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
   }
   
   const company = await prisma.company.findUnique({
-    where: { slug },
+    where: { slug, status: 'ACTIVE' },
     select: {
       id: true,
       name: true,
@@ -170,7 +170,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
   const consultantWhatsapp = settingsResult.settings?.['CONTACT_WHATSAPP'] || '' // Removido número de teste
 
   // Analytics reativado para gerar métricas de tração
-  await incrementCompanyView(company.id)
+  incrementCompanyView(company.id).catch(() => {})
 
   const initials = company.name.substring(0, 2).toUpperCase()
   
@@ -317,7 +317,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
       </div>
 
       {/* Barra de Certificações Flutuante */}
-      {company.certifications && (
+      {Array.isArray(company.certifications) && company.certifications.length > 0 && (
         <div className="container-custom relative z-20 -mt-8">
           <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-6 flex flex-wrap items-center justify-center gap-8 md:gap-16">
             {(company.certifications as string[]).map((cert: string, idx: number) => (
@@ -541,7 +541,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
                       <div className="space-y-1 w-full flex-1 flex flex-col justify-center">
                         <span className={cn(
                           "font-display font-black leading-tight block px-2 break-words",
-                          (stat.value as string).length > 20 ? "text-xs" : (stat.value as string).length > 12 ? "text-sm" : "text-lg",
+                          String(stat.value).length > 20 ? "text-xs" : String(stat.value).length > 12 ? "text-sm" : "text-lg",
                           isVerification ? getVerificationColor(stat.value as string) : "text-[var(--color-navy)]"
                         )}>
                           {stat.value}
@@ -689,7 +689,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
             </div>
 
             {/* Palavras-Chave (Keywords) */}
-            {company.keywords && (
+            {Array.isArray(company.keywords) && company.keywords.length > 0 && (
               <div className="p-8 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white space-y-6">
                 <div className="flex items-center gap-3 text-[var(--color-navy)]">
                   <Tags size={20} className="text-[var(--color-gold)]" />

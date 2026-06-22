@@ -28,6 +28,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!isPasswordValid) return null
 
+        prisma.adminUser.update({
+          where: { id: user.id },
+          data: { lastLogin: new Date() }
+        }).catch(() => {})
+
         return {
           id: user.id,
           name: user.name,

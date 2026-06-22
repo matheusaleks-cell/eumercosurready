@@ -15,8 +15,8 @@ export default async function CatalogPage({ params }: PageProps) {
 
   // Buscar empresa real do banco de dados
   const company = await prisma.company.findUnique({
-    where: { slug },
-    include: { 
+    where: { slug, status: 'ACTIVE' },
+    include: {
       products: {
         orderBy: { createdAt: 'desc' }
       }

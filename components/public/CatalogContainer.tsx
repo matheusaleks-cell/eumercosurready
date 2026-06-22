@@ -178,7 +178,10 @@ export const CatalogContainer = ({ products, companyName, companySlug }: Catalog
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <button className="lg:hidden flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-50 rounded-2xl text-sm font-bold text-[var(--color-navy)]">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="lg:hidden flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-50 rounded-2xl text-sm font-bold text-[var(--color-navy)]"
+            >
               <Filter size={18} /> Filtros
             </button>
             <div className="hidden md:block text-xs font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
@@ -204,12 +207,14 @@ export const CatalogContainer = ({ products, companyName, companySlug }: Catalog
             <p className="text-gray-500 max-w-xs mx-auto font-body">
               Tente ajustar sua busca ou limpar os filtros para encontrar o que precisa.
             </p>
-            <button 
-              onClick={() => { 
-                setSearchTerm(''); 
-                setSelectedCategory(null); 
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCategory(null);
                 setReadyToShipOnly(false);
                 setLowMOQOnly(false);
+                setCertifiedOnly(false);
+                setSustainableOnly(false);
               }}
               className="mt-8 text-[var(--color-gold)] font-bold uppercase tracking-widest text-sm hover:underline"
             >

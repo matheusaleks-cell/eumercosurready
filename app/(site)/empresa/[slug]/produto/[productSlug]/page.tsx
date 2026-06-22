@@ -22,8 +22,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
   // Buscar empresa do banco de dados
   const company = await prisma.company.findUnique({
-    where: { slug },
-    include: { 
+    where: { slug, status: 'ACTIVE' },
+    include: {
       products: {
         orderBy: { createdAt: 'desc' }
       }
@@ -260,7 +260,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                         {/* WhatsApp Action */}
               {company.whatsapp && (
                 <a 
-                  href={`https://wa.me/${company.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(st(`Olá! Gostaria de saber mais sobre o produto: ${translatedTitle}`, `Hi! I would like to know more about the product: ${translatedTitle}`, `¡Hola! Me gustaría saber más sobre o produto: ${translatedTitle}`))}`}
+                  href={`https://wa.me/${company.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(st(`Olá! Gostaria de saber mais sobre o produto: ${translatedTitle}`, `Hi! I would like to know more about the product: ${translatedTitle}`, `¡Hola! Me gustaría saber más sobre el producto: ${translatedTitle}`))}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 px-8 py-5 border-2 border-[#25D366] text-[#25D366] rounded-2xl font-display font-bold hover:bg-[#25D366] hover:text-white transition-all flex items-center justify-center gap-2 group"

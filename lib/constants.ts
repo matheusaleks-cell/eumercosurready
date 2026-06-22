@@ -39,7 +39,7 @@ export const DEFAULT_SECTORS = [
 
 // Opções de porte
 export const EMPLOYEES_RANGE_OPTIONS = [
-  '1–10', '10–50', '50–200', '200–500', '500+'
+  '1-10', '11-50', '51-200', '201-500', '500+'
 ]
 
 export const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {

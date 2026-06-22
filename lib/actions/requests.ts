@@ -120,9 +120,12 @@ export async function createRequest(formData: FormData) {
     return { success: true, id: request.id }
   } catch (error: any) {
     console.error('Error creating request:', error)
-    return { 
-      success: false, 
-      error: error.message || 'Falha ao enviar solicitação. Verifique os dados e tente novamente.' 
+    if (error?.name === 'ZodError') {
+      return { success: false, error: 'Dados inválidos. Verifique os campos e tente novamente.' }
+    }
+    return {
+      success: false,
+      error: 'Falha ao enviar solicitação. Verifique os dados e tente novamente.'
     }
   }
 }
@@ -155,6 +158,7 @@ async function internalPromote(requestId: string) {
     while (await prisma.company.findUnique({ where: { slug } })) {
       slug = `${baseSlug}-${counter}`
       counter++
+      if (counter > 100) throw new Error('Não foi possível gerar um slug único')
     }
 
     // Verificar se já existe uma empresa com este nome exato para evitar duplicidade na aprovação
@@ -172,7 +176,7 @@ async function internalPromote(requestId: string) {
     }
 
     // TRADUÇÃO AUTOMÁTICA (DeepL)
-    const shortDescPt = request.description.substring(0, 195) + '...'
+    const shortDescPt = request.description.length > 195 ? request.description.substring(0, 195) + '...' : request.description
     const fullDescPt = request.description
 
     const [shortEn, shortEs, fullEn, fullEs] = await Promise.all([
@@ -256,7 +260,7 @@ export async function updateRequestStatus(id: string, status: 'APPROVED' | 'REJE
 
     await prisma.contactRequest.update({
       where: { id },
-      data: { status, rejectionReason, reviewedAt: new Date() }
+      data: { status, rejectionReason, reviewedAt: new Date(), reviewedById: session.user?.id as string }
     })
 
     revalidatePath('/admin/solicitacoes')

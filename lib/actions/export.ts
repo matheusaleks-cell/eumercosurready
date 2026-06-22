@@ -19,7 +19,7 @@ export async function exportCompaniesToCSV() {
       c.name,
       c.slug,
       c.country,
-      c.sector.name,
+      c.sector?.name || 'N/A',
       c.status,
       c.auditStatus,
       c.views,

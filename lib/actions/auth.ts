@@ -61,15 +61,22 @@ export async function logoutAction() {
   await signOut({ redirectTo: '/admin/login' })
 }
 
+const passwordSchema = z.string().min(8, 'Senha deve ter no mínimo 8 caracteres').max(128)
+
 export async function updateAdminPassword(password: string) {
   const session = await auth()
-  
+
   if (!session?.user?.id) {
     return { success: false, error: 'Não autorizado' }
   }
 
+  const parsed = passwordSchema.safeParse(password)
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message }
+  }
+
   try {
-    const passwordHash = await bcrypt.hash(password, 10)
+    const passwordHash = await bcrypt.hash(password, 12)
     
     await prisma.adminUser.update({
       where: { id: session.user.id as string },

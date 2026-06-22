@@ -47,6 +47,7 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://flagcdn.com",
               "connect-src 'self'",
+              "frame-src 'self' https://www.youtube.com https://youtube.com",
               "frame-ancestors 'none'",
             ].join('; '),
           },

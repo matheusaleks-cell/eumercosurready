@@ -66,7 +66,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     },
   },
-  session: { strategy: "jwt" },
+  // Sessão de admin expira em 8h de inatividade (em vez do padrão de 30 dias),
+  // reduzindo a janela útil de um cookie de sessão roubado/vazado.
+  session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
   secret: process.env.AUTH_SECRET,
   trustHost: true,
   pages: {

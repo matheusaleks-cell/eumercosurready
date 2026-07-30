@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { auth } from '@/lib/auth'
+import { logAudit } from '@/lib/audit'
 
 export async function getSectors() {
   const session = await auth()
@@ -19,6 +20,7 @@ export async function getSectors() {
     })
     return { success: true, sectors }
   } catch (error) {
+    console.error('Erro ao buscar setores:', error)
     return { success: false, error: 'Falha ao buscar setores' }
   }
 }
@@ -40,8 +42,10 @@ export async function createSector(data: { name: string, icon: string, descripti
     })
 
     revalidatePath('/admin/setores')
+    await logAudit({ action: 'sector.create', entityType: 'Sector', entityId: sector.id, details: sector.name })
     return { success: true, sector }
   } catch (error) {
+    console.error('Erro ao criar setor:', error)
     return { success: false, error: 'Falha ao criar setor' }
   }
 }
@@ -51,12 +55,14 @@ export async function deleteSector(id: string) {
   if (!session) return { success: false, error: 'Não autorizado' }
 
   try {
-    await prisma.sector.delete({
+    const deleted = await prisma.sector.delete({
       where: { id }
     })
     revalidatePath('/admin/setores')
+    await logAudit({ action: 'sector.delete', entityType: 'Sector', entityId: id, details: deleted.name })
     return { success: true }
   } catch (error) {
+    console.error('Erro ao excluir setor:', error)
     return { success: false, error: 'Falha ao excluir setor. Verifique se existem empresas vinculadas.' }
   }
 }

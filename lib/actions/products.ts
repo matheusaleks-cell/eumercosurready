@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import { auth } from '@/lib/auth'
+import { logAudit } from '@/lib/audit'
 
 const ProductSchema = z.object({
   companyId: z.string(),
@@ -78,7 +79,8 @@ export async function addProduct(data: z.infer<typeof ProductSchema>) {
       revalidatePath(`/empresa/${company.slug}/catalogo`)
     }
     revalidatePath('/admin/empresas')
-    
+    await logAudit({ action: 'product.create', entityType: 'Product', entityId: product.id, details: product.title })
+
     return { success: true, data: product }
   } catch (error) {
     console.error('Error adding product:', error)
@@ -113,7 +115,8 @@ export async function updateProduct(id: string, data: Partial<z.infer<typeof Pro
       revalidatePath(`/empresa/${company.slug}/catalogo`)
     }
     revalidatePath('/admin/empresas')
-    
+    await logAudit({ action: 'product.update', entityType: 'Product', entityId: id, details: product.title })
+
     return { success: true, data: product }
   } catch (error) {
     console.error('Error updating product:', error)
@@ -140,6 +143,7 @@ export async function deleteProduct(id: string, companyId: string) {
       revalidatePath(`/empresa/${company.slug}/catalogo`)
     }
     revalidatePath('/admin/empresas')
+    await logAudit({ action: 'product.delete', entityType: 'Product', entityId: id, details: product.title })
 
     return { success: true }
   } catch (error) {

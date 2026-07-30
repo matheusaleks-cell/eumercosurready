@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import { auth } from '@/lib/auth'
+import { logAudit } from '@/lib/audit'
 
 const CompanySchema = z.object({
 
@@ -13,7 +14,7 @@ const CompanySchema = z.object({
   bannerUrl: z.string().optional().nullable(),
   country: z.string().min(1, 'País é obrigatório'),
   countryCode: z.string().min(2, 'Código do país é obrigatório'),
-  region: z.enum(['EU', 'MERCOSUL']),
+  region: z.enum(['EU', 'MERCOSUL', 'GUEST']),
   sectorId: z.string().min(1, 'Setor é obrigatório'),
   city: z.string().optional().nullable(),
   shortDescription: z.string().max(200),
@@ -115,6 +116,7 @@ export async function createCompany(formData: any) {
     revalidatePath('/admin/empresas')
     revalidatePath('/')
     revalidatePath('/', 'layout')
+    await logAudit({ action: 'company.create', entityType: 'Company', entityId: company.id, details: company.name })
     return { success: true }
   } catch (error) {
     console.error('Error creating company:', error)
@@ -162,7 +164,8 @@ export async function updateCompany(id: string, formData: any) {
     revalidatePath(`/empresa/${company.slug}`)
     revalidatePath('/')
     revalidatePath('/', 'layout')
-    
+    await logAudit({ action: 'company.update', entityType: 'Company', entityId: id, details: company.name })
+
     return { success: true }
   } catch (error) {
     console.error('Error updating company:', error)
@@ -247,13 +250,14 @@ export async function deleteCompany(id: string) {
   if (!session) return { success: false, error: 'Não autorizado' }
 
   try {
-    await prisma.company.delete({
+    const deleted = await prisma.company.delete({
       where: { id }
     })
-    
+
     revalidatePath('/admin/empresas')
     revalidatePath('/')
     revalidatePath('/', 'layout')
+    await logAudit({ action: 'company.delete', entityType: 'Company', entityId: id, details: deleted.name })
     return { success: true }
   } catch (error) {
     console.error('Error deleting company:', error)

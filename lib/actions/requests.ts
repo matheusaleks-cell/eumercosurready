@@ -4,7 +4,8 @@ import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { countriesList } from '@/lib/countries-list'
 import { auth } from '@/lib/auth'
-
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { logAudit } from '@/lib/audit'
 
 import { z } from 'zod'
 
@@ -32,8 +33,20 @@ function fixUrl(url: string | null | undefined) {
   return `https://${url}`
 }
 
+// Máximo de solicitações públicas por IP em 1 hora, independente do e-mail usado.
+const REQUEST_MAX_PER_IP = 5
+const REQUEST_WINDOW_MS = 60 * 60 * 1000
+
 export async function createRequest(formData: FormData) {
   try {
+    const ip = await getClientIp()
+    if (!checkRateLimit(`request:${ip}`, REQUEST_MAX_PER_IP, REQUEST_WINDOW_MS)) {
+      return {
+        success: false,
+        error: 'Muitas solicitações enviadas deste endereço. Aguarde uma hora antes de tentar novamente.'
+      }
+    }
+
     const rawData = {
       companyName: formData.get('companyName') as string,
       countryCode: formData.get('country') as string,
@@ -138,8 +151,14 @@ async function internalPromote(requestId: string) {
     if (!request) return null
     if (request.companyId) return request.companyId
 
+    // Busca primeiro na tabela Country (fonte de verdade, inclui países Convidados);
+    // cai para a lista estática legada só se o país ainda não tiver sido migrado/cadastrado.
+    const dbCountry = request.countryCode
+      ? await prisma.country.findUnique({ where: { code: request.countryCode } })
+      : null
     const countryInfo = countriesList.find(c => c.code === request.countryCode)
-    const region = countryInfo?.bloc === 'Mercosul' ? 'MERCOSUL' : 'EU'
+    const region = dbCountry?.group || (countryInfo?.bloc === 'Mercosul' ? 'MERCOSUL' : 'EU')
+    const countryName = dbCountry?.name || countryInfo?.name
 
     let sector = await prisma.sector.findFirst({
       where: { 
@@ -175,28 +194,41 @@ async function internalPromote(requestId: string) {
       return companyExists.id
     }
 
-    // TRADUÇÃO AUTOMÁTICA (DeepL)
+    // TRADUÇÃO AUTOMÁTICA (DeepL) — se falhar, deixamos os campos em branco
+    // (em vez de gravar o texto em português como "tradução") para que o admin
+    // possa retraduzir depois em /admin/empresas sem que o sistema pense que já está feito.
     const shortDescPt = request.description.length > 195 ? request.description.substring(0, 195) + '...' : request.description
     const fullDescPt = request.description
 
-    const [shortEn, shortEs, fullEn, fullEs] = await Promise.all([
+    const [shortEnRes, shortEsRes, fullEnRes, fullEsRes] = await Promise.allSettled([
       translateText(shortDescPt, 'en-US'),
       translateText(shortDescPt, 'es'),
       translateText(fullDescPt, 'en-US'),
       translateText(fullDescPt, 'es')
     ])
 
+    if ([shortEnRes, shortEsRes, fullEnRes, fullEsRes].some(r => r.status === 'rejected')) {
+      console.error(`Falha parcial na tradução automática ao promover solicitação ${requestId}`)
+    }
+
+    const shortEn = shortEnRes.status === 'fulfilled' ? shortEnRes.value.substring(0, 200) : null
+    const shortEs = shortEsRes.status === 'fulfilled' ? shortEsRes.value.substring(0, 200) : null
+    const fullEn = fullEnRes.status === 'fulfilled' ? fullEnRes.value : null
+    const fullEs = fullEsRes.status === 'fulfilled' ? fullEsRes.value : null
+
     const company = await prisma.company.create({
       data: {
         name: request.companyName,
         slug,
         sectorId: sector.id,
-        country: request.country,
+        // Usa o nome completo do país (igual ao formulário do admin), não o código ISO,
+        // para manter Company.country consistente independente de como a empresa foi criada.
+        country: countryName || request.country,
         countryCode: request.countryCode || 'BR',
         region: region as any,
         shortDescription: shortDescPt.substring(0, 200),
-        shortDescription_en: shortEn.substring(0, 200),
-        shortDescription_es: shortEs.substring(0, 200),
+        shortDescription_en: shortEn,
+        shortDescription_es: shortEs,
         fullDescription: fullDescPt,
         fullDescription_en: fullEn,
         fullDescription_es: fullEs,
@@ -241,6 +273,7 @@ export async function getRequests() {
     })
     return { success: true, requests }
   } catch (error) {
+    console.error('Erro ao buscar solicitações:', error)
     return { success: false, error: 'Falha ao buscar solicitações' }
   }
 }
@@ -255,6 +288,7 @@ export async function updateRequestStatus(id: string, status: 'APPROVED' | 'REJE
       const companyId = await internalPromote(id)
       if (!companyId) return { success: false, error: 'Falha ao criar empresa: nenhum setor cadastrado no sistema.' }
       revalidatePath('/admin/solicitacoes')
+      await logAudit({ action: 'request.approve', entityType: 'ContactRequest', entityId: id, details: companyId })
       return { success: true }
     }
 
@@ -264,6 +298,7 @@ export async function updateRequestStatus(id: string, status: 'APPROVED' | 'REJE
     })
 
     revalidatePath('/admin/solicitacoes')
+    await logAudit({ action: 'request.reject', entityType: 'ContactRequest', entityId: id, details: rejectionReason })
     return { success: true }
   } catch (error: any) {
     console.error('updateRequestStatus error:', error)
@@ -286,6 +321,7 @@ export async function getRequestById(id: string) {
     })
     return { success: true, request }
   } catch (error) {
+    console.error('Erro ao buscar detalhes da solicitação:', error)
     return { success: false, error: 'Falha ao buscar detalhes da solicitação' }
   }
 }
@@ -299,6 +335,7 @@ export async function promoteToCompany(requestId: string) {
     if (!companyId) return { success: false, error: 'Falha ao criar empresa: nenhum setor cadastrado no sistema.' }
     revalidatePath('/admin/solicitacoes')
     revalidatePath('/admin/empresas')
+    await logAudit({ action: 'request.promote', entityType: 'ContactRequest', entityId: requestId, details: companyId })
     return { success: true, companyId }
   } catch (error: any) {
     console.error('Promotion error:', error)

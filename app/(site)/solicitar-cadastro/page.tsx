@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { 
@@ -23,7 +23,23 @@ import {
 import { countriesList } from '@/lib/countries-list'
 import { createRequest } from '@/lib/actions/requests'
 import { uploadImage } from '@/lib/actions/upload'
+import { getPublicCountries } from '@/lib/actions/countries'
 import { useLanguage } from '@/hooks/use-language'
+
+interface CountryOption {
+  code: string
+  name: string
+  ddi: string
+  group: 'EU' | 'MERCOSUL' | 'GUEST'
+}
+
+// Fallback estático (usado só se a tabela Country ainda não tiver sido sincronizada no admin)
+const fallbackCountries: CountryOption[] = countriesList.map(c => ({
+  code: c.code,
+  name: c.name,
+  ddi: c.ddi,
+  group: c.bloc === 'Mercosul' ? 'MERCOSUL' : 'EU',
+}))
 
 export default function SolicitarCadastroPage() {
   const [selectedSector, setSelectedSector] = useState('')
@@ -32,11 +48,21 @@ export default function SolicitarCadastroPage() {
   const [error, setError] = useState('')
   const [selectedDdi, setSelectedDdi] = useState('55')
   const [privacyAccepted, setPrivacyAccepted] = useState(false)
+  const [availableCountries, setAvailableCountries] = useState<CountryOption[]>(fallbackCountries)
 
   const { t, language } = useLanguage()
 
-  const mercosulCountries = countriesList.filter(c => c.bloc === 'Mercosul')
-  const euCountries = countriesList.filter(c => c.bloc === 'EU')
+  useEffect(() => {
+    getPublicCountries().then(countries => {
+      if (countries.length > 0) {
+        setAvailableCountries(countries.map(c => ({ code: c.code, name: c.name, ddi: c.ddi, group: c.group as CountryOption['group'] })))
+      }
+    })
+  }, [])
+
+  const mercosulCountries = availableCountries.filter(c => c.group === 'MERCOSUL')
+  const euCountries = availableCountries.filter(c => c.group === 'EU')
+  const guestCountries = availableCountries.filter(c => c.group === 'GUEST')
 
   const steps = [
     {
@@ -234,7 +260,7 @@ export default function SolicitarCadastroPage() {
                         name="country" 
                         required 
                         onChange={(e) => {
-                          const country = countriesList.find(c => c.code === e.target.value)
+                          const country = availableCountries.find(c => c.code === e.target.value)
                           if (country) setSelectedDdi(country.ddi)
                         }}
                         className="w-full pl-12 pr-10 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50 focus:border-[var(--color-gold)] transition-all font-body text-sm appearance-none"
@@ -250,6 +276,13 @@ export default function SolicitarCadastroPage() {
                             <option key={c.code} value={c.code}>{c.name}</option>
                           ))}
                         </optgroup>
+                        {guestCountries.length > 0 && (
+                          <optgroup label={t('Países Convidados', 'Guest Countries', 'Países Invitados')}>
+                            {guestCountries.map(c => (
+                              <option key={c.code} value={c.code}>{c.name}</option>
+                            ))}
+                          </optgroup>
+                        )}
                       </select>
                       <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 rotate-90" size={18} />
                     </div>
@@ -357,7 +390,7 @@ export default function SolicitarCadastroPage() {
                           onChange={(e) => setSelectedDdi(e.target.value)}
                           className="w-full pl-3 pr-8 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50 focus:border-[var(--color-gold)] transition-all font-body text-sm appearance-none"
                         >
-                          {countriesList.sort((a,b) => a.name.localeCompare(b.name)).map(c => (
+                          {[...availableCountries].sort((a,b) => a.name.localeCompare(b.name)).map(c => (
                             <option key={`${c.code}-${c.ddi}`} value={c.ddi}>
                               +{c.ddi} ({c.code})
                             </option>

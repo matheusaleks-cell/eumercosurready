@@ -133,6 +133,7 @@ enum AuditStatus {
 enum Region {
   EU
   MERCOSUL
+  GUEST
 }
 
 enum CompanyStatus {
@@ -157,6 +158,26 @@ model Sector {
   createdAt   DateTime  @default(now())
 
   companies   Company[]
+}
+
+// ─── PAÍSES ─────────────────────────────────────────────
+model Country {
+  id        String   @id @default(cuid())
+  code      String   @unique // ISO 3166-1 alpha-2, ex: "DE", "BR", "CL"
+  name      String
+  name_en   String?
+  name_es   String?
+  slug      String   @unique
+  group     Region   // EU | MERCOSUL | GUEST
+  ddi       String
+  flagUrl   String?
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([group])
+  @@index([active])
 }
 
 // ─── SOLICITAÇÕES DE CADASTRO ───────────────────────────
@@ -231,6 +252,22 @@ model CompanyView {
 
   @@index([companyId])
   @@index([createdAt])
+}
+
+// ─── LOG DE AUDITORIA ───────────────────────────────────
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String   // ex: "company.create", "user.delete"
+  entityType String   // ex: "Company", "AdminUser"
+  entityId   String?
+  adminId    String?
+  adminName  String?
+  details    String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@index([adminId])
 }
 
 model Review {

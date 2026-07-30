@@ -7,6 +7,7 @@ import { updateAdminPassword } from '@/lib/actions/auth'
 import { signOut } from 'next-auth/react'
 
 export function ForcePasswordChange({ username }: { username: string }) {
+  const [currentPassword, setCurrentPassword] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -16,6 +17,11 @@ export function ForcePasswordChange({ username }: { username: string }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
+    if (!currentPassword) {
+      setError('Informe sua senha atual.')
+      return
+    }
 
     if (password.length < 8) {
       setError('A senha deve ter pelo menos 8 caracteres.')
@@ -29,7 +35,7 @@ export function ForcePasswordChange({ username }: { username: string }) {
 
     setLoading(true)
     try {
-      const result = await updateAdminPassword(password)
+      const result = await updateAdminPassword(currentPassword, password)
       if (result.success) {
         setSuccess(true)
         // Forçamos o logout para que o usuário logue com a senha nova e a sessão seja atualizada
@@ -98,6 +104,21 @@ export function ForcePasswordChange({ username }: { username: string }) {
               ) : (
                 <>
                   <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Senha Atual</label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        required
+                        placeholder="Senha usada para entrar agora"
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3.5 pl-12 pr-4 text-sm focus:outline-none focus:border-[var(--color-gold)] transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Nova Senha</label>
                     <div className="relative">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -106,7 +127,7 @@ export function ForcePasswordChange({ username }: { username: string }) {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        placeholder="Mínimo 6 caracteres"
+                        placeholder="Mínimo 8 caracteres"
                         className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3.5 pl-12 pr-4 text-sm focus:outline-none focus:border-[var(--color-gold)] transition-all"
                       />
                     </div>

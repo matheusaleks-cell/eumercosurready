@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { LayoutDashboard, Building2, MessageSquare, Tag, Users, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, Building2, MessageSquare, Tag, Flag, Users, Settings, LogOut } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { signOut, useSession } from 'next-auth/react'
@@ -18,6 +18,7 @@ export function AdminSidebar() {
     { label: 'Empresas', icon: Building2, href: '/admin/empresas' },
     { label: 'Solicitações', icon: MessageSquare, href: '/admin/solicitacoes', dynamicBadge: true },
     { label: 'Setores', icon: Tag, href: '/admin/setores' },
+    { label: 'Países', icon: Flag, href: '/admin/paises' },
     { label: 'Usuários', icon: Users, href: '/admin/usuarios' },
     { label: 'Configurações', icon: Settings, href: '/admin/configuracoes' },
   ]

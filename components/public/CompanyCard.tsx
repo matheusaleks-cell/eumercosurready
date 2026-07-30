@@ -101,7 +101,10 @@ export const CompanyCard = ({ company }: CompanyCardProps) => {
           </span>
           
           {verificationStatus && verificationStatus !== 'NONE' && (
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[8px] font-bold uppercase tracking-widest border border-emerald-500/20">
+            <div className={cn(
+              "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest border",
+              vColor || "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+            )}>
               <ShieldCheck size={10} />
               <span>{t('Verificada', 'Verified', 'Verificada')}</span>
             </div>

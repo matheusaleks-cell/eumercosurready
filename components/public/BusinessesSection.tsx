@@ -93,7 +93,11 @@ export const BusinessesSection = ({ initialCompanies = [] }: BusinessesSectionPr
         'health': 'Saúde',
         'industry': 'Indústria'
       }
-      const segmentMatch = !filters.segment || company.sector?.name === segmentMap[filters.segment]
+      // Usamos startsWith (em vez de igualdade exata) para que setores "irmãos" com nomes
+      // mais específicos (ex: "Logística & Supply Chain", "Energias Renováveis",
+      // "Indústria Manufatureira") também sejam incluídos no filtro rápido correspondente.
+      const segmentBase = filters.segment ? segmentMap[filters.segment]?.toLowerCase() : null
+      const segmentMatch = !segmentBase || (company.sector?.name || '').toLowerCase().startsWith(segmentBase)
 
       // 4. Filtros Rápidos (Chips)
       let quickFilterMatch = true

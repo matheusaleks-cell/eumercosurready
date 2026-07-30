@@ -3,10 +3,19 @@
 import prisma from "@/lib/prisma"
 import { AuditStatus } from "@prisma/client"
 import { auth } from "@/lib/auth"
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit"
+import { logAudit } from "@/lib/audit"
+
+// Conta no máximo 1 view por visitante (IP) por empresa a cada 30 minutos, evitando
+// que um script simplesmente chame essa action em loop para inflar o ranking público.
+const VIEW_DEDUP_WINDOW_MS = 30 * 60 * 1000
 
 export async function incrementCompanyView(companyId: string) {
   try {
-    // Incrementa o contador global e salva registro histórico em paralelo
+    const ip = await getClientIp()
+    const isNewView = checkRateLimit(`view:${companyId}:${ip}`, 1, VIEW_DEDUP_WINDOW_MS)
+    if (!isNewView) return
+
     // Incrementa o contador global
     await prisma.company.update({
       where: { id: companyId },
@@ -56,6 +65,7 @@ export async function updateAuditStatus(companyId: string, status: AuditStatus, 
         verificationNotes: notes
       }
     })
+    await logAudit({ action: 'company.auditStatus', entityType: 'Company', entityId: companyId, details: status })
     return { success: true, data: company }
   } catch (error) {
     console.error("Erro ao atualizar status de verificação:", error)

@@ -12,15 +12,16 @@ import {
   Sparkles, Languages, ExternalLink, FlaskConical, ChevronRight
 } from 'lucide-react'
 import { translateSingleText } from '@/lib/actions/translation'
-import { countriesList } from '@/lib/countries-list'
 import { cn } from '@/lib/utils'
+import type { Country } from '@/types'
 
 interface CompanyFormProps {
   sectors: { id: string, name: string }[]
+  countries: Country[]
   initialData?: any
 }
 
-export default function CompanyForm({ sectors, initialData }: CompanyFormProps) {
+export default function CompanyForm({ sectors, countries, initialData }: CompanyFormProps) {
   const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
   const [isUploadingLogo, setIsUploadingLogo] = useState(false)

@@ -5,10 +5,13 @@ import { AdminRole } from "@prisma/client"
 import bcrypt from "bcryptjs"
 import { revalidatePath } from "next/cache"
 import { auth } from "@/lib/auth"
+import { logAudit } from "@/lib/audit"
 
 export async function getUsers() {
   const session = await auth()
-  if (!session) return { success: false, error: "Não autorizado" }
+  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    return { success: false, error: "Não autorizado. Apenas Super Admins podem visualizar usuários." }
+  }
 
   try {
     const users = await prisma.adminUser.findMany({
@@ -64,7 +67,7 @@ export async function createUser(data: {
     const salt = await bcrypt.genSalt(10)
     const passwordHash = await bcrypt.hash(data.password, salt)
 
-    await prisma.adminUser.create({
+    const created = await prisma.adminUser.create({
       data: {
         name: data.name,
         email: data.email,
@@ -76,6 +79,7 @@ export async function createUser(data: {
     })
 
     revalidatePath("/admin/usuarios")
+    await logAudit({ action: 'user.create', entityType: 'AdminUser', entityId: created.id, details: `${created.username} (${created.role})` })
     return { success: true }
   } catch (error) {
     console.error("Erro ao criar usuário:", error)
@@ -95,11 +99,12 @@ export async function deleteUser(id: string) {
       return { success: false, error: "Você não pode deletar sua própria conta." }
     }
     
-    await prisma.adminUser.delete({
+    const deleted = await prisma.adminUser.delete({
       where: { id }
     })
 
     revalidatePath("/admin/usuarios")
+    await logAudit({ action: 'user.delete', entityType: 'AdminUser', entityId: id, details: deleted.username })
     return { success: true }
   } catch (error) {
     console.error("Erro ao deletar usuário:", error)
@@ -119,6 +124,7 @@ export async function toggleUserStatus(id: string, active: boolean) {
       data: { active }
     })
     revalidatePath("/admin/usuarios")
+    await logAudit({ action: active ? 'user.activate' : 'user.deactivate', entityType: 'AdminUser', entityId: id })
     return { success: true }
   } catch (error) {
     console.error("Erro ao alterar status do usuário:", error)

@@ -5,13 +5,22 @@ const translator = authKey ? new deepl.Translator(authKey) : null;
 
 export type TargetLanguage = 'pt-BR' | 'es' | 'en-US';
 
-export async function translateText(text: string, targetLang: TargetLanguage, sourceLang: deepl.SourceLanguageCode = 'pt') {
-  if (!translator) {
-    console.warn('DEEPL_API_KEY_MISSING: Returning original text without translation.');
-    return text;
+/** Lançado quando a tradução não pôde ser realizada (chave ausente, cota excedida, erro de API).
+ *  Os chamadores devem tratar esse erro explicitamente e NUNCA persistir o texto original
+ *  como se fosse a tradução final — isso "prende" o campo para sempre como não-traduzido. */
+export class TranslationUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TranslationUnavailableError';
   }
+}
 
+export async function translateText(text: string, targetLang: TargetLanguage, sourceLang: deepl.SourceLanguageCode = 'pt'): Promise<string> {
   if (!text || text.trim() === '') return '';
+
+  if (!translator) {
+    throw new TranslationUnavailableError('DEEPL_API_KEY_MISSING');
+  }
 
   try {
     // Configurações otimizadas para B2B: tom formal e preservação de estrutura
@@ -29,13 +38,7 @@ export async function translateText(text: string, targetLang: TargetLanguage, so
     return result.text;
   } catch (error: any) {
     console.error('DeepL Translation Error:', error);
-    
-    // Tratamento de erro amigável para limites de cota
-    if (error.message?.includes('limit exceeded')) {
-      console.error('Cota do DeepL excedida.');
-    }
-    
-    return text;
+    throw new TranslationUnavailableError(error?.message || 'DEEPL_REQUEST_FAILED');
   }
 }
 

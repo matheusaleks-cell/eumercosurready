@@ -1,6 +1,6 @@
 // types/index.ts
 
-export type Region = 'EU' | 'MERCOSUL'
+export type Region = 'EU' | 'MERCOSUL' | 'GUEST'
 
 export type CompanyStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING' | 'DRAFT' | 'FEATURED'
 
@@ -50,6 +50,20 @@ export interface Sector {
   active: boolean
   order: number
   _count?: { companies: number }
+}
+
+export interface Country {
+  id: string
+  code: string
+  name: string
+  name_en?: string | null
+  name_es?: string | null
+  slug: string
+  group: Region
+  ddi: string
+  flagUrl?: string | null
+  order: number
+  active: boolean
 }
 
 export interface ContactRequest {

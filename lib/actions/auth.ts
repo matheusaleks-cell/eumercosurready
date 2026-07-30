@@ -6,35 +6,21 @@ import { auth, signIn, signOut } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 import { AuthError } from 'next-auth'
 import { z } from 'zod'
-import { headers } from 'next/headers'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { logAudit } from '@/lib/audit'
 
 const loginSchema = z.object({
   username: z.string().min(1).max(80),
   password: z.string().min(1).max(128),
 })
 
-// In-memory rate limiter: max 10 attempts per IP per 15 minutes
-const loginAttempts = new Map<string, { count: number; resetAt: number }>()
-const MAX_ATTEMPTS = 10
-const WINDOW_MS = 15 * 60 * 1000
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = loginAttempts.get(ip)
-  if (!entry || now > entry.resetAt) {
-    loginAttempts.set(ip, { count: 1, resetAt: now + WINDOW_MS })
-    return true
-  }
-  if (entry.count >= MAX_ATTEMPTS) return false
-  entry.count++
-  return true
-}
+const LOGIN_MAX_ATTEMPTS = 10
+const LOGIN_WINDOW_MS = 15 * 60 * 1000
 
 export async function loginAction(values: unknown) {
-  const headersList = await headers()
-  const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  const ip = await getClientIp()
 
-  if (!checkRateLimit(ip)) {
+  if (!checkRateLimit(`login:${ip}`, LOGIN_MAX_ATTEMPTS, LOGIN_WINDOW_MS)) {
     return { error: 'Muitas tentativas. Aguarde 15 minutos e tente novamente.' }
   }
 
@@ -63,21 +49,33 @@ export async function logoutAction() {
 
 const passwordSchema = z.string().min(8, 'Senha deve ter no mínimo 8 caracteres').max(128)
 
-export async function updateAdminPassword(password: string) {
+export async function updateAdminPassword(currentPassword: string, newPassword: string) {
   const session = await auth()
 
   if (!session?.user?.id) {
     return { success: false, error: 'Não autorizado' }
   }
 
-  const parsed = passwordSchema.safeParse(password)
+  const parsed = passwordSchema.safeParse(newPassword)
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message }
   }
 
   try {
-    const passwordHash = await bcrypt.hash(password, 12)
-    
+    const user = await prisma.adminUser.findUnique({
+      where: { id: session.user.id as string }
+    })
+    if (!user) {
+      return { success: false, error: 'Usuário não encontrado' }
+    }
+
+    const isCurrentValid = await bcrypt.compare(currentPassword || '', user.passwordHash)
+    if (!isCurrentValid) {
+      return { success: false, error: 'Senha atual incorreta.' }
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12)
+
     await prisma.adminUser.update({
       where: { id: session.user.id as string },
       data: {
@@ -87,6 +85,7 @@ export async function updateAdminPassword(password: string) {
     })
 
     revalidatePath('/admin')
+    await logAudit({ action: 'user.password_change', entityType: 'AdminUser', entityId: session.user.id as string })
     return { success: true }
   } catch (err) {
     console.error('Update password error:', err)

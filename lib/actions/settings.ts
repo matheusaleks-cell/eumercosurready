@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { auth } from "@/lib/auth"
+import { logAudit } from "@/lib/audit"
 
 export async function getSettings() {
   const session = await auth()
@@ -50,6 +51,7 @@ export async function updateSettings(data: Record<string, string>) {
     // Revalidar o site inteiro para aplicar o novo favicon/meta-dados
     revalidatePath("/", "layout")
     revalidatePath("/admin/configuracoes")
+    await logAudit({ action: 'settings.update', entityType: 'PlatformSetting', details: filteredEntries.map(([k]) => k).join(', ') })
     return { success: true }
   } catch (error) {
     console.error("Erro ao salvar configurações:", error)

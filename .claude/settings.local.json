@@ -1,7 +1,25 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\Documents\\\\SITES\\\\PLATAFORMA EU-MERCOSUR READY\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(dir \"C:\\\\Users\\\\User\\\\Documents\\\\SITES\\\\PLATAFORMA EU-MERCOSUR READY\" /b)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\Documents\\\\SITES\\\\PLATAFORMA EU-MERCOSUR READY\\\\app\\\\api\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\Documents\\\\SITES\\\\PLATAFORMA EU-MERCOSUR READY\\\\app\\\\admin\" -Recurse -File -Filter \"*.tsx\")",
+      "Bash(Select-Object -First 30)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(npx next *)",
+      "Bash(npx eslint *)",
+      "Bash(npm audit *)",
+      "Bash(npx prisma *)",
+      "Bash(npm install *)",
+      "Bash(npm view *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next/node_modules/sharp/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next/node_modules/postcss/package.json'\\).version\\)\")"
     ]
   }
 }

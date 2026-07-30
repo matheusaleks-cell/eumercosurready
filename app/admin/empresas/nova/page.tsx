@@ -11,6 +11,11 @@ export default async function NovaEmpresaPage() {
     select: { id: true, name: true }
   })
 
+  const countries = await prisma.country.findMany({
+    where: { active: true },
+    orderBy: [{ group: 'asc' }, { order: 'asc' }, { name: 'asc' }]
+  })
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
       {/* Header */}
@@ -34,7 +39,7 @@ export default async function NovaEmpresaPage() {
 
       {/* Grid com Formulário */}
       <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-        <CompanyForm sectors={sectors} />
+        <CompanyForm sectors={sectors} countries={countries} />
       </div>
     </div>
   )

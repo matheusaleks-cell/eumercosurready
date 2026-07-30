@@ -1012,7 +1012,7 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
                   onChange={(e) => setWhatsappParts(p => ({ ...p, ddi: e.target.value }))}
                   className={cn(inputClasses, "pl-3 pr-8 appearance-none text-xs")}
                 >
-                  {countriesList.sort((a,b) => a.name.localeCompare(b.name)).map(c => (
+                  {countries.slice().sort((a,b) => a.name.localeCompare(b.name)).map(c => (
                     <option key={`wa-${c.code}-${c.ddi}`} value={c.ddi}>
                       +{c.ddi} ({c.code})
                     </option>
@@ -1056,7 +1056,7 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
                   onChange={(e) => setPhoneParts(p => ({ ...p, ddi: e.target.value }))}
                   className={cn(inputClasses, "pl-3 pr-8 appearance-none text-xs")}
                 >
-                  {countriesList.sort((a,b) => a.name.localeCompare(b.name)).map(c => (
+                  {countries.slice().sort((a,b) => a.name.localeCompare(b.name)).map(c => (
                     <option key={`ph-${c.code}-${c.ddi}`} value={c.ddi}>
                       +{c.ddi} ({c.code})
                     </option>

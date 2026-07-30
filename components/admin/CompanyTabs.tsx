@@ -5,13 +5,15 @@ import { Building2, Package, LayoutDashboard } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import CompanyForm from './CompanyForm'
 import ProductManager from './ProductManager'
+import type { Country } from '@/types'
 
 interface CompanyTabsProps {
   sectors: { id: string, name: string }[]
+  countries: Country[]
   company: any
 }
 
-export default function CompanyTabs({ sectors, company }: CompanyTabsProps) {
+export default function CompanyTabs({ sectors, countries, company }: CompanyTabsProps) {
   const [activeTab, setActiveTab] = useState<'info' | 'products'>('info')
 
   const tabs = [
@@ -71,7 +73,7 @@ export default function CompanyTabs({ sectors, company }: CompanyTabsProps) {
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
         {activeTab === 'info' ? (
           <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-gray-100 shadow-sm">
-            <CompanyForm sectors={sectors} initialData={company} />
+            <CompanyForm sectors={sectors} countries={countries} initialData={company} />
           </div>
         ) : (
           <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-gray-100 shadow-sm min-h-[600px]">

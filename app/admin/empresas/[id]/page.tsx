@@ -20,6 +20,11 @@ export default async function EditarEmpresaPage({ params }: { params: Promise<{ 
     select: { id: true, name: true }
   })
 
+  const countries = await prisma.country.findMany({
+    where: { active: true },
+    orderBy: [{ group: 'asc' }, { order: 'asc' }, { name: 'asc' }]
+  })
+
   return (
     <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-700">
       {/* Header */}
@@ -52,7 +57,7 @@ export default async function EditarEmpresaPage({ params }: { params: Promise<{ 
       </div>
 
       {/* Interface de Abas */}
-      <CompanyTabs sectors={sectors} company={company} />
+      <CompanyTabs sectors={sectors} countries={countries} company={company} />
     </div>
   )
 }

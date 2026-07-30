@@ -30,7 +30,9 @@ function generateSlug(name: string): string {
 
 export async function getCountries(filters?: { group?: 'EU' | 'MERCOSUL' | 'GUEST' | 'ALL'; activeOnly?: boolean }) {
   const session = await auth()
-  if (!session) return { success: false, error: 'Não autorizado' }
+  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
+  }
 
   try {
     const where: Record<string, unknown> = {}
@@ -65,7 +67,9 @@ export async function getPublicCountries() {
 
 export async function createCountry(data: unknown) {
   const session = await auth()
-  if (!session) return { success: false, error: 'Não autorizado' }
+  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
+  }
 
   try {
     const validated = CountrySchema.parse(data)
@@ -98,7 +102,9 @@ export async function createCountry(data: unknown) {
 
 export async function updateCountry(id: string, data: unknown) {
   const session = await auth()
-  if (!session) return { success: false, error: 'Não autorizado' }
+  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
+  }
 
   try {
     const validated = CountrySchema.parse(data)
@@ -132,7 +138,9 @@ export async function updateCountry(id: string, data: unknown) {
 
 export async function deleteCountry(id: string) {
   const session = await auth()
-  if (!session) return { success: false, error: 'Não autorizado' }
+  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
+  }
 
   try {
     const country = await prisma.country.findUnique({ where: { id } })
@@ -161,7 +169,9 @@ export async function deleteCountry(id: string) {
 
 export async function toggleCountryActive(id: string, active: boolean) {
   const session = await auth()
-  if (!session) return { success: false, error: 'Não autorizado' }
+  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
+  }
 
   try {
     await prisma.country.update({ where: { id }, data: { active } })
@@ -182,7 +192,9 @@ export async function toggleCountryActive(id: string, active: boolean) {
  */
 export async function seedInitialCountries() {
   const session = await auth()
-  if (!session) return { success: false, error: 'Não autorizado' }
+  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
+  }
 
   try {
     const flagByCode = new Map(countriesData.map(c => [c.id, c.flagPath]))

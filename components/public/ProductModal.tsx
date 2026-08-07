@@ -62,10 +62,11 @@ export const ProductModal = ({ isOpen, onClose, product, companyName }: ProductM
             {/* Imagem (Esquerda) */}
             <div className="relative w-full md:w-1/2 h-64 md:h-auto bg-gray-100">
               {product.imageUrl ? (
-                <SafeImage 
-                  src={product.imageUrl} 
-                  alt={product.title} 
-                  fill 
+                <SafeImage
+                  src={product.imageUrl}
+                  alt={product.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
                   fallbackIcon={<ShieldCheck size={64} className="text-gray-300" />}
                 />

@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Noto+Sans:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -45,9 +44,7 @@
   --background: var(--color-cream);
   --foreground: var(--color-text-primary);
 
-  /* Fontes Premium */
-  --font-display: 'Be Vietnam Pro', sans-serif;
-  --font-body: 'Noto Sans', sans-serif;
+  /* Fontes Premium — --font-display/--font-body são definidas via next/font no <body> (app/layout.tsx) */
 }
 
 @theme {

@@ -82,6 +82,7 @@ export default function UsuariosPage() {
 
       {/* Tabela */}
       <div className="bg-white border border-gray-100 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -196,6 +197,7 @@ export default function UsuariosPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

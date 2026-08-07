@@ -54,10 +54,11 @@ export const LanguageLoading = ({ isVisible, targetLanguage }: LanguageLoadingPr
               }}
               className="relative w-48 h-48 md:w-64 md:h-64 mb-8"
             >
-              <Image 
-                src="/logo-mercosur.png" 
-                alt="EU-Mercosur Ready" 
-                fill 
+              <Image
+                src="/logo-mercosur.png"
+                alt="EU-Mercosur Ready"
+                fill
+                sizes="(max-width: 768px) 192px, 256px"
                 className="object-contain"
                 priority
               />

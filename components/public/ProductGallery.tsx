@@ -37,10 +37,11 @@ export const ProductGallery = ({ products, companyName, companySlug, useLink = f
           >
             <div className="relative h-64 overflow-hidden bg-gray-100">
               {product.imageUrl ? (
-                <SafeImage 
-                  src={product.imageUrl} 
-                  alt={product.title} 
-                  fill 
+                <SafeImage
+                  src={product.imageUrl}
+                  alt={product.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover group-hover:scale-110 transition-transform duration-700"
                   fallbackIcon={<Package size={48} className="text-gray-300" />}
                 />

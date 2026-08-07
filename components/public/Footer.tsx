@@ -71,10 +71,11 @@ export const Footer = async () => {
           <div className="col-span-1 lg:col-span-1">
             <Link href="/" className="inline-block mb-6 group">
               <div className="relative w-20 h-20 overflow-hidden">
-                <Image 
-                  src="/logo-mercosur.png" 
-                  alt={config['PLATFORM_NAME'] || "EU-Mercosur Ready"} 
-                  fill 
+                <Image
+                  src="/logo-mercosur.png"
+                  alt={config['PLATFORM_NAME'] || "EU-Mercosur Ready"}
+                  fill
+                  sizes="80px"
                   className="object-contain scale-110"
                 />
               </div>

@@ -269,7 +269,10 @@ export async function getRequests() {
           select: { name: true }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      // Teto de segurança: a tela consome a lista inteira para filtro/busca client-side,
+      // então isso evita crescimento ilimitado da query sem exigir paginação na UI ainda.
+      take: 200
     })
     return { success: true, requests }
   } catch (error) {

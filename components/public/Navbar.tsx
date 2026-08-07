@@ -61,10 +61,11 @@ export const Navbar = () => {
           {/* Logo sobressaindo */}
           <Link href="/" className="group relative z-50 flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
             <div className="relative w-16 h-16 md:w-20 md:h-20 -my-6 md:-my-10 transition-transform duration-500 group-hover:scale-105 drop-shadow-[0_8px_20px_rgba(0,0,0,0.4)]">
-              <Image 
-                src="/logo-mercosur.png" 
-                alt="EU-Mercosur Ready" 
-                fill 
+              <Image
+                src="/logo-mercosur.png"
+                alt="EU-Mercosur Ready"
+                fill
+                sizes="(max-width: 768px) 64px, 80px"
                 className="object-contain"
                 priority
               />
@@ -109,7 +110,7 @@ export const Navbar = () => {
                             onClick={() => setIsCountriesOpen(false)}
                           >
                             <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5">
-                              <Image src={country.flagPath} alt={country.name} fill className="object-cover" />
+                              <Image src={country.flagPath} alt={country.name} fill sizes="20px" className="object-cover" />
                             </div>
                             <span className="truncate">{t(country.name, country.name_en, country.name_es)}</span>
                           </Link>
@@ -131,7 +132,7 @@ export const Navbar = () => {
                             onClick={() => setIsCountriesOpen(false)}
                           >
                             <div className="relative w-6 h-4 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5">
-                              <Image src={country.flagPath} alt={country.name} fill className="object-cover" />
+                              <Image src={country.flagPath} alt={country.name} fill sizes="24px" className="object-cover" />
                             </div>
                             <span>{t(country.name, country.name_en, country.name_es)}</span>
                           </Link>
@@ -193,7 +194,7 @@ export const Navbar = () => {
               <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
                 <div className="flex items-center gap-3">
                   <div className="relative w-10 h-10">
-                    <Image src="/logo-mercosur.png" alt="Logo" fill className="object-contain scale-125" />
+                    <Image src="/logo-mercosur.png" alt="Logo" fill sizes="40px" className="object-contain scale-125" />
                   </div>
                   <span className="font-display font-bold text-white text-sm tracking-tight">MENU</span>
                 </div>
@@ -236,7 +237,7 @@ export const Navbar = () => {
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale transition-all group-hover:grayscale-0">
-                            <Image src={country.flagPath} alt={country.name} fill className="object-cover" />
+                            <Image src={country.flagPath} alt={country.name} fill sizes="20px" className="object-cover" />
                           </div>
                           <span className="font-medium truncate">{t(country.name, country.name_en, country.name_es)}</span>
                         </Link>

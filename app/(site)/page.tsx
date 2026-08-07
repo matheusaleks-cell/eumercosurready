@@ -6,7 +6,8 @@ import { CallToAction } from '@/components/public/CallToAction'
 import { HashScroll } from '@/components/public/HashScroll'
 import prisma from '@/lib/prisma'
 
-export const revalidate = 0 // Força renderização dinâmica para testes
+// As mutations de empresa já chamam revalidatePath('/') sob demanda; isso é só um teto de segurança.
+export const revalidate = 300
 
 export default async function HomePage() {
   let dbError = null

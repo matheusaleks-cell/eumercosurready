@@ -33,10 +33,11 @@ export const CallToAction = () => {
              >
                {/* Logo sem fundo e muito maior */}
                <div className="relative w-48 h-48 drop-shadow-[0_0_20px_rgba(200,148,58,0.4)]">
-                 <Image 
-                   src="/logo-mercosur.png" 
-                   alt="EU-Mercosur Ready" 
-                   fill 
+                 <Image
+                   src="/logo-mercosur.png"
+                   alt="EU-Mercosur Ready"
+                   fill
+                   sizes="192px"
                    className="object-contain"
                    priority
                  />

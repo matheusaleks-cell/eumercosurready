@@ -319,7 +319,7 @@ export default function ProductManager({ companyId, products }: ProductManagerPr
                 <label className={labelClasses}>Título do Produto (PT)</label>
                 <input name="title" id="productTitle" defaultValue={editingProduct?.title} className={inputClasses} placeholder="Ex: Soja Orgânica Premium" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1 relative">
                   <label className={labelClasses}>Título em Inglês (EN)</label>
                   <input name="title_en" id="productTitle_en" defaultValue={editingProduct?.title_en} className={cn(inputClasses, "pr-10")} placeholder="English title" />

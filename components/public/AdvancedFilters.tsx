@@ -249,10 +249,11 @@ export const AdvancedFilters = ({
             >
               {q.flagPath ? (
                 <div className="relative w-4 h-3 overflow-hidden rounded-sm border border-white/10">
-                  <Image 
-                    src={q.flagPath} 
+                  <Image
+                    src={q.flagPath}
                     alt={q.label}
                     fill
+                    sizes="16px"
                     className="object-cover"
                   />
                 </div>

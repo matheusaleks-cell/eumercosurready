@@ -37,7 +37,7 @@ export default function AdminLayout({
 
           {/* Main Content */}
           <main className="flex-1 overflow-auto">
-            <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-10">
+            <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between pl-16 pr-4 md:px-8 sticky top-0 z-10">
               <div className="text-sm text-gray-500 font-medium font-sans">
                 Painel Administrativo
               </div>

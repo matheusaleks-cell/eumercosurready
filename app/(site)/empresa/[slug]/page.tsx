@@ -1,7 +1,8 @@
 // app/(public)/empresa/[slug]/page.tsx
-export const revalidate = 0
+// As mutations de empresa já chamam revalidatePath(`/empresa/${slug}`) sob demanda; isso é só um teto de segurança.
+export const revalidate = 300
 
-import React from 'react'
+import React, { cache } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -38,33 +39,81 @@ import { cn, translateEmployeesRange } from '@/lib/utils'
 import { ProductGallery } from '@/components/public/ProductGallery'
 import { CompanyNavigation } from '@/components/public/CompanyNavigation'
 import { FloatingContact } from '@/components/public/FloatingContact'
-import { incrementCompanyView } from '@/lib/actions/analytics'
+import { ViewTracker } from '@/components/public/ViewTracker'
 import { SafeImage } from '@/components/public/SafeImage'
 import { cookies } from 'next/headers'
 import { Metadata } from 'next'
-import { getSettings } from '@/lib/actions/settings'
+import { getPublicSettings } from '@/lib/actions/settings'
 import { countriesData } from '@/lib/countries-data'
 
 interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+// cache() deduplica: generateMetadata e a página chamam a mesma query, mas só 1 roundtrip por request.
+const getCompanyBySlug = cache((slug: string) => prisma.company.findUnique({
+  where: { slug, status: 'ACTIVE' },
+  select: {
+    id: true,
+    name: true,
+    slug: true,
+    logoUrl: true,
+    bannerUrl: true,
+    logoColor: true,
+    country: true,
+    countryCode: true,
+    region: true,
+    city: true,
+    foundedYear: true,
+    employeesRange: true,
+    shortDescription: true,
+    shortDescription_en: true,
+    shortDescription_es: true,
+    fullDescription: true,
+    fullDescription_en: true,
+    fullDescription_es: true,
+    videoUrl: true,
+    certifications: true,
+    targetMarkets: true,
+    secondarySectors: true,
+    website: true,
+    email: true,
+    phone: true,
+    whatsapp: true,
+    linkedin: true,
+    instagram: true,
+    facebook: true,
+    twitter: true,
+    auditStatus: true,
+    keywords: true,
+    status: true,
+    sector: {
+      select: {
+        id: true,
+        name: true,
+        name_en: true,
+        name_es: true,
+        slug: true
+      }
+    },
+    products: {
+      take: 10
+    },
+    reviews: {
+      orderBy: {
+        date: 'desc'
+      }
+    }
+  }
+}))
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const cookieStore = await cookies()
   const language = cookieStore.get('mr-language')?.value || 'pt'
-  
-  const company = await prisma.company.findUnique({
-    where: { slug },
-    select: { 
-      name: true, 
-      shortDescription: true, 
-      shortDescription_en: true, 
-      shortDescription_es: true,
-      logoUrl: true 
-    }
-  })
- 
+
+  const company = await getCompanyBySlug(slug)
+
   const t = (pt: string, en?: string | null, es?: string | null) => {
     if (language === 'en' && en) return en
     if (language === 'es' && es) return es
@@ -105,72 +154,15 @@ export default async function CompanyProfilePage({ params }: PageProps) {
     return pt
   }
   
-  const company = await prisma.company.findUnique({
-    where: { slug, status: 'ACTIVE' },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      logoUrl: true,
-      bannerUrl: true,
-      logoColor: true,
-      country: true,
-      countryCode: true,
-      region: true,
-      city: true,
-      foundedYear: true,
-      employeesRange: true,
-      shortDescription: true,
-      shortDescription_en: true,
-      shortDescription_es: true,
-      fullDescription: true,
-      fullDescription_en: true,
-      fullDescription_es: true,
-      videoUrl: true,
-      certifications: true,
-      targetMarkets: true,
-      secondarySectors: true,
-      website: true,
-      email: true,
-      phone: true,
-      whatsapp: true,
-      linkedin: true,
-      instagram: true,
-      facebook: true,
-      twitter: true,
-      auditStatus: true,
-      keywords: true,
-      status: true,
-      sector: {
-        select: {
-          id: true,
-          name: true,
-          name_en: true,
-          name_es: true,
-          slug: true
-        }
-      },
-      products: {
-        take: 10
-      },
-      reviews: {
-        orderBy: {
-          date: 'desc'
-        }
-      }
-    }
-  })
+  const company = await getCompanyBySlug(slug)
 
   if (!company) {
     notFound()
   }
 
   // Buscar configurações para o WhatsApp de suporte
-  const settingsResult = await getSettings()
-  const consultantWhatsapp = settingsResult.settings?.['CONTACT_WHATSAPP'] || '' // Removido número de teste
-
-  // Analytics reativado para gerar métricas de tração
-  incrementCompanyView(company.id).catch(() => {})
+  const publicSettings = await getPublicSettings()
+  const consultantWhatsapp = publicSettings['CONTACT_WHATSAPP'] || ''
 
   const initials = company.name.substring(0, 2).toUpperCase()
   
@@ -198,13 +190,15 @@ export default async function CompanyProfilePage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-white pb-20">
+      <ViewTracker companyId={company.id} />
       {/* Hero Section Cinematográfica */}
       <section className="relative h-[60vh] min-h-[400px] w-full overflow-hidden">
         {company.bannerUrl ? (
-          <SafeImage 
-            src={company.bannerUrl} 
+          <SafeImage
+            src={company.bannerUrl}
             alt={company.name}
             fill
+            sizes="100vw"
             className="object-cover"
             priority
             fallbackSrc="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200"
@@ -224,10 +218,11 @@ export default async function CompanyProfilePage({ params }: PageProps) {
               <div className="relative w-28 h-28 md:w-44 md:h-44 bg-white rounded-[var(--radius-lg)] p-4 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 z-10 flex items-center justify-center -mb-4 md:-mb-12 transition-transform hover:scale-105 duration-500">
                 {company.logoUrl ? (
                   <div className="relative w-full h-full overflow-hidden">
-                    <SafeImage 
-                      src={company.logoUrl} 
-                      alt={company.name} 
-                      fill 
+                    <SafeImage
+                      src={company.logoUrl}
+                      alt={company.name}
+                      fill
+                      sizes="(max-width: 768px) 112px, 176px"
                       className="object-contain"
                       fallbackIcon={<Building2 className="text-gray-200" size={54} />}
                     />
@@ -502,7 +497,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
             
             {/* Bloco de Métricas - Estilo Grade Visual */}
             {mockStats && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {mockStats.map((stat, idx) => {
                   const getIcon = (iconName: string, value?: string) => {
                     // Lógica especial para setor de Agronegócio

@@ -119,10 +119,11 @@ export const OpportunitiesSection = () => {
                       )}
                     >
                       <div className="relative w-12 h-12 mb-3 rounded-xl overflow-hidden shadow-sm border border-gray-100">
-                        <SafeImage 
-                          src={country.flagPath} 
-                          alt={t(country.name, country.name_en, country.name_es)} 
-                          fill 
+                        <SafeImage
+                          src={country.flagPath}
+                          alt={t(country.name, country.name_en, country.name_es)}
+                          fill
+                          sizes="48px"
                           className="object-cover"
                           fallbackSrc="https://placehold.co/48x48/f3f4f6/9ca3af?text="
                         />
@@ -150,14 +151,14 @@ export const OpportunitiesSection = () => {
               >
                 {/* Background Decor - Flag Blured */}
                 <div className="absolute inset-0 opacity-10 pointer-events-none">
-                   <SafeImage src={currentCountry.flagPath} alt="" fill className="object-cover blur-3xl scale-110" />
+                   <SafeImage src={currentCountry.flagPath} alt="" fill sizes="(max-width: 1024px) 100vw, 600px" className="object-cover blur-3xl scale-110" />
                 </div>
 
                 <div className="relative z-10 space-y-6">
                   {/* Header do Card */}
                   <div className="flex items-center gap-5">
                     <div className="relative w-20 h-14 rounded-xl overflow-hidden shadow-xl border border-white/10 shrink-0">
-                       <SafeImage src={currentCountry.flagPath} alt={t(currentCountry.name, currentCountry.name_en, currentCountry.name_es)} fill className="object-cover" />
+                       <SafeImage src={currentCountry.flagPath} alt={t(currentCountry.name, currentCountry.name_en, currentCountry.name_es)} fill sizes="80px" className="object-cover" />
                     </div>
                     <div className="space-y-1">
                       <div className="flex flex-wrap gap-2">

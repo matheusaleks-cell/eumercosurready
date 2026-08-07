@@ -75,6 +75,7 @@ export const LanguageSwitcher = () => {
                   src={lang.flag}
                   alt={lang.label}
                   fill
+                  sizes="28px"
                   className="object-cover"
                 />
               </motion.button>

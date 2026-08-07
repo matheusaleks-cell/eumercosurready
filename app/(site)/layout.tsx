@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { cookies } from 'next/headers'
 import { Navbar } from '@/components/public/Navbar'
 import { Footer } from '@/components/public/Footer'
@@ -10,18 +9,6 @@ import { SessionProvider } from "@/components/providers/SessionProvider";
 import prisma from "@/lib/prisma";
 import { FloatingContact } from "@/components/public/FloatingContact";
 import "../globals.css";
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-jakarta",
-  weight: ["400", "500", "600", "700", "800"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["300", "400", "500", "600"],
-});
 
 export async function generateMetadata(): Promise<Metadata> {
   let config: Record<string, string> = {};
@@ -76,7 +63,7 @@ export default async function PublicLayout({
   const secondaryColor = HEX_COLOR.test(rawSecondary) ? rawSecondary : '#C8943A';
 
   return (
-    <div className={`${jakarta.variable} ${inter.variable} antialiased font-body bg-[var(--background)] text-[var(--foreground)]`}>
+    <div className={`antialiased font-body bg-[var(--background)] text-[var(--foreground)]`}>
       <style dangerouslySetInnerHTML={{ __html: `
         :root {
           --color-navy: ${primaryColor};

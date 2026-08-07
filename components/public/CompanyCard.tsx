@@ -57,10 +57,11 @@ export const CompanyCard = ({ company }: CompanyCardProps) => {
         )} />
         
         {company.bannerUrl && (
-          <SafeImage 
-            src={company.bannerUrl} 
-            alt={`Capa ${company.name}`} 
-            fill 
+          <SafeImage
+            src={company.bannerUrl}
+            alt={`Capa ${company.name}`}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             unoptimized={true}
             className="object-cover opacity-90 transition-transform duration-700 group-hover:scale-110"
           />
@@ -82,10 +83,11 @@ export const CompanyCard = ({ company }: CompanyCardProps) => {
       <div className="relative p-6 pt-12 flex flex-col flex-1">
         {/* Logo que "quebra" a linha do banner - Sem fundo e maior */}
         <div className="absolute -top-14 left-4 z-20 w-24 h-24 group-hover:scale-110 transition-transform duration-500 flex items-center justify-center">
-          <SafeImage 
-            src={company.logoUrl} 
-            alt={company.name} 
-            fill 
+          <SafeImage
+            src={company.logoUrl}
+            alt={company.name}
+            fill
+            sizes="96px"
             className="object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.3)]"
             fallbackIcon={
               <div className="text-4xl font-black text-white/90 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] select-none italic tracking-tighter">
@@ -129,6 +131,7 @@ export const CompanyCard = ({ company }: CompanyCardProps) => {
                 })()} 
                 alt={company.country}
                 fill
+                sizes="20px"
                 className="object-cover"
                 fallbackSrc="https://placehold.co/32x20/f3f4f6/9ca3af?text="
               />

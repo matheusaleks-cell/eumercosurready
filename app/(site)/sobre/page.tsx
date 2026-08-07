@@ -9,9 +9,12 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
 import { useLanguage } from '@/hooks/use-language'
-import { CobeGlobe } from '@/components/public/CobeGlobe'
+
+// WebGL (cobe) só carrega no cliente e só quando essa página é visitada, não no bundle geral.
+const CobeGlobe = dynamic(() => import('@/components/public/CobeGlobe').then(m => m.CobeGlobe), { ssr: false })
 
 export default function SobrePage() {
   const { t } = useLanguage()
@@ -283,7 +286,7 @@ export default function SobrePage() {
                     transition={{ duration: 0.8 }}
                     className="relative w-72 h-72 md:w-[400px] md:h-[400px] drop-shadow-[0_0_50px_rgba(200,148,58,0.4)]"
                   >
-                    <Image src="/logo-mercosur.png" alt="EU-Mercosur Ready Logo" fill className="object-contain" />
+                    <Image src="/logo-mercosur.png" alt="EU-Mercosur Ready Logo" fill sizes="(max-width: 768px) 288px, 400px" className="object-contain" />
                   </motion.div>
                 </div>
 

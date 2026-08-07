@@ -1,10 +1,23 @@
 import type { Metadata } from "next";
+import { Be_Vietnam_Pro, Noto_Sans } from "next/font/google";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import "./globals.css";
 
 import { getPublicSettings } from "@/lib/actions/settings";
 
-export const dynamic = "force-dynamic";
+// Substitui o @import bloqueante do Google Fonts em globals.css — next/font
+// self-hospeda e injeta as variáveis --font-display/--font-body sem round-trip externo.
+const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+});
+
+const notoSans = Noto_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicSettings();
@@ -25,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className="antialiased" suppressHydrationWarning>
+      <body className={`${beVietnamPro.variable} ${notoSans.variable} antialiased`} suppressHydrationWarning>
         <SessionProvider>
           {children}
         </SessionProvider>

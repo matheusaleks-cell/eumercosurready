@@ -105,10 +105,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
           <div className="space-y-6">
             <div className="relative aspect-square rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-2xl group">
               {product.imageUrl ? (
-                <Image 
-                  src={product.imageUrl} 
-                  alt={translatedTitle} 
-                  fill 
+                <Image
+                  src={product.imageUrl}
+                  alt={translatedTitle}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               ) : (

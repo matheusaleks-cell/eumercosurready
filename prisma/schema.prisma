@@ -78,6 +78,8 @@ model Company {
   @@index([auditStatus])
   @@index([views])
   @@index([sectorId])
+  @@index([countryCode])
+  @@index([status, region])
 }
 
 model Product {
@@ -175,6 +177,44 @@ model Country {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Perfil público (marketing) — usado em /pais/[slug]
+  description       String?  @db.Text
+  description_en    String?  @db.Text
+  description_es    String?  @db.Text
+  highlight         String?
+  highlight_en      String?
+  highlight_es      String?
+  ctaTitle          String?
+  ctaTitle_en       String?
+  ctaTitle_es       String?
+  ctaDescription    String?  @db.Text
+  ctaDescription_en String?  @db.Text
+  ctaDescription_es String?  @db.Text
+
+  // Economia
+  gdp           String?
+  growth        String?
+  mainSector    String?
+  mainSector_en String?
+  mainSector_es String?
+  taxRate       String?
+
+  // Setores de destaque: Array<{ title, title_en?, title_es?, description, description_en?, description_es? }>
+  sectors Json?
+
+  // Riquezas naturais
+  naturalRiches    String[] @default([])
+  naturalRiches_en String[] @default([])
+  naturalRiches_es String[] @default([])
+
+  // Comércio exterior
+  exports    String[] @default([])
+  exports_en String[] @default([])
+  exports_es String[] @default([])
+  imports    String[] @default([])
+  imports_en String[] @default([])
+  imports_es String[] @default([])
 
   @@index([group])
   @@index([active])

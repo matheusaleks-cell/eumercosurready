@@ -52,6 +52,15 @@ export interface Sector {
   _count?: { companies: number }
 }
 
+export interface CountrySector {
+  title: string
+  title_en?: string | null
+  title_es?: string | null
+  description: string
+  description_en?: string | null
+  description_es?: string | null
+}
+
 export interface Country {
   id: string
   code: string
@@ -64,6 +73,39 @@ export interface Country {
   flagUrl?: string | null
   order: number
   active: boolean
+
+  description?: string | null
+  description_en?: string | null
+  description_es?: string | null
+  highlight?: string | null
+  highlight_en?: string | null
+  highlight_es?: string | null
+  ctaTitle?: string | null
+  ctaTitle_en?: string | null
+  ctaTitle_es?: string | null
+  ctaDescription?: string | null
+  ctaDescription_en?: string | null
+  ctaDescription_es?: string | null
+
+  gdp?: string | null
+  growth?: string | null
+  mainSector?: string | null
+  mainSector_en?: string | null
+  mainSector_es?: string | null
+  taxRate?: string | null
+
+  sectors?: CountrySector[] | null
+
+  naturalRiches: string[]
+  naturalRiches_en: string[]
+  naturalRiches_es: string[]
+
+  exports: string[]
+  exports_en: string[]
+  exports_es: string[]
+  imports: string[]
+  imports_en: string[]
+  imports_es: string[]
 }
 
 export interface ContactRequest {

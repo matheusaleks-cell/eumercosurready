@@ -1,12 +1,14 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { loginAction } from '@/lib/actions/auth'
 import Image from 'next/image'
 import { Lock, User, ChevronRight, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react'
 
 export default function LoginPage() {
+  const router = useRouter()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -20,20 +22,16 @@ export default function LoginPage() {
 
     try {
       const result = await loginAction({ username, password })
-      
-      if (result?.error) {
-        setError(result.error)
-        setLoading(false)
-      } else {
-        // Se não retornou erro, o redirect já está acontecendo via Server Action
+
+      if (result?.success) {
         setSuccess(true)
+        router.push('/admin/dashboard')
+        router.refresh()
+      } else {
+        setError(result?.error || 'Falha na autenticação.')
+        setLoading(false)
       }
     } catch (err) {
-      // O redirect lança um erro que deve ser ignorado ou tratado pelo Next.js
-      if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
-        setSuccess(true)
-        return
-      }
       console.error('Erro no login:', err)
       setError('Falha na autenticação.')
       setLoading(false)

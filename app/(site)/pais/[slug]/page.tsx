@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { cache } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { 
@@ -13,11 +13,11 @@ import {
   TrendingDown,
   Info
 } from 'lucide-react'
-import { countriesData } from '@/lib/countries-data'
-import { reportsData } from '@/lib/reports-data'
+import prisma from '@/lib/prisma'
 import { SafeImage } from '@/components/public/SafeImage'
 import { cn } from '@/lib/utils'
 import { Metadata } from 'next'
+import type { CountrySector } from '@/types'
 
 import { cookies } from 'next/headers'
 
@@ -43,12 +43,15 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+// cache() deduplica: generateMetadata e a página chamam a mesma query, mas só 1 roundtrip por request.
+const getCountryBySlug = cache((slug: string) => prisma.country.findUnique({ where: { slug, active: true } }))
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const cookieStore = await cookies()
   const language = cookieStore.get('mr-language')?.value || 'pt'
-  
-  const country = countriesData.find(c => c.slug === slug)
+
+  const country = await getCountryBySlug(slug)
   if (!country) return { title: 'País não encontrado' }
 
   const t = (pt: string, en?: string | null, es?: string | null) => {
@@ -58,7 +61,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const name = t(country.name, country.name_en, country.name_es)
-  const desc = t(country.description, country.description_en, country.description_es)
+  const desc = t(country.description || '', country.description_en, country.description_es)
 
   return {
     title: `${name} - ${t('Oportunidades B2B', 'B2B Opportunities', 'Oportunidades B2B')} | EU-Mercosur Ready`,
@@ -66,7 +69,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: `${name} - ${t('Plataforma de Negócios Internacionais', 'International Business Platform', 'Plataforma de Negocios Internacionales')}`,
       description: desc,
-      images: [country.flagPath],
+      images: country.flagUrl ? [country.flagUrl] : [],
     }
   }
 }
@@ -88,26 +91,49 @@ export default async function CountryProfilePage({ params }: PageProps) {
     return pt
   }
 
-  // Buscar o país pelo slug
-  const country = countriesData.find(c => c.slug === slug)
-  
+  // Buscar o país pelo slug (mesma query cacheada usada em generateMetadata)
+  const country = await getCountryBySlug(slug)
+
   if (!country) {
     notFound()
   }
 
-  // Buscar o relatório correspondente (pelo ID do país)
-  const report = reportsData[country.id]
+  const metrics = {
+    gdp: country.gdp,
+    growth: country.growth,
+    mainSector: country.mainSector,
+    mainSector_en: country.mainSector_en,
+    mainSector_es: country.mainSector_es,
+    taxRate: country.taxRate,
+  }
+
+  const sectors = (country.sectors as unknown as CountrySector[] | null) || []
+  const report = sectors.length > 0 ? {
+    sectors,
+    naturalRiches: country.naturalRiches,
+    naturalRiches_en: country.naturalRiches_en,
+    naturalRiches_es: country.naturalRiches_es,
+    trade: {
+      exports: country.exports,
+      exports_en: country.exports_en,
+      exports_es: country.exports_es,
+      imports: country.imports,
+      imports_en: country.imports_en,
+      imports_es: country.imports_es,
+    },
+  } : null
 
   return (
     <main className="min-h-screen bg-[var(--color-cream)] pb-20">
       {/* Hero Section Cinematográfica */}
       <section className="relative h-[55vh] min-h-[450px] w-full overflow-hidden bg-[var(--color-navy)]">
         <div className="absolute inset-0 opacity-20 pointer-events-none">
-          <SafeImage 
-            src={country.flagPath} 
-            alt={t(country.name, country.name_en, country.name_es)} 
-            fill 
-            className="object-cover blur-3xl scale-110" 
+          <SafeImage
+            src={country.flagUrl || ''}
+            alt={t(country.name, country.name_en, country.name_es)}
+            fill
+            sizes="100vw"
+            className="object-cover blur-3xl scale-110"
           />
         </div>
         
@@ -134,11 +160,12 @@ export default async function CountryProfilePage({ params }: PageProps) {
             <div className="flex flex-col md:flex-row gap-8 items-start md:items-end">
               {/* Bandeira */}
               <div className="relative w-32 h-24 md:w-48 md:h-32 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 shrink-0 bg-white/5">
-                <SafeImage 
-                  src={country.flagPath} 
-                  alt={t(country.name, country.name_en, country.name_es)} 
-                  fill 
-                  className="object-cover" 
+                <SafeImage
+                  src={country.flagUrl || ''}
+                  alt={t(country.name, country.name_en, country.name_es)}
+                  fill
+                  sizes="(max-width: 768px) 128px, 192px"
+                  className="object-cover"
                   fallbackSrc="https://placehold.co/400x300/f3f4f6/9ca3af?text="
                 />
               </div>
@@ -148,7 +175,7 @@ export default async function CountryProfilePage({ params }: PageProps) {
                 <div className="flex items-center gap-3">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest text-[var(--color-gold-light)] border border-white/20">
                     <Globe size={12} />
-                    {country.region === 'EU' ? t('União Europeia', 'European Union', 'Unión Europea') : 'Mercosul'}
+                    {country.group === 'EU' ? t('União Europeia', 'European Union', 'Unión Europea') : 'Mercosul'}
                   </span>
                 </div>
                 
@@ -157,7 +184,7 @@ export default async function CountryProfilePage({ params }: PageProps) {
                 </h1>
                 
                 <p className="text-base md:text-lg text-gray-300 font-body max-w-2xl leading-relaxed">
-                  {t(country.description, country.description_en, country.description_es)}
+                  {t(country.description || '', country.description_en, country.description_es)}
                 </p>
               </div>
             </div>
@@ -170,40 +197,40 @@ export default async function CountryProfilePage({ params }: PageProps) {
         <div className="container-custom">
           <div className={cn(
             "bg-white rounded-3xl p-6 md:p-8 shadow-2xl border border-[var(--color-navy)]/5 grid gap-6 divide-y md:divide-y-0 md:divide-x divide-[var(--color-navy)]/5",
-            [country.metrics?.gdp, country.metrics?.growth, true].filter(Boolean).length === 3 ? "grid-cols-1 md:grid-cols-3" :
-            [country.metrics?.gdp, country.metrics?.growth, true].filter(Boolean).length === 2 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
+            [metrics.gdp, metrics.growth, true].filter(Boolean).length === 3 ? "grid-cols-1 md:grid-cols-3" :
+            [metrics.gdp, metrics.growth, true].filter(Boolean).length === 2 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
           )}>
-            {country.metrics?.gdp && (
+            {metrics.gdp && (
               <div className="px-4 py-2 md:py-0 group">
                 <span className="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">{t('Produto Interno Bruto (PIB)', 'Gross Domestic Product (GDP)', 'Producto Interno Bruto (PIB)')}</span>
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-[var(--color-gold)]/10 rounded-xl text-[var(--color-gold)] group-hover:scale-110 transition-transform">
                     <BarChart3 size={24} />
                   </div>
-                  <span className="text-2xl font-bold text-[var(--color-navy)]">{country.metrics.gdp}</span>
+                  <span className="text-2xl font-bold text-[var(--color-navy)]">{metrics.gdp}</span>
                 </div>
               </div>
             )}
-            
-            {country.metrics?.growth && (
+
+            {metrics.growth && (
               <div className="px-4 pt-6 md:pt-0 pb-2 md:pb-0 group">
                 <span className="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">{t('Crescimento Estimado', 'Estimated Growth', 'Crecimiento Estimado')}</span>
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-green-500/10 rounded-xl text-green-500 group-hover:scale-110 transition-transform">
                     <TrendingUp size={24} />
                   </div>
-                  <span className="text-2xl font-bold text-[var(--color-navy)]">{country.metrics.growth}</span>
+                  <span className="text-2xl font-bold text-[var(--color-navy)]">{metrics.growth}</span>
                 </div>
               </div>
             )}
-            
+
             <div className="px-4 pt-6 md:pt-0 group">
               <span className="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">{t('Setor Principal', 'Main Sector', 'Sector Principal')}</span>
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-[var(--color-navy)]/10 rounded-xl text-[var(--color-navy)] group-hover:scale-110 transition-transform">
                   <Briefcase size={24} />
                 </div>
-                <span className="text-xl font-bold text-[var(--color-navy)] leading-tight">{t(country.metrics?.mainSector || 'Industrial', country.metrics?.mainSector_en, country.metrics?.mainSector_es)}</span>
+                <span className="text-xl font-bold text-[var(--color-navy)] leading-tight">{t(metrics.mainSector || 'Industrial', metrics.mainSector_en, metrics.mainSector_es)}</span>
               </div>
             </div>
           </div>
@@ -225,7 +252,7 @@ export default async function CountryProfilePage({ params }: PageProps) {
               </div>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold leading-tight">
                 {t(
-                  country.ctaTitle || `O mercado ${getPrepositionForCountry(country.id)} ${country.name} busca fornecedores de excelência. Eles vão encontrar você ou seu concorrente?`,
+                  country.ctaTitle || `O mercado ${getPrepositionForCountry(country.code)} ${country.name} busca fornecedores de excelência. Eles vão encontrar você ou seu concorrente?`,
                   country.ctaTitle_en || `The ${t(country.name, country.name_en, country.name_es)} market is looking for excellent suppliers. Will they find you or your competitor?`,
                   country.ctaTitle_es || `El mercado de ${t(country.name, country.name_en, country.name_es)} busca proveedores de excelencia. ¿Le encontrarán a usted o a su competidor?`
                 )}
@@ -243,11 +270,11 @@ export default async function CountryProfilePage({ params }: PageProps) {
                 <span>{t('INCLUIR MINHA EMPRESA', 'ADD MY COMPANY', 'INCLUIR MI EMPRESA')}</span>
               </Link>
               <Link 
-                href={`/?origin=${country.id}#partners-section`} 
+                href={`/?origin=${country.code}#partners-section`} 
                 className="inline-flex items-center justify-center px-8 py-4 rounded-full border border-white/20 bg-white/5 text-white font-bold hover:bg-white/10 transition-all text-sm uppercase tracking-widest"
               >
                 <Briefcase className="mr-2" size={18} />
-                <span>{t(`Ver Empresas ${getPrepositionForCountry(country.id)} ${country.name}`, `View Companies from ${t(country.name, country.name_en, country.name_es)}`, `Ver Empresas de ${t(country.name, country.name_en, country.name_es)}`)}</span>
+                <span>{t(`Ver Empresas ${getPrepositionForCountry(country.code)} ${country.name}`, `View Companies from ${t(country.name, country.name_en, country.name_es)}`, `Ver Empresas de ${t(country.name, country.name_en, country.name_es)}`)}</span>
               </Link>
             </div>
           </div>
@@ -342,7 +369,7 @@ export default async function CountryProfilePage({ params }: PageProps) {
             <h3 className="text-2xl font-display font-bold text-[var(--color-navy)]">{t('Relatório Detalhado em Construção', 'Detailed Report Under Construction', 'Informe Detallado en Construcción')}</h3>
             <p className="text-gray-500 max-w-xl mx-auto">
               {t(
-                `Nossa equipe de inteligência de mercado está mapeando as oportunidades, setores e balança comercial ${getPrepositionForCountry(country.id)} ${country.name}. Em breve, disponibilizaremos o relatório completo.`,
+                `Nossa equipe de inteligência de mercado está mapeando as oportunidades, setores e balança comercial ${getPrepositionForCountry(country.code)} ${country.name}. Em breve, disponibilizaremos o relatório completo.`,
                 `Our market intelligence team is mapping the opportunities, sectors, and trade balance of ${country.name}. Soon, we will provide the full report.`,
                 `Nuestro equipo de inteligencia de mercado está mapeando las oportunidades, sectores y balanza comercial de ${country.name}. Próximamente, pondremos a su disposición el informe completo.`
               )}

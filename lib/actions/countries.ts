@@ -7,6 +7,16 @@ import { auth } from '@/lib/auth'
 import { logAudit } from '@/lib/audit'
 import { countriesList } from '@/lib/countries-list'
 import { countriesData } from '@/lib/countries-data'
+import { reportsData } from '@/lib/reports-data'
+
+const SectorSchema = z.object({
+  title: z.string().min(1).max(150),
+  title_en: z.string().max(150).optional().nullable(),
+  title_es: z.string().max(150).optional().nullable(),
+  description: z.string().min(1).max(1000),
+  description_en: z.string().max(1000).optional().nullable(),
+  description_es: z.string().max(1000).optional().nullable(),
+})
 
 const CountrySchema = z.object({
   code: z.string().trim().toUpperCase().length(2, 'Código ISO deve ter 2 letras'),
@@ -17,6 +27,40 @@ const CountrySchema = z.object({
   ddi: z.string().min(1, 'DDI é obrigatório').max(5),
   flagUrl: z.string().optional().nullable(),
   order: z.number().default(0),
+
+  // Perfil público
+  description: z.string().max(2000).optional().nullable(),
+  description_en: z.string().max(2000).optional().nullable(),
+  description_es: z.string().max(2000).optional().nullable(),
+  highlight: z.string().max(300).optional().nullable(),
+  highlight_en: z.string().max(300).optional().nullable(),
+  highlight_es: z.string().max(300).optional().nullable(),
+  ctaTitle: z.string().max(300).optional().nullable(),
+  ctaTitle_en: z.string().max(300).optional().nullable(),
+  ctaTitle_es: z.string().max(300).optional().nullable(),
+  ctaDescription: z.string().max(1000).optional().nullable(),
+  ctaDescription_en: z.string().max(1000).optional().nullable(),
+  ctaDescription_es: z.string().max(1000).optional().nullable(),
+
+  // Economia
+  gdp: z.string().max(50).optional().nullable(),
+  growth: z.string().max(50).optional().nullable(),
+  mainSector: z.string().max(150).optional().nullable(),
+  mainSector_en: z.string().max(150).optional().nullable(),
+  mainSector_es: z.string().max(150).optional().nullable(),
+  taxRate: z.string().max(50).optional().nullable(),
+
+  // Setores e comércio exterior
+  sectors: z.array(SectorSchema).max(10).optional(),
+  naturalRiches: z.array(z.string().max(200)).max(20).optional(),
+  naturalRiches_en: z.array(z.string().max(200)).max(20).optional(),
+  naturalRiches_es: z.array(z.string().max(200)).max(20).optional(),
+  exports: z.array(z.string().max(200)).max(20).optional(),
+  exports_en: z.array(z.string().max(200)).max(20).optional(),
+  exports_es: z.array(z.string().max(200)).max(20).optional(),
+  imports: z.array(z.string().max(200)).max(20).optional(),
+  imports_en: z.array(z.string().max(200)).max(20).optional(),
+  imports_es: z.array(z.string().max(200)).max(20).optional(),
 })
 
 function generateSlug(name: string): string {
@@ -241,5 +285,87 @@ export async function seedInitialCountries() {
   } catch (error) {
     console.error('Erro ao sincronizar países:', error)
     return { success: false, error: 'Falha ao sincronizar países. Verifique o console.' }
+  }
+}
+
+/**
+ * Importa o "perfil" de cada país (descrição, destaque, CTA, economia, setores de destaque,
+ * riquezas naturais e comércio exterior) a partir dos arquivos estáticos legados
+ * (lib/countries-data.ts + lib/reports-data.ts) para a tabela Country.
+ *
+ * Idempotente e defensivo: só atualiza países que já existem no banco (via seedInitialCountries)
+ * e só preenche um campo se ele ainda estiver vazio — nunca sobrescreve uma edição manual feita
+ * no admin. Pode ser executada quantas vezes forem necessárias sem risco.
+ */
+export async function migrateLegacyCountryProfiles() {
+  const session = await auth()
+  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
+  }
+
+  try {
+    let updated = 0
+
+    for (const opportunity of countriesData) {
+      const existing = await prisma.country.findUnique({ where: { code: opportunity.id } })
+      if (!existing) continue
+
+      const report = reportsData[opportunity.id]
+
+      const fill = <T>(current: T | null | undefined, incoming: T | undefined): T | undefined =>
+        (current === null || current === undefined || current === '') && incoming !== undefined ? incoming : undefined
+
+      const fillArray = (current: string[] | undefined, incoming: string[] | undefined): string[] | undefined =>
+        (!current || current.length === 0) && incoming && incoming.length > 0 ? incoming : undefined
+
+      const data: Record<string, unknown> = {
+        description: fill(existing.description, opportunity.description),
+        description_en: fill(existing.description_en, opportunity.description_en),
+        description_es: fill(existing.description_es, opportunity.description_es),
+        highlight: fill(existing.highlight, opportunity.highlight),
+        highlight_en: fill(existing.highlight_en, opportunity.highlight_en),
+        highlight_es: fill(existing.highlight_es, opportunity.highlight_es),
+        ctaTitle: fill(existing.ctaTitle, opportunity.ctaTitle),
+        ctaTitle_en: fill(existing.ctaTitle_en, opportunity.ctaTitle_en),
+        ctaTitle_es: fill(existing.ctaTitle_es, opportunity.ctaTitle_es),
+        ctaDescription: fill(existing.ctaDescription, opportunity.ctaDescription),
+        ctaDescription_en: fill(existing.ctaDescription_en, opportunity.ctaDescription_en),
+        ctaDescription_es: fill(existing.ctaDescription_es, opportunity.ctaDescription_es),
+        gdp: fill(existing.gdp, opportunity.metrics?.gdp),
+        growth: fill(existing.growth, opportunity.metrics?.growth),
+        mainSector: fill(existing.mainSector, opportunity.metrics?.mainSector),
+        mainSector_en: fill(existing.mainSector_en, opportunity.metrics?.mainSector_en),
+        mainSector_es: fill(existing.mainSector_es, opportunity.metrics?.mainSector_es),
+        taxRate: fill(existing.taxRate, opportunity.metrics?.taxRate),
+      }
+
+      if (report) {
+        if (!existing.sectors || (Array.isArray(existing.sectors) && existing.sectors.length === 0)) {
+          data.sectors = report.sectors
+        }
+        data.naturalRiches = fillArray(existing.naturalRiches, report.naturalRiches)
+        data.naturalRiches_en = fillArray(existing.naturalRiches_en, report.naturalRiches_en)
+        data.naturalRiches_es = fillArray(existing.naturalRiches_es, report.naturalRiches_es)
+        data.exports = fillArray(existing.exports, report.trade.exports)
+        data.exports_en = fillArray(existing.exports_en, report.trade.exports_en)
+        data.exports_es = fillArray(existing.exports_es, report.trade.exports_es)
+        data.imports = fillArray(existing.imports, report.trade.imports)
+        data.imports_en = fillArray(existing.imports_en, report.trade.imports_en)
+        data.imports_es = fillArray(existing.imports_es, report.trade.imports_es)
+      }
+
+      const changes = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined))
+      if (Object.keys(changes).length === 0) continue
+
+      await prisma.country.update({ where: { id: existing.id }, data: changes })
+      updated++
+    }
+
+    revalidatePath('/admin/paises')
+    await logAudit({ action: 'country.migrate_profile', entityType: 'Country', details: `${updated} país(es) atualizado(s) com dados legados` })
+    return { success: true, updated }
+  } catch (error) {
+    console.error('Erro ao importar perfis legados:', error)
+    return { success: false, error: 'Falha ao importar perfis legados. Verifique o console.' }
   }
 }

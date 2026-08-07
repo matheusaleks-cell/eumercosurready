@@ -33,8 +33,9 @@ export async function loginAction(values: unknown) {
     await signIn('credentials', {
       username: parsed.data.username,
       password: parsed.data.password,
-      redirectTo: '/admin/dashboard',
+      redirect: false,
     })
+    return { success: true }
   } catch (error) {
     if (error instanceof AuthError) {
       return { error: 'Credenciais inválidas ou erro no servidor.' }

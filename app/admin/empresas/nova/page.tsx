@@ -13,7 +13,8 @@ export default async function NovaEmpresaPage() {
 
   const countries = await prisma.country.findMany({
     where: { active: true },
-    orderBy: [{ group: 'asc' }, { order: 'asc' }, { name: 'asc' }]
+    orderBy: [{ group: 'asc' }, { order: 'asc' }, { name: 'asc' }],
+    select: { id: true, code: true, name: true, ddi: true }
   })
 
   return (

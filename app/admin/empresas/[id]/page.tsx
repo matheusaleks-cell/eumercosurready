@@ -22,7 +22,8 @@ export default async function EditarEmpresaPage({ params }: { params: Promise<{ 
 
   const countries = await prisma.country.findMany({
     where: { active: true },
-    orderBy: [{ group: 'asc' }, { order: 'asc' }, { name: 'asc' }]
+    orderBy: [{ group: 'asc' }, { order: 'asc' }, { name: 'asc' }],
+    select: { id: true, code: true, name: true, ddi: true }
   })
 
   return (

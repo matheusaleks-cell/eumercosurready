@@ -13,11 +13,10 @@ import {
 } from 'lucide-react'
 import { translateSingleText } from '@/lib/actions/translation'
 import { cn } from '@/lib/utils'
-import type { Country } from '@/types'
 
 interface CompanyFormProps {
   sectors: { id: string, name: string }[]
-  countries: Country[]
+  countries: { id: string, code: string, name: string, ddi: string }[]
   initialData?: any
 }
 
@@ -1173,7 +1172,7 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
                 <Trash2 size={16} />
               </button>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className={labelClasses}>Autor</label>
                   <input 
@@ -1287,21 +1286,21 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
       </section>
 
       {/* FOOTER: BOTÕES DE AÇÃO */}
-      <div className="sticky bottom-8 bg-white/80 backdrop-blur-md p-4 rounded-2xl border border-gray-200 shadow-2xl flex items-center justify-between gap-4 z-50">
-        <button 
-          type="button" 
+      <div className="sticky bottom-4 md:bottom-8 bg-white/80 backdrop-blur-md p-4 rounded-2xl border border-gray-200 shadow-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 z-50">
+        <button
+          type="button"
           onClick={() => router.back()}
-          className="px-6 py-3 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors"
+          className="px-6 py-3 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors text-center md:text-left"
         >
           Descartar Alterações
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <button
             type="button"
             id="btn-test-magic"
             onClick={fillTestData}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-emerald-100 transition-all border border-emerald-100"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-emerald-100 transition-all border border-emerald-100"
             title="Preencher com dados de teste"
           >
             <FlaskConical size={14} />
@@ -1310,11 +1309,11 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
 
           <div className="h-8 w-px bg-gray-200 mx-2 hidden md:block" />
 
-          <button 
+          <button
             type="button"
             onClick={handleTranslateAll}
             disabled={isTranslatingAll}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-50 text-blue-600 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-blue-100 transition-all disabled:opacity-50 border border-blue-100 group"
+            className="flex items-center justify-center gap-2 px-6 py-2 bg-blue-50 text-blue-600 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-blue-100 transition-all disabled:opacity-50 border border-blue-100 group"
           >
             {isTranslatingAll ? (
               <div className="w-3 h-3 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
@@ -1325,10 +1324,10 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
           </button>
         </div>
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={isSaving || isUploadingLogo || isUploadingBanner}
-          className="flex items-center gap-2 px-10 py-3 bg-[var(--color-navy)] text-white rounded-xl font-bold hover:bg-[#002266] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
+          className="flex items-center justify-center gap-2 px-10 py-3 bg-[var(--color-navy)] text-white rounded-xl font-bold hover:bg-[#002266] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
         >
           {isSaving ? (
             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

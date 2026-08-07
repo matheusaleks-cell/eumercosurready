@@ -5,11 +5,10 @@ import { Building2, Package, LayoutDashboard } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import CompanyForm from './CompanyForm'
 import ProductManager from './ProductManager'
-import type { Country } from '@/types'
 
 interface CompanyTabsProps {
   sectors: { id: string, name: string }[]
-  countries: Country[]
+  countries: { id: string, code: string, name: string, ddi: string }[]
   company: any
 }
 

@@ -44,7 +44,6 @@ import { SafeImage } from '@/components/public/SafeImage'
 import { cookies } from 'next/headers'
 import { Metadata } from 'next'
 import { getPublicSettings } from '@/lib/actions/settings'
-import { countriesData } from '@/lib/countries-data'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -171,7 +170,9 @@ export default async function CompanyProfilePage({ params }: PageProps) {
     ? new Date().getFullYear() - company.foundedYear 
     : null
 
-  const countryInfo = countriesData.find(c => c.id === company.countryCode)
+  const countryInfo = company.countryCode
+    ? await prisma.country.findUnique({ where: { code: company.countryCode }, select: { name: true, name_en: true, name_es: true } })
+    : null
   const translatedCountry = countryInfo ? t(countryInfo.name, countryInfo.name_en, countryInfo.name_es) : company.country
 
   const mockStats = [

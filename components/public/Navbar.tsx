@@ -7,11 +7,18 @@ import { Menu, ChevronDown, X, Globe, Building2, Info, UserPlus } from 'lucide-r
 import { motion, AnimatePresence } from 'framer-motion'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { useLanguage } from '@/hooks/use-language'
-import { countriesData } from '@/lib/countries-data'
 import { cn } from '@/lib/utils'
+import type { Country } from '@/types'
 
-export const Navbar = () => {
+interface NavbarProps {
+  countries: Country[]
+}
+
+export const Navbar = ({ countries }: NavbarProps) => {
   const { t, language } = useLanguage()
+  const euCountries = countries.filter(c => c.group === 'EU')
+  const mercosulCountries = countries.filter(c => c.group === 'MERCOSUL')
+  const guestCountries = countries.filter(c => c.group === 'GUEST')
   const [isCountriesOpen, setIsCountriesOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -94,7 +101,10 @@ export const Navbar = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
                     transition={{ duration: 0.3, ease: "circOut" }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 w-[640px] bg-[var(--color-navy)]/95 border border-white/10 rounded-[2rem] shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] p-8 grid grid-cols-2 gap-10 backdrop-blur-2xl mt-2"
+                    className={cn(
+                      "absolute top-full left-1/2 -translate-x-1/2 w-[640px] bg-[var(--color-navy)]/95 border border-white/10 rounded-[2rem] shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] p-8 grid grid-cols-2 gap-10 backdrop-blur-2xl mt-2",
+                      guestCountries.length > 0 && "grid-rows-[auto_auto]"
+                    )}
                   >
                     {/* União Europeia */}
                     <div className="space-y-5">
@@ -102,15 +112,15 @@ export const Navbar = () => {
                         {t('União Europeia', 'European Union', 'Unión Europea')}
                       </h4>
                       <div className="grid grid-cols-2 gap-x-4 gap-y-3 max-h-[320px] overflow-y-auto pr-3 custom-scrollbar">
-                        {countriesData.filter(c => c.region === 'EU').map(country => (
-                          <Link 
-                            key={country.id} 
+                        {euCountries.map(country => (
+                          <Link
+                            key={country.code}
                             href={`/pais/${country.slug}`}
                             className="flex items-center gap-3 text-[11px] font-medium text-gray-400 hover:text-white transition-all group/item"
                             onClick={() => setIsCountriesOpen(false)}
                           >
                             <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5">
-                              <Image src={country.flagPath} alt={country.name} fill sizes="20px" className="object-cover" />
+                              <Image src={country.flagUrl || '/flags/EU.png'} alt={country.name} fill sizes="20px" className="object-cover" />
                             </div>
                             <span className="truncate">{t(country.name, country.name_en, country.name_es)}</span>
                           </Link>
@@ -124,21 +134,45 @@ export const Navbar = () => {
                         {t('Mercosul', 'Mercosur', 'Mercosur')}
                       </h4>
                       <div className="space-y-3">
-                        {countriesData.filter(c => c.region === 'MERCOSUL').map(country => (
-                          <Link 
-                            key={country.id} 
+                        {mercosulCountries.map(country => (
+                          <Link
+                            key={country.code}
                             href={`/pais/${country.slug}`}
                             className="flex items-center gap-3 text-[11px] font-medium text-gray-400 hover:text-white transition-all group/item"
                             onClick={() => setIsCountriesOpen(false)}
                           >
                             <div className="relative w-6 h-4 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5">
-                              <Image src={country.flagPath} alt={country.name} fill sizes="24px" className="object-cover" />
+                              <Image src={country.flagUrl || '/flags/Mercosul.png'} alt={country.name} fill sizes="24px" className="object-cover" />
                             </div>
                             <span>{t(country.name, country.name_en, country.name_es)}</span>
                           </Link>
                         ))}
                       </div>
                     </div>
+
+                    {/* Convidados */}
+                    {guestCountries.length > 0 && (
+                      <div className="space-y-5 col-span-2 pt-6 border-t border-white/5">
+                        <h4 className="text-[10px] font-bold text-[var(--color-gold)] uppercase tracking-[0.3em]">
+                          {t('Convidados', 'Guests', 'Invitados')}
+                        </h4>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                          {guestCountries.map(country => (
+                            <Link
+                              key={country.code}
+                              href={`/pais/${country.slug}`}
+                              className="flex items-center gap-3 text-[11px] font-medium text-gray-400 hover:text-white transition-all group/item"
+                              onClick={() => setIsCountriesOpen(false)}
+                            >
+                              <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5">
+                                <Image src={country.flagUrl || '/flags/EU.png'} alt={country.name} fill sizes="20px" className="object-cover" />
+                              </div>
+                              <span className="truncate">{t(country.name, country.name_en, country.name_es)}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -229,15 +263,15 @@ export const Navbar = () => {
                       <div className="flex-1 h-[1px] bg-white/10"></div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      {countriesData.slice(0, 10).map((country, idx) => (
-                        <Link 
-                          key={country.id} 
+                      {countries.slice(0, 10).map((country) => (
+                        <Link
+                          key={country.code}
                           href={`/pais/${country.slug}`}
                           className="flex items-center gap-2.5 text-[11px] text-gray-400 hover:text-white transition-all bg-white/5 p-2.5 rounded-lg border border-transparent hover:border-white/10"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale transition-all group-hover:grayscale-0">
-                            <Image src={country.flagPath} alt={country.name} fill sizes="20px" className="object-cover" />
+                            <Image src={country.flagUrl || '/flags/EU.png'} alt={country.name} fill sizes="20px" className="object-cover" />
                           </div>
                           <span className="font-medium truncate">{t(country.name, country.name_en, country.name_es)}</span>
                         </Link>

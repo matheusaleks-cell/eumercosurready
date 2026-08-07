@@ -9,13 +9,14 @@ import { Company } from '@/lib/companies-data'
 import { SafeImage } from './SafeImage'
 
 import { useLanguage } from '@/hooks/use-language'
-import { countriesData } from '@/lib/countries-data'
+import type { Country } from '@/types'
 
 interface CompanyCardProps {
   company: any // Aceita tanto o Mock quanto o Prisma
+  countries: Country[]
 }
 
-export const CompanyCard = ({ company }: CompanyCardProps) => {
+export const CompanyCard = ({ company, countries }: CompanyCardProps) => {
   const { t } = useLanguage()
   const initials = company.name.substring(0, 2).toUpperCase()
   
@@ -124,11 +125,11 @@ export const CompanyCard = ({ company }: CompanyCardProps) => {
         <div className="mt-auto pt-4 border-t border-[var(--color-border)] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="relative w-5 h-3.5 overflow-hidden rounded-sm shadow-sm border border-gray-100 grayscale-[20%] group-hover:grayscale-0 transition-all">
-              <SafeImage 
+              <SafeImage
                 src={(() => {
-                  const c = countriesData.find(curr => curr.id === company.countryCode);
-                  return c?.flagPath || `/flags/${company.country.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '')}.png`;
-                })()} 
+                  const c = countries.find(curr => curr.code === company.countryCode);
+                  return c?.flagUrl || `/flags/${company.country.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '')}.png`;
+                })()}
                 alt={company.country}
                 fill
                 sizes="20px"
@@ -138,7 +139,7 @@ export const CompanyCard = ({ company }: CompanyCardProps) => {
             </div>
             <span className="text-[11px] font-bold text-[var(--color-navy-light)] uppercase tracking-wide">
               {(() => {
-                const c = countriesData.find(c => c.id === company.countryCode);
+                const c = countries.find(c => c.code === company.countryCode);
                 return c ? t(c.name, c.name_en, c.name_es) : company.country;
               })()}
             </span>

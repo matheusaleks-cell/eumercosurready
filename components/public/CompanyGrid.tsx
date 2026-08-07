@@ -6,19 +6,22 @@ import { CompanyCard } from './CompanyCard'
 import { Company } from '@/lib/companies-data'
 import { SearchX } from 'lucide-react'
 import { useLanguage } from '@/hooks/use-language'
+import type { Country } from '@/types'
 
 interface CompanyGridProps {
   companies: any[]
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
+  countries: Country[]
 }
 
-export const CompanyGrid = ({ 
-  companies, 
-  currentPage, 
-  totalPages, 
-  onPageChange 
+export const CompanyGrid = ({
+  companies,
+  currentPage,
+  totalPages,
+  onPageChange,
+  countries
 }: CompanyGridProps) => {
   const { t } = useLanguage()
 
@@ -70,9 +73,10 @@ export const CompanyGrid = ({
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {companies.map((company) => (
-          <CompanyCard 
-            key={company.id} 
-            company={company} 
+          <CompanyCard
+            key={company.id}
+            company={company}
+            countries={countries}
           />
         ))}
       </div>

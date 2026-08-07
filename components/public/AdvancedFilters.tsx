@@ -7,9 +7,9 @@ import {
   Sprout, Cpu, Zap, Truck, Landmark, Stethoscope, Factory 
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { countriesData } from '@/lib/countries-data'
 import Image from 'next/image'
 import { useLanguage } from '@/hooks/use-language'
+import type { Country } from '@/types'
 
 export interface FilterState {
   search: string
@@ -23,14 +23,16 @@ interface AdvancedFiltersProps {
   activeQuickFilters: string[]
   setActiveQuickFilters: React.Dispatch<React.SetStateAction<string[]>>
   totalResults: number
+  countries: Country[]
 }
 
-export const AdvancedFilters = ({ 
-  filters, 
-  setFilters, 
-  activeQuickFilters, 
+export const AdvancedFilters = ({
+  filters,
+  setFilters,
+  activeQuickFilters,
   setActiveQuickFilters,
-  totalResults
+  totalResults,
+  countries
 }: AdvancedFiltersProps) => {
   const { t } = useLanguage()
   const [isSegmentOpen, setIsSegmentOpen] = React.useState(false)
@@ -97,7 +99,7 @@ export const AdvancedFilters = ({
             {filters.origin && (
               <span className="flex items-center gap-1.5 px-2 py-1 bg-white/5 text-[10px] text-[var(--color-gold)] rounded-md border border-[var(--color-gold)]/20">
                 {t('Origem', 'Origin', 'Origen')}: {(() => {
-                  const c = countriesData.find(c => c.id === filters.origin);
+                  const c = countries.find(c => c.code === filters.origin);
                   return c ? t(c.name, c.name_en, c.name_es) : '';
                 })()} <X size={10} className="cursor-pointer" onClick={() => setFilters(f => ({...f, origin: ''}))} />
               </span>
@@ -162,15 +164,22 @@ export const AdvancedFilters = ({
             >
               <option value="" className="bg-[var(--color-navy)]">{t('Todos os países', 'All countries', 'Todos los países')}</option>
               <optgroup label={t('União Europeia', 'European Union', 'Unión Europea')} className="bg-[var(--color-navy)]">
-                {countriesData.filter(c => c.region === 'EU').map(c => (
-                  <option key={c.id} value={c.id}>{t('Origem', 'Origin', 'Origen')}: {t(c.name, c.name_en, c.name_es)}</option>
+                {countries.filter(c => c.group === 'EU').map(c => (
+                  <option key={c.code} value={c.code}>{t('Origem', 'Origin', 'Origen')}: {t(c.name, c.name_en, c.name_es)}</option>
                 ))}
               </optgroup>
               <optgroup label={t('Mercosul', 'Mercosur', 'Mercosur')} className="bg-[var(--color-navy)]">
-                {countriesData.filter(c => c.region === 'MERCOSUL').map(c => (
-                  <option key={c.id} value={c.id}>{t('Origem', 'Origin', 'Origen')}: {t(c.name, c.name_en, c.name_es)}</option>
+                {countries.filter(c => c.group === 'MERCOSUL').map(c => (
+                  <option key={c.code} value={c.code}>{t('Origem', 'Origin', 'Origen')}: {t(c.name, c.name_en, c.name_es)}</option>
                 ))}
               </optgroup>
+              {countries.some(c => c.group === 'GUEST') && (
+                <optgroup label={t('Países Convidados', 'Guest Countries', 'Países Invitados')} className="bg-[var(--color-navy)]">
+                  {countries.filter(c => c.group === 'GUEST').map(c => (
+                    <option key={c.code} value={c.code}>{t('Origem', 'Origin', 'Origen')}: {t(c.name, c.name_en, c.name_es)}</option>
+                  ))}
+                </optgroup>
+              )}
             </select>
             <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
           </div>

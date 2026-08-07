@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { AdvancedFilters } from './AdvancedFilters'
 import { CompanyGrid } from './CompanyGrid'
 import { useLanguage } from '@/hooks/use-language'
+import type { Country } from '@/types'
 
 export interface FilterState {
   search: string
@@ -15,9 +16,10 @@ export interface FilterState {
 
 interface BusinessesSectionProps {
   initialCompanies: any[]
+  countries: Country[]
 }
 
-export const BusinessesSection = ({ initialCompanies = [] }: BusinessesSectionProps) => {
+export const BusinessesSection = ({ initialCompanies = [], countries }: BusinessesSectionProps) => {
   const { language } = useLanguage()
   const searchParams = useSearchParams()
   
@@ -133,22 +135,24 @@ export const BusinessesSection = ({ initialCompanies = [] }: BusinessesSectionPr
     <div className="flex flex-col gap-12">
       {/* Sistema de Filtros */}
       <div id="partners-section" className="-mt-10 relative z-30">
-        <AdvancedFilters 
-          filters={filters} 
+        <AdvancedFilters
+          filters={filters}
           setFilters={setFilters}
           activeQuickFilters={activeQuickFilters}
           setActiveQuickFilters={setActiveQuickFilters}
           totalResults={filteredCompanies.length}
+          countries={countries}
         />
       </div>
 
       {/* Grid de Empresas */}
       <div className="py-8 md:py-12">
-        <CompanyGrid 
-          companies={paginatedCompanies} 
+        <CompanyGrid
+          companies={paginatedCompanies}
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
+          countries={countries}
         />
       </div>
     </div>

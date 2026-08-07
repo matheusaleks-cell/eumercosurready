@@ -5,22 +5,34 @@ import { Globe, ChevronLeft, ChevronRight, BarChart3, TrendingUp, Briefcase, Tar
 import { useLanguage } from '@/hooks/use-language'
 import { cn } from '@/lib/utils'
 import { SafeImage } from './SafeImage'
-import { countriesData } from '@/lib/countries-data'
 import Link from 'next/link'
+import type { Country } from '@/types'
 
-export const OpportunitiesSection = () => {
+type RegionGroup = 'EU' | 'MERCOSUL' | 'GUEST'
+
+interface OpportunitiesSectionProps {
+  countries: Country[]
+}
+
+export const OpportunitiesSection = ({ countries }: OpportunitiesSectionProps) => {
   const { t } = useLanguage()
-  const [activeRegion, setActiveRegion] = useState<'EU' | 'MERCOSUL'>('EU')
-  const [activeId, setActiveId] = useState('PT')
+  const hasGuestCountries = countries.some(c => c.group === 'GUEST')
+  const initialRegion: RegionGroup = countries.some(c => c.group === 'EU')
+    ? 'EU'
+    : (countries[0]?.group as RegionGroup) || 'EU'
+  const [activeRegion, setActiveRegion] = useState<RegionGroup>(initialRegion)
+  const [activeId, setActiveId] = useState(
+    countries.find(c => c.group === initialRegion)?.code || countries[0]?.code || ''
+  )
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const filteredCountries = countriesData.filter(c => c.region === activeRegion)
-  const currentCountry = countriesData.find(c => c.id === activeId) || filteredCountries[0]
-  
-  const handleRegionChange = (region: 'EU' | 'MERCOSUL') => {
+  const filteredCountries = countries.filter(c => c.group === activeRegion)
+  const currentCountry = countries.find(c => c.code === activeId) || filteredCountries[0]
+
+  const handleRegionChange = (region: RegionGroup) => {
     setActiveRegion(region)
-    const firstOfRegion = countriesData.find(c => c.region === region)
-    if (firstOfRegion) setActiveId(firstOfRegion.id)
+    const firstOfRegion = countries.find(c => c.group === region)
+    if (firstOfRegion) setActiveId(firstOfRegion.code)
   }
 
   const scroll = (direction: 'left' | 'right') => {
@@ -86,6 +98,18 @@ export const OpportunitiesSection = () => {
                   <Globe size={16} />
                   {t('Mercosul', 'Mercosur', 'Mercosur')}
                 </button>
+                {hasGuestCountries && (
+                  <button
+                    onClick={() => handleRegionChange('GUEST')}
+                    className={cn(
+                      "px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2",
+                      activeRegion === 'GUEST' ? "bg-[var(--color-navy)] text-white shadow-xl" : "text-gray-500 hover:text-[var(--color-navy)]"
+                    )}
+                  >
+                    <Globe size={16} />
+                    {t('Convidados', 'Guests', 'Invitados')}
+                  </button>
+                )}
               </div>
 
               {/* Carrossel de Países */}
@@ -109,18 +133,18 @@ export const OpportunitiesSection = () => {
                 >
                   {filteredCountries.map((country) => (
                     <button
-                      key={country.id}
-                      onClick={() => setActiveId(country.id)}
+                      key={country.code}
+                      onClick={() => setActiveId(country.code)}
                       className={cn(
                         "flex-shrink-0 w-32 snap-start group relative flex flex-col items-center p-5 rounded-3xl transition-all duration-500 border-2",
-                        activeId === country.id 
-                          ? "bg-white border-[var(--color-gold)] shadow-2xl scale-105" 
+                        activeId === country.code
+                          ? "bg-white border-[var(--color-gold)] shadow-2xl scale-105"
                           : "bg-white/40 border-transparent grayscale opacity-50 hover:opacity-100 hover:grayscale-0 hover:border-gray-200"
                       )}
                     >
                       <div className="relative w-12 h-12 mb-3 rounded-xl overflow-hidden shadow-sm border border-gray-100">
                         <SafeImage
-                          src={country.flagPath}
+                          src={country.flagUrl || ''}
                           alt={t(country.name, country.name_en, country.name_es)}
                           fill
                           sizes="48px"
@@ -133,6 +157,11 @@ export const OpportunitiesSection = () => {
                       </span>
                     </button>
                   ))}
+                  {filteredCountries.length === 0 && (
+                    <p className="text-xs text-gray-400 py-4">
+                      {t('Nenhum país cadastrado nesta categoria ainda.', 'No countries registered in this category yet.', 'Ningún país registrado en esta categoría todavía.')}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -140,6 +169,7 @@ export const OpportunitiesSection = () => {
 
           {/* Lado Direito: Showcase Ativo */}
           <div className="sticky top-24">
+            {currentCountry && (
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeId}
@@ -151,20 +181,24 @@ export const OpportunitiesSection = () => {
               >
                 {/* Background Decor - Flag Blured */}
                 <div className="absolute inset-0 opacity-10 pointer-events-none">
-                   <SafeImage src={currentCountry.flagPath} alt="" fill sizes="(max-width: 1024px) 100vw, 600px" className="object-cover blur-3xl scale-110" />
+                   <SafeImage src={currentCountry.flagUrl || ''} alt="" fill sizes="(max-width: 1024px) 100vw, 600px" className="object-cover blur-3xl scale-110" />
                 </div>
 
                 <div className="relative z-10 space-y-6">
                   {/* Header do Card */}
                   <div className="flex items-center gap-5">
                     <div className="relative w-20 h-14 rounded-xl overflow-hidden shadow-xl border border-white/10 shrink-0">
-                       <SafeImage src={currentCountry.flagPath} alt={t(currentCountry.name, currentCountry.name_en, currentCountry.name_es)} fill sizes="80px" className="object-cover" />
+                       <SafeImage src={currentCountry.flagUrl || ''} alt={t(currentCountry.name, currentCountry.name_en, currentCountry.name_es)} fill sizes="80px" className="object-cover" />
                     </div>
                     <div className="space-y-1">
                       <div className="flex flex-wrap gap-2">
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-white/5 rounded-full text-[9px] font-bold uppercase tracking-widest text-[var(--color-gold-light)] border border-white/10">
                           <Globe size={9} />
-                          {currentCountry?.region === 'EU' ? t('União Europeia', 'European Union', 'Unión Europea') : t('Mercosul', 'Mercosur', 'Mercosur')}
+                          {currentCountry?.group === 'EU'
+                            ? t('União Europeia', 'European Union', 'Unión Europea')
+                            : currentCountry?.group === 'MERCOSUL'
+                              ? t('Mercosul', 'Mercosur', 'Mercosur')
+                              : t('Convidado', 'Guest', 'Invitado')}
                         </span>
                       </div>
                       <h3 className="text-3xl md:text-4xl font-display font-bold tracking-tight">
@@ -172,28 +206,28 @@ export const OpportunitiesSection = () => {
                       </h3>
                     </div>
                   </div>
-                  
+
                   {/* Grid de Métricas Estratégicas */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {currentCountry?.metrics?.gdp && (
+                    {currentCountry?.gdp && (
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5 backdrop-blur-sm group/metric hover:bg-white/10 transition-colors">
                         <span className="block text-[7px] uppercase tracking-widest text-gray-400 font-bold mb-1.5">{t('PIB', 'GDP', 'PIB')}</span>
                         <div className="flex items-center gap-2">
                           <div className="p-1 bg-[var(--color-gold)]/10 rounded-md text-[var(--color-gold)] group-hover/metric:scale-110 transition-transform">
                             <BarChart3 size={12} />
                           </div>
-                          <span className="text-xs font-bold">{currentCountry.metrics.gdp}</span>
+                          <span className="text-xs font-bold">{currentCountry.gdp}</span>
                         </div>
                       </div>
                     )}
-                    {currentCountry?.metrics?.growth && (
+                    {currentCountry?.growth && (
                       <div className="bg-white/5 p-3 rounded-xl border border-white/5 backdrop-blur-sm group/metric hover:bg-white/10 transition-colors">
                         <span className="block text-[7px] uppercase tracking-widest text-gray-400 font-bold mb-1.5">{t('Crescimento', 'Growth', 'Crecimiento')}</span>
                         <div className="flex items-center gap-2">
                           <div className="p-1 bg-green-500/10 rounded-md text-green-400 group-hover/metric:scale-110 transition-transform">
                             <TrendingUp size={12} />
                           </div>
-                          <span className="text-xs font-bold">{currentCountry.metrics.growth}</span>
+                          <span className="text-xs font-bold">{currentCountry.growth}</span>
                         </div>
                       </div>
                     )}
@@ -203,13 +237,13 @@ export const OpportunitiesSection = () => {
                         <div className="p-1 bg-blue-500/10 rounded-md text-blue-400 group-hover/metric:scale-110 transition-transform">
                           <Briefcase size={12} />
                         </div>
-                        <span className="text-[10px] font-bold truncate leading-none">{t(currentCountry?.metrics?.mainSector || 'Industrial', currentCountry?.metrics?.mainSector_en, currentCountry?.metrics?.mainSector_es)}</span>
+                        <span className="text-[10px] font-bold truncate leading-none">{t(currentCountry?.mainSector || 'Industrial', currentCountry?.mainSector_en || undefined, currentCountry?.mainSector_es || undefined)}</span>
                       </div>
                     </div>
                   </div>
 
                   <p className="text-sm md:text-base text-gray-200 font-body leading-relaxed max-w-md">
-                    {t(currentCountry?.description, currentCountry?.description_en, currentCountry?.description_es)}
+                    {t(currentCountry?.description || '', currentCountry?.description_en || undefined, currentCountry?.description_es || undefined)}
                   </p>
                 </div>
 
@@ -221,12 +255,12 @@ export const OpportunitiesSection = () => {
                       </div>
                       <div>
                         <span className="block text-[8px] font-bold text-[var(--color-gold)] uppercase tracking-[0.2em] mb-1">{t('Oportunidade de Mercado', 'Market Opportunity', 'Oportunidad de Mercado')}</span>
-                        <p className="text-white text-base md:text-lg font-display font-medium leading-tight">{t(currentCountry?.highlight, currentCountry?.highlight_en, currentCountry?.highlight_es)}</p>
+                        <p className="text-white text-base md:text-lg font-display font-medium leading-tight">{t(currentCountry?.highlight || '', currentCountry?.highlight_en || undefined, currentCountry?.highlight_es || undefined)}</p>
                       </div>
                     </div>
                   </div>
 
-                  <Link 
+                  <Link
                     href={`/pais/${currentCountry.slug}`}
                     className="flex items-center gap-4 text-white font-bold group w-full justify-between p-3.5 px-5 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-all font-body"
                   >
@@ -239,10 +273,11 @@ export const OpportunitiesSection = () => {
 
                 {/* Marca D'água Estilizada */}
                 <div className="absolute -bottom-12 -right-12 text-[240px] font-bold text-white/[0.02] select-none pointer-events-none leading-none font-display">
-                  {currentCountry?.id}
+                  {currentCountry?.code}
                 </div>
               </motion.div>
             </AnimatePresence>
+            )}
           </div>
 
         </div>

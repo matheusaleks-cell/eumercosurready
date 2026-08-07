@@ -8,6 +8,8 @@ import { ScrollReset } from "@/components/public/ScrollReset";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import prisma from "@/lib/prisma";
 import { FloatingContact } from "@/components/public/FloatingContact";
+import { getPublicCountries } from "@/lib/actions/countries";
+import type { Country } from "@/types";
 import "../globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -44,7 +46,9 @@ export default async function PublicLayout({
   const cookieStore = await cookies()
   const rawLang = cookieStore.get('mr-language')?.value
   const language: Language = (rawLang === 'pt' || rawLang === 'en' || rawLang === 'es') ? rawLang : 'pt'
-  
+
+  const countries = await getPublicCountries() as unknown as Country[]
+
   let config: Record<string, string> = {};
   try {
     const settings = await prisma.platformSetting.findMany();
@@ -74,7 +78,7 @@ export default async function PublicLayout({
         <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
           <div className="flex flex-col min-h-screen">
             <ScrollReset />
-            <Navbar />
+            <Navbar countries={countries} />
             <div className="flex-grow">
               {children}
             </div>

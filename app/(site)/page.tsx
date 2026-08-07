@@ -5,11 +5,15 @@ import { OpportunitiesSection } from '@/components/public/OpportunitiesSection'
 import { CallToAction } from '@/components/public/CallToAction'
 import { HashScroll } from '@/components/public/HashScroll'
 import prisma from '@/lib/prisma'
+import { getPublicCountries } from '@/lib/actions/countries'
+import type { Country } from '@/types'
 
 // As mutations de empresa já chamam revalidatePath('/') sob demanda; isso é só um teto de segurança.
 export const revalidate = 300
 
 export default async function HomePage() {
+  const countries = await getPublicCountries() as unknown as Country[]
+
   let dbError = null
   let companiesData: any[] = []
   try {
@@ -90,11 +94,11 @@ export default async function HomePage() {
         {/* Restaurando o container para que os filtros não fiquem gigantes */}
         <div className="container-custom relative z-30">
           <Suspense fallback={<div className="py-20 text-center text-gray-500 italic">Carregando listagem de empresas...</div>}>
-            <BusinessesSection initialCompanies={safeCompanies as any} />
+            <BusinessesSection initialCompanies={safeCompanies as any} countries={countries} />
           </Suspense>
         </div>
-        
-        <OpportunitiesSection />
+
+        <OpportunitiesSection countries={countries} />
         <CallToAction />
       </main>
     </div>

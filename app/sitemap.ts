@@ -1,10 +1,11 @@
 import { MetadataRoute } from 'next'
 export const dynamic = 'force-dynamic'
 import prisma from '@/lib/prisma'
-import { countriesData } from '@/lib/countries-data'
+import { getPublicCountries } from '@/lib/actions/countries'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://eumercosurready.com'
+  const countries = await getPublicCountries()
 
   // Rotas estáticas principais
   const staticRoutes = [
@@ -22,9 +23,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // Rotas dinâmicas de países
-  const countryRoutes = countriesData.map((country) => ({
+  const countryRoutes = countries.map((country) => ({
     url: `${baseUrl}/pais/${country.slug}`,
-    lastModified: new Date(),
+    lastModified: country.updatedAt,
     changeFrequency: 'monthly' as const,
     priority: 0.7,
   }))

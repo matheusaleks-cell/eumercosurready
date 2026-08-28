@@ -8,5 +8,10 @@ export default async function CountriesPage() {
   const result = await getCountries()
   const countries = (result.success ? (result.countries as Country[]) : []) || []
 
-  return <CountriesList initialCountries={countries} />
+  return (
+    <CountriesList
+      initialCountries={countries}
+      initialError={result.success ? undefined : result.error}
+    />
+  )
 }

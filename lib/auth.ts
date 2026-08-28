@@ -40,8 +40,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           role: user.role,
           needsPasswordChange: user.needsPasswordChange,
-          image: null
-        } as any
+          image: null,
+        }
       },
     }),
   ],
@@ -49,20 +49,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.username = (user as any).username
-        token.role = (user as any).role
-        token.needsPasswordChange = (user as any).needsPasswordChange
+        token.username = user.username
+        token.role = user.role
+        token.needsPasswordChange = user.needsPasswordChange
       }
       return token
     },
     async session({ session, token }) {
-      if (token) {
-        const t = token as any
-        ;(session.user as any).id = t.id
-        ;(session.user as any).username = t.username
-        ;(session.user as any).role = t.role
-        ;(session.user as any).needsPasswordChange = t.needsPasswordChange
-      }
+      session.user.id = token.id
+      session.user.username = token.username
+      session.user.role = token.role
+      session.user.needsPasswordChange = token.needsPasswordChange
       return session
     },
   },

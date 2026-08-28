@@ -11,6 +11,7 @@ import {
   Trash2,
   Power,
   Clock,
+  AlertCircle,
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -21,6 +22,7 @@ export default function UsuariosPage() {
   const [users, setUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [pendingDelete, setPendingDelete] = useState<string | null>(null)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     loadUsers()
@@ -30,6 +32,7 @@ export default function UsuariosPage() {
     setLoading(true)
     const result = await getUsers()
     setUsers(result.users || [])
+    setError(result.success ? '' : result.error || 'Falha ao buscar usuários')
     setLoading(false)
   }
 
@@ -79,6 +82,13 @@ export default function UsuariosPage() {
           <UserPlus size={14} /> Convidar Membro
         </Link>
       </div>
+
+      {error && (
+        <div className="p-3 rounded flex items-center gap-3 text-[11px] font-bold bg-red-50 text-red-700 border border-red-200">
+          <AlertCircle size={16} />
+          {error}
+        </div>
+      )}
 
       {/* Tabela */}
       <div className="bg-white border border-gray-100 shadow-sm overflow-hidden">

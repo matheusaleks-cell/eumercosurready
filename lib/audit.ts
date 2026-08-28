@@ -13,7 +13,7 @@ export async function logAudit(params: {
 }) {
   try {
     const session = await auth()
-    const admin = session?.user as { id?: string; name?: string; username?: string } | undefined
+    const admin = session?.user
 
     await prisma.auditLog.create({
       data: {

@@ -22,15 +22,18 @@ const GROUP_LABELS: Record<string, string> = {
 
 interface CountriesListProps {
   initialCountries: Country[]
+  initialError?: string
 }
 
-export default function CountriesList({ initialCountries }: CountriesListProps) {
+export default function CountriesList({ initialCountries, initialError }: CountriesListProps) {
   const [countries, setCountries] = useState<Country[]>(initialCountries)
   const [refreshing, setRefreshing] = useState(false)
   const [seeding, setSeeding] = useState(false)
   const [migrating, setMigrating] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [message, setMessage] = useState({ type: '', text: '' })
+  const [message, setMessage] = useState(
+    initialError ? { type: 'error', text: initialError } : { type: '', text: '' }
+  )
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   async function loadCountries() {
@@ -38,6 +41,8 @@ export default function CountriesList({ initialCountries }: CountriesListProps) 
     const result = await getCountries()
     if (result.success) {
       setCountries((result.countries as Country[]) || [])
+    } else {
+      setMessage({ type: 'error', text: result.error || 'Erro ao buscar países' })
     }
     setRefreshing(false)
   }

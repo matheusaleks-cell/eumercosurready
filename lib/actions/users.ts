@@ -9,7 +9,7 @@ import { logAudit } from "@/lib/audit"
 
 export async function getUsers() {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: "Não autorizado. Apenas Super Admins podem visualizar usuários." }
   }
 
@@ -41,7 +41,7 @@ export async function createUser(data: {
   role: AdminRole
 }) {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: "Não autorizado. Apenas Super Admins podem criar usuários." }
   }
 
@@ -89,13 +89,13 @@ export async function createUser(data: {
 
 export async function deleteUser(id: string) {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: "Não autorizado. Apenas Super Admins podem deletar usuários." }
   }
 
   try {
     // Evitar que o usuário se delete
-    if ((session.user as any).id === id) {
+    if (session.user.id === id) {
       return { success: false, error: "Você não pode deletar sua própria conta." }
     }
     
@@ -114,7 +114,7 @@ export async function deleteUser(id: string) {
 
 export async function toggleUserStatus(id: string, active: boolean) {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: "Não autorizado" }
   }
 

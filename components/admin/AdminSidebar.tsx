@@ -11,8 +11,9 @@ import { cn } from '@/lib/utils'
 
 export function AdminSidebar() {
   const { data: session } = useSession()
-  const needsPasswordChange = (session?.user as any)?.needsPasswordChange
-  const username = (session?.user as any)?.username || 'Admin'
+  const needsPasswordChange = session?.user?.needsPasswordChange
+  const username = session?.user?.username || 'Admin'
+  const isSuperAdmin = session?.user?.role === 'SUPER_ADMIN'
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   const menuItems = [
@@ -20,8 +21,12 @@ export function AdminSidebar() {
     { label: 'Empresas', icon: Building2, href: '/admin/empresas' },
     { label: 'Solicitações', icon: MessageSquare, href: '/admin/solicitacoes', dynamicBadge: true },
     { label: 'Setores', icon: Tag, href: '/admin/setores' },
-    { label: 'Países', icon: Flag, href: '/admin/paises' },
-    { label: 'Usuários', icon: Users, href: '/admin/usuarios' },
+    // Países e Usuários são geridos apenas por SUPER_ADMIN — ocultos para outros
+    // papéis para não sugerir um recurso que a action vai recusar em seguida.
+    ...(isSuperAdmin ? [
+      { label: 'Países', icon: Flag, href: '/admin/paises' },
+      { label: 'Usuários', icon: Users, href: '/admin/usuarios' },
+    ] : []),
     { label: 'Configurações', icon: Settings, href: '/admin/configuracoes' },
   ]
 

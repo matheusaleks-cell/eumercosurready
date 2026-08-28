@@ -70,7 +70,7 @@ export async function deleteSector(id: string) {
 // Função para popular setores iniciais (Seed)
 export async function seedInitialSectors() {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: 'Não autorizado' }
   }
 

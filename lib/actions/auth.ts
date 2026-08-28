@@ -64,7 +64,7 @@ export async function updateAdminPassword(currentPassword: string, newPassword: 
 
   try {
     const user = await prisma.adminUser.findUnique({
-      where: { id: session.user.id as string }
+      where: { id: session.user.id }
     })
     if (!user) {
       return { success: false, error: 'Usuário não encontrado' }
@@ -78,7 +78,7 @@ export async function updateAdminPassword(currentPassword: string, newPassword: 
     const passwordHash = await bcrypt.hash(newPassword, 12)
 
     await prisma.adminUser.update({
-      where: { id: session.user.id as string },
+      where: { id: session.user.id },
       data: {
         passwordHash,
         needsPasswordChange: false
@@ -86,7 +86,7 @@ export async function updateAdminPassword(currentPassword: string, newPassword: 
     })
 
     revalidatePath('/admin')
-    await logAudit({ action: 'user.password_change', entityType: 'AdminUser', entityId: session.user.id as string })
+    await logAudit({ action: 'user.password_change', entityType: 'AdminUser', entityId: session.user.id })
     return { success: true }
   } catch (err) {
     console.error('Update password error:', err)

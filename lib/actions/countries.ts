@@ -74,7 +74,7 @@ function generateSlug(name: string): string {
 
 export async function getCountries(filters?: { group?: 'EU' | 'MERCOSUL' | 'GUEST' | 'ALL'; activeOnly?: boolean }) {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
   }
 
@@ -111,7 +111,7 @@ export async function getPublicCountries() {
 
 export async function createCountry(data: unknown) {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
   }
 
@@ -146,7 +146,7 @@ export async function createCountry(data: unknown) {
 
 export async function updateCountry(id: string, data: unknown) {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
   }
 
@@ -182,7 +182,7 @@ export async function updateCountry(id: string, data: unknown) {
 
 export async function deleteCountry(id: string) {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
   }
 
@@ -213,7 +213,7 @@ export async function deleteCountry(id: string) {
 
 export async function toggleCountryActive(id: string, active: boolean) {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
   }
 
@@ -236,7 +236,7 @@ export async function toggleCountryActive(id: string, active: boolean) {
  */
 export async function seedInitialCountries() {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
   }
 
@@ -299,7 +299,7 @@ export async function seedInitialCountries() {
  */
 export async function migrateLegacyCountryProfiles() {
   const session = await auth()
-  if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+  if (!session || session.user.role !== 'SUPER_ADMIN') {
     return { success: false, error: 'Não autorizado. Apenas Super Admins podem gerenciar países.' }
   }
 

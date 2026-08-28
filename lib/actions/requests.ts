@@ -297,15 +297,15 @@ export async function updateRequestStatus(id: string, status: 'APPROVED' | 'REJE
 
     await prisma.contactRequest.update({
       where: { id },
-      data: { status, rejectionReason, reviewedAt: new Date(), reviewedById: session.user?.id as string }
+      data: { status, rejectionReason, reviewedAt: new Date(), reviewedById: session.user.id }
     })
 
     revalidatePath('/admin/solicitacoes')
     await logAudit({ action: 'request.reject', entityType: 'ContactRequest', entityId: id, details: rejectionReason })
     return { success: true }
-  } catch (error: any) {
+  } catch (error) {
     console.error('updateRequestStatus error:', error)
-    return { success: false, error: error?.message || 'Falha ao atualizar status' }
+    return { success: false, error: 'Falha ao atualizar status' }
   }
 }
 
@@ -340,8 +340,8 @@ export async function promoteToCompany(requestId: string) {
     revalidatePath('/admin/empresas')
     await logAudit({ action: 'request.promote', entityType: 'ContactRequest', entityId: requestId, details: companyId })
     return { success: true, companyId }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Promotion error:', error)
-    return { success: false, error: error?.message || 'Falha ao converter solicitação em empresa' }
+    return { success: false, error: 'Falha ao converter solicitação em empresa' }
   }
 }

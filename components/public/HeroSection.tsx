@@ -1,15 +1,34 @@
 'use client'
 
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useSyncExternalStore } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'motion/react'
 import { useLanguage } from '@/hooks/use-language'
+import { cn } from '@/lib/utils'
+
+// Sem inscrição real: só precisamos saber se já passamos do primeiro commit no
+// cliente (para evitar mismatch de hidratação), então o "valor externo" nunca muda.
+const noopSubscribe = () => () => {}
+const getIsClientSnapshot = () => true
+const getIsClientServerSnapshot = () => false
+
+function subscribeToResize(callback: () => void) {
+  window.addEventListener('resize', callback)
+  return () => window.removeEventListener('resize', callback)
+}
+const getIsMobileSnapshot = () => window.innerWidth < 768
+const getIsMobileServerSnapshot = () => false
 
 export const HeroSection = () => {
   const { t } = useLanguage()
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [mounted, setMounted] = useState(false)
+  // useSyncExternalStore em vez de useState+useEffect: sincroniza com o
+  // navegador (hidratação e largura da janela) sem chamar setState dentro de
+  // um efeito, que causa uma renderização em cascata extra.
+  const mounted = useSyncExternalStore(noopSubscribe, getIsClientSnapshot, getIsClientServerSnapshot)
+  const isMobile = useSyncExternalStore(subscribeToResize, getIsMobileSnapshot, getIsMobileServerSnapshot)
   const [images, setImages] = useState<HTMLImageElement[]>([])
   const frameCount = 60
 
@@ -21,9 +40,9 @@ export const HeroSection = () => {
   const currentFrame = useTransform(scrollYProgress, [0, 1], [1, frameCount])
 
   useEffect(() => {
-    setMounted(true)
-    
-    // Preload images
+    if (!mounted || isMobile) return
+
+    // Preload images only on desktop to prevent mobile WebKit OOM crash
     const loadedImages: HTMLImageElement[] = []
     let loadedCount = 0
 
@@ -34,14 +53,15 @@ export const HeroSection = () => {
       img.onload = () => {
         loadedCount++
         if (loadedCount === frameCount) {
-          setImages([...loadedImages]) // triggers state update when all are loaded
+          setImages([...loadedImages])
         }
       }
       loadedImages.push(img)
     }
-  }, [])
+  }, [mounted, isMobile])
 
   const drawFrame = (index: number) => {
+    if (isMobile) return
     if (images.length > 0 && canvasRef.current) {
       const img = images[index]
       if (img && img.complete) {
@@ -64,7 +84,7 @@ export const HeroSection = () => {
 
   // Desenha o primeiro frame quando as imagens carregam ou a janela redimensiona
   useEffect(() => {
-    if (images.length > 0) {
+    if (!isMobile && images.length > 0) {
       const handleResize = () => {
         if (canvasRef.current) {
           canvasRef.current.width = window.innerWidth
@@ -76,24 +96,47 @@ export const HeroSection = () => {
       window.addEventListener('resize', handleResize)
       return () => window.removeEventListener('resize', handleResize)
     }
-  }, [images])
+  }, [isMobile, images])
 
-  // Atualiza o frame ao fazer scroll
+  // Atualiza o frame ao fazer scroll no desktop
   useMotionValueEvent(currentFrame, "change", (latest) => {
-    drawFrame(Math.round(latest) - 1)
+    if (!isMobile) {
+      drawFrame(Math.round(latest) - 1)
+    }
   })
 
   return (
-    <div ref={containerRef} className="relative bg-[var(--color-navy)] w-full" style={{ height: '300vh' }}>
+    <div 
+      ref={containerRef} 
+      className="relative bg-[var(--color-navy)] w-full" 
+      style={{ height: isMobile ? 'auto' : '300vh' }}
+    >
       
-      {/* Container Fixo (Sticky) */}
-      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex items-center justify-center">
+      {/* Container Fixo (Sticky no desktop, natural no mobile) */}
+      <div className={cn(
+        "w-full overflow-hidden flex items-center justify-center",
+        isMobile ? "relative min-h-[100dvh] py-24" : "sticky top-0 h-[100dvh]"
+      )}>
         
-        {/* Camada Escura de Fundo sobre o Canvas */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-[var(--color-navy)]/95 via-[var(--color-navy)]/30 to-[var(--color-navy)]/95 pointer-events-none" />
+        {/* Camada Escura de Fundo sobre o Canvas/Imagem */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-[var(--color-navy)]/95 via-[var(--color-navy)]/40 to-[var(--color-navy)]/95 pointer-events-none" />
 
-        {/* Canvas Background */}
-        {mounted && (
+        {/* Background Estático e Otimizado no Mobile */}
+        {isMobile && (
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <Image
+              src="/hero-frames/Container_descending_on_trucks_202605061342_001.jpg"
+              alt="Hero Background"
+              fill
+              priority
+              className="object-cover object-center opacity-40"
+              sizes="100vw"
+            />
+          </div>
+        )}
+
+        {/* Canvas Background no Desktop */}
+        {!isMobile && mounted && (
           <canvas
             ref={canvasRef}
             className="absolute inset-0 w-full h-full z-0 pointer-events-none"

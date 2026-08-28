@@ -19,7 +19,18 @@
       "Bash(npm install *)",
       "Bash(npm view *)",
       "Bash(node -e \"console.log\\(require\\('./node_modules/next/node_modules/sharp/package.json'\\).version\\)\")",
-      "Bash(node -e \"console.log\\(require\\('./node_modules/next/node_modules/postcss/package.json'\\).version\\)\")"
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next/node_modules/postcss/package.json'\\).version\\)\")",
+      "Bash(npm run *)",
+      "Bash(git commit *)",
+      "Bash(gh repo *)",
+      "WebFetch(domain:github.com)",
+      "Bash(node -e \"require\\('crypto'\\).randomBytes\\(1\\)\")",
+      "Bash(npx tsx *)",
+      "Bash(timeout 15 git ls-remote origin HEAD)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(git config *)",
+      "Bash(curl *)",
+      "PowerShell(Get-NetTCPConnection *)"
     ]
   }
 }

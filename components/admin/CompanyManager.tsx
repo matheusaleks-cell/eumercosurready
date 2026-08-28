@@ -124,6 +124,7 @@ export function CompanyManager({ initialSectors, initialCountries }: CompanyMana
             <option value="ALL">Todas as Regiões</option>
             <option value="EU">União Europeia</option>
             <option value="MERCOSUL">Mercosul</option>
+            <option value="GUEST">Países Convidados</option>
           </select>
 
           <select 
@@ -133,7 +134,7 @@ export function CompanyManager({ initialSectors, initialCountries }: CompanyMana
           >
             <option value="ALL">Todos os Países</option>
             {initialCountries
-              .filter(c => region === 'ALL' || c.bloc.toUpperCase() === region)
+              .filter(c => region === 'ALL' || (c.group || c.bloc)?.toUpperCase() === region)
               .sort((a, b) => a.name.localeCompare(b.name))
               .map(c => (
                 <option key={c.code} value={c.code}>{c.name}</option>

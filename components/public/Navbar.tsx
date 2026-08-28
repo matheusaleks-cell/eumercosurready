@@ -102,12 +102,12 @@ export const Navbar = ({ countries }: NavbarProps) => {
                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
                     transition={{ duration: 0.3, ease: "circOut" }}
                     className={cn(
-                      "absolute top-full left-1/2 -translate-x-1/2 w-[640px] bg-[var(--color-navy)]/95 border border-white/10 rounded-[2rem] shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] p-8 grid grid-cols-2 gap-10 backdrop-blur-2xl mt-2",
-                      guestCountries.length > 0 && "grid-rows-[auto_auto]"
+                      "absolute top-full left-1/2 -translate-x-1/2 bg-[var(--color-navy)]/95 border border-white/10 rounded-[2rem] shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] p-8 flex gap-8 backdrop-blur-2xl mt-2",
+                      guestCountries.length > 0 ? "w-[760px]" : "w-[560px]"
                     )}
                   >
                     {/* União Europeia */}
-                    <div className="space-y-5">
+                    <div className="flex-1 space-y-5">
                       <h4 className="text-[10px] font-bold text-[var(--color-gold)] uppercase tracking-[0.3em] border-b border-white/5 pb-3">
                         {t('União Europeia', 'European Union', 'Unión Europea')}
                       </h4>
@@ -119,7 +119,7 @@ export const Navbar = ({ countries }: NavbarProps) => {
                             className="flex items-center gap-3 text-[11px] font-medium text-gray-400 hover:text-white transition-all group/item"
                             onClick={() => setIsCountriesOpen(false)}
                           >
-                            <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5">
+                            <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5 flex-shrink-0">
                               <Image src={country.flagUrl || '/flags/EU.png'} alt={country.name} fill sizes="20px" className="object-cover" />
                             </div>
                             <span className="truncate">{t(country.name, country.name_en, country.name_es)}</span>
@@ -128,12 +128,15 @@ export const Navbar = ({ countries }: NavbarProps) => {
                       </div>
                     </div>
 
+                    {/* Divisória */}
+                    <div className="w-[1px] bg-white/10 self-stretch my-1" />
+
                     {/* Mercosul */}
-                    <div className="space-y-5">
+                    <div className={cn("space-y-5", guestCountries.length > 0 ? "w-[170px]" : "w-[200px]")}>
                       <h4 className="text-[10px] font-bold text-[var(--color-gold)] uppercase tracking-[0.3em] border-b border-white/5 pb-3">
                         {t('Mercosul', 'Mercosur', 'Mercosur')}
                       </h4>
-                      <div className="space-y-3">
+                      <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1 custom-scrollbar">
                         {mercosulCountries.map(country => (
                           <Link
                             key={country.code}
@@ -141,10 +144,10 @@ export const Navbar = ({ countries }: NavbarProps) => {
                             className="flex items-center gap-3 text-[11px] font-medium text-gray-400 hover:text-white transition-all group/item"
                             onClick={() => setIsCountriesOpen(false)}
                           >
-                            <div className="relative w-6 h-4 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5">
-                              <Image src={country.flagUrl || '/flags/Mercosul.png'} alt={country.name} fill sizes="24px" className="object-cover" />
+                            <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5 flex-shrink-0">
+                              <Image src={country.flagUrl || '/flags/Mercosul.png'} alt={country.name} fill sizes="20px" className="object-cover" />
                             </div>
-                            <span>{t(country.name, country.name_en, country.name_es)}</span>
+                            <span className="truncate">{t(country.name, country.name_en, country.name_es)}</span>
                           </Link>
                         ))}
                       </div>
@@ -152,26 +155,31 @@ export const Navbar = ({ countries }: NavbarProps) => {
 
                     {/* Convidados */}
                     {guestCountries.length > 0 && (
-                      <div className="space-y-5 col-span-2 pt-6 border-t border-white/5">
-                        <h4 className="text-[10px] font-bold text-[var(--color-gold)] uppercase tracking-[0.3em]">
-                          {t('Convidados', 'Guests', 'Invitados')}
-                        </h4>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                          {guestCountries.map(country => (
-                            <Link
-                              key={country.code}
-                              href={`/pais/${country.slug}`}
-                              className="flex items-center gap-3 text-[11px] font-medium text-gray-400 hover:text-white transition-all group/item"
-                              onClick={() => setIsCountriesOpen(false)}
-                            >
-                              <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5">
-                                <Image src={country.flagUrl || '/flags/EU.png'} alt={country.name} fill sizes="20px" className="object-cover" />
-                              </div>
-                              <span className="truncate">{t(country.name, country.name_en, country.name_es)}</span>
-                            </Link>
-                          ))}
+                      <>
+                        {/* Divisória */}
+                        <div className="w-[1px] bg-white/10 self-stretch my-1" />
+
+                        <div className="w-[170px] space-y-5">
+                          <h4 className="text-[10px] font-bold text-[var(--color-gold)] uppercase tracking-[0.3em] border-b border-white/5 pb-3">
+                            {t('Convidados', 'Guests', 'Invitados')}
+                          </h4>
+                          <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1 custom-scrollbar">
+                            {guestCountries.map(country => (
+                              <Link
+                                key={country.code}
+                                href={`/pais/${country.slug}`}
+                                className="flex items-center gap-3 text-[11px] font-medium text-gray-400 hover:text-white transition-all group/item"
+                                onClick={() => setIsCountriesOpen(false)}
+                              >
+                                <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale group-hover/item:grayscale-0 transition-all border border-white/5 flex-shrink-0">
+                                  <Image src={country.flagUrl || '/flags/Mercosul.png'} alt={country.name} fill sizes="20px" className="object-cover" />
+                                </div>
+                                <span className="truncate">{t(country.name, country.name_en, country.name_es)}</span>
+                              </Link>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      </>
                     )}
                   </motion.div>
                 )}

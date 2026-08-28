@@ -8,7 +8,7 @@ import ProductManager from './ProductManager'
 
 interface CompanyTabsProps {
   sectors: { id: string, name: string }[]
-  countries: { id: string, code: string, name: string, ddi: string }[]
+  countries: { id: string, code: string, name: string, ddi: string, group?: string }[]
   company: any
 }
 

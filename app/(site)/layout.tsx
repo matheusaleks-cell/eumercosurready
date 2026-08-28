@@ -75,7 +75,7 @@ export default async function PublicLayout({
         }
       ` }} />
       <LanguageProvider initialLanguage={language}>
-        <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
+        <ReactLenis root options={{ lerp: 0.1, duration: 1.2, smoothWheel: true, syncTouch: false }}>
           <div className="flex flex-col min-h-screen">
             <ScrollReset />
             <Navbar countries={countries} />

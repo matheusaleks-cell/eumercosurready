@@ -12,6 +12,12 @@ export default async function EmpresasAdminPage() {
     select: { id: true, name: true }
   })
 
+  const countries = await prisma.country.findMany({
+    where: { active: true },
+    orderBy: [{ group: 'asc' }, { order: 'asc' }, { name: 'asc' }],
+    select: { code: true, name: true, group: true, ddi: true }
+  })
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
       {/* Header com Ações */}
@@ -32,7 +38,7 @@ export default async function EmpresasAdminPage() {
       </div>
 
       {/* Componente de Gestão com Filtros e Paginação */}
-      <CompanyManager initialSectors={sectors} initialCountries={countriesList} />
+      <CompanyManager initialSectors={sectors} initialCountries={countries.length > 0 ? countries : countriesList} />
     </div>
   )
 }

@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils'
 
 interface CompanyFormProps {
   sectors: { id: string, name: string }[]
-  countries: { id: string, code: string, name: string, ddi: string }[]
+  countries: { id: string, code: string, name: string, ddi: string, group?: string }[]
   initialData?: any
 }
 
@@ -178,52 +178,16 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
   // State para Reviews (Depoimentos)
   const [reviews, setReviews] = useState<any[]>(initialData?.reviews || [])
 
-  // Dados de Países por Bloco
-  const COUNTRIES = {
-    MERCOSUL: [
-      { name: 'Brasil', code: 'BR' },
-      { name: 'Argentina', code: 'AR' },
-      { name: 'Paraguai', code: 'PY' },
-      { name: 'Uruguai', code: 'UY' },
-    ],
-    EU: [
-      { name: 'Portugal', code: 'PT' },
-      { name: 'Espanha', code: 'ES' },
-      { name: 'França', code: 'FR' },
-      { name: 'Alemanha', code: 'DE' },
-      { name: 'Itália', code: 'IT' },
-      { name: 'Bélgica', code: 'BE' },
-      { name: 'Países Baixos', code: 'NL' },
-      { name: 'Luxemburgo', code: 'LU' },
-      { name: 'Irlanda', code: 'IE' },
-      { name: 'Dinamarca', code: 'DK' },
-      { name: 'Grécia', code: 'GR' },
-      { name: 'Áustria', code: 'AT' },
-      { name: 'Suécia', code: 'SE' },
-      { name: 'Finlândia', code: 'FI' },
-      { name: 'Polônia', code: 'PL' },
-      { name: 'República Tcheca', code: 'CZ' },
-      { name: 'Hungria', code: 'HU' },
-      { name: 'Eslovênia', code: 'SI' },
-      { name: 'Eslováquia', code: 'SK' },
-      { name: 'Estônia', code: 'EE' },
-      { name: 'Letônia', code: 'LV' },
-      { name: 'Lituânia', code: 'LT' },
-      { name: 'Chipre', code: 'CY' },
-      { name: 'Malta', code: 'MT' },
-      { name: 'Bulgária', code: 'BG' },
-      { name: 'Romênia', code: 'RO' },
-      { name: 'Croácia', code: 'HR' },
-    ]
-  }
-
   // States para Localização
-  const [selectedRegion, setSelectedRegion] = useState<'MERCOSUL' | 'EU'>(initialData?.region || 'MERCOSUL')
+  const [selectedRegion, setSelectedRegion] = useState<'MERCOSUL' | 'EU' | 'GUEST'>(initialData?.region || 'MERCOSUL')
   const [selectedCountry, setSelectedCountry] = useState(initialData?.country || '')
   const [countryCode, setCountryCode] = useState(initialData?.countryCode || '')
 
+  // Países disponíveis de acordo com a região selecionada
+  const availableCountries = countries.filter(c => !c.group || c.group === selectedRegion)
+
   const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const region = e.target.value as 'MERCOSUL' | 'EU'
+    const region = e.target.value as 'MERCOSUL' | 'EU' | 'GUEST'
     setSelectedRegion(region)
     setSelectedCountry('')
     setCountryCode('')
@@ -232,9 +196,12 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const countryName = e.target.value
     setSelectedCountry(countryName)
-    const country = (COUNTRIES as any)[selectedRegion].find((c: any) => c.name === countryName)
-    if (country) {
-      setCountryCode(country.code)
+    const found = countries.find((c: any) => c.name === countryName)
+    if (found) {
+      setCountryCode(found.code)
+      if (found.group && found.group !== selectedRegion) {
+        setSelectedRegion(found.group as any)
+      }
     }
   }
 
@@ -605,6 +572,7 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
             >
               <option value="MERCOSUL">Mercosul</option>
               <option value="EU">União Europeia</option>
+              <option value="GUEST">Países Convidados</option>
             </select>
           </div>
           <div className="space-y-1">
@@ -617,7 +585,7 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
               className={inputClasses}
             >
               <option value="">Selecione o País...</option>
-              {(COUNTRIES as any)[selectedRegion].map((c: any) => (
+              {(availableCountries.length > 0 ? availableCountries : countries).map((c: any) => (
                 <option key={c.code} value={c.name}>{c.name}</option>
               ))}
             </select>
@@ -1201,7 +1169,7 @@ export default function CompanyForm({ sectors, countries, initialData }: Company
                 <label className={labelClasses}>Data (Opcional)</label>
                 <input 
                   type="text" 
-                  value={review.date ? (typeof review.date === 'string' ? review.date.split('T')[0] : review.date.toISOString().split('T')[0]) : ''}
+                  value={review.date ? (typeof review.date === 'string' ? review.date.split('T')[0] : (review.date instanceof Date ? review.date.toISOString().split('T')[0] : String(review.date))) : ''}
                   onChange={(e) => updateReview(index, 'date', e.target.value)}
                   placeholder="2024-04-20"
                   className={inputClasses}

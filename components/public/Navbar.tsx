@@ -1,6 +1,7 @@
 'use client'
 // components/public/Navbar.tsx
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, ChevronDown, X, Globe, Building2, Info, UserPlus } from 'lucide-react'
@@ -22,6 +23,11 @@ export const Navbar = ({ countries }: NavbarProps) => {
   const [isCountriesOpen, setIsCountriesOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Controle de scroll para efeito de transparência
   useEffect(() => {
@@ -210,121 +216,126 @@ export const Navbar = ({ countries }: NavbarProps) => {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] md:hidden"
-            />
-            
-            {/* Drawer */}
-            <motion.div
-              variants={menuVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-              style={{ backgroundColor: '#0B1F3A', opacity: 1 }}
-              className="fixed top-0 right-0 bottom-0 h-screen min-h-screen w-[85%] max-w-sm z-[9999] flex flex-col shadow-[-20px_0_60px_rgba(0,0,0,0.9)] md:hidden border-l border-white/10 overflow-hidden"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-10">
-                    <Image src="/logo-mercosur.png" alt="Logo" fill sizes="40px" className="object-contain scale-125" />
-                  </div>
-                  <span className="font-display font-bold text-white text-sm tracking-tight">MENU</span>
-                </div>
-                <button 
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-3 bg-white/5 rounded-full text-gray-300 hover:text-white border border-white/10 transition-all active:rotate-90"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              {/* Links */}
-              <div 
-                className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar"
+      {/* Mobile Menu Overlay via Portal (escapa do container com backdrop-blur e stacking context do nav) */}
+      {mounted && createPortal(
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <div className="fixed inset-0 z-[99999] md:hidden">
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="fixed inset-0 bg-black/75 backdrop-blur-sm"
+              />
+              
+              {/* Drawer */}
+              <motion.div
+                variants={menuVariants}
+                initial="closed"
+                animate="open"
+                exit="closed"
                 style={{ backgroundColor: '#0B1F3A' }}
+                className="fixed top-0 right-0 bottom-0 h-[100dvh] w-[85%] max-w-sm z-10 flex flex-col shadow-[-20px_0_60px_rgba(0,0,0,0.95)] border-l border-white/10 overflow-hidden bg-[#0B1F3A]"
               >
-                <nav className="flex flex-col gap-6">
-                  <motion.div custom={0} variants={linkVariants}>
-                    <Link 
-                      href="/" 
-                      className="flex items-center gap-4 text-2xl font-display font-bold text-white hover:text-[var(--color-gold)] transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <Building2 className="text-[var(--color-gold)]" size={24} />
-                      {t('Empresas', 'Companies', 'Empresas')}
-                    </Link>
-                  </motion.div>
-                  
-                  <motion.div custom={1} variants={linkVariants} className="space-y-6 pt-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-[9px] font-bold text-[var(--color-gold)] uppercase tracking-[0.3em]">{t('Países Estratégicos', 'Strategic Countries', 'Países Estratégicos')}</span>
-                      <div className="flex-1 h-[1px] bg-white/10"></div>
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-10 h-10">
+                      <Image src="/logo-mercosur.png" alt="Logo" fill sizes="40px" className="object-contain scale-125" />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      {countries.slice(0, 10).map((country) => (
-                        <Link
-                          key={country.code}
-                          href={`/pais/${country.slug}`}
-                          className="flex items-center gap-2.5 text-[11px] text-gray-400 hover:text-white transition-all bg-white/5 p-2.5 rounded-lg border border-transparent hover:border-white/10"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale transition-all group-hover:grayscale-0">
-                            <Image src={country.flagUrl || '/flags/EU.png'} alt={country.name} fill sizes="20px" className="object-cover" />
-                          </div>
-                          <span className="font-medium truncate">{t(country.name, country.name_en, country.name_es)}</span>
-                        </Link>
-                      ))}
-                    </div>
-                    <Link 
-                      href="/#oportunidades" 
-                      className="inline-flex items-center gap-2 text-[10px] text-[var(--color-gold)] font-bold uppercase tracking-widest bg-[var(--color-gold)]/10 px-4 py-2 rounded-full" 
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {t('Explorar Mapa Completo', 'Explore Full Map', 'Explorar Mapa Completo')} 
-                      <Globe size={12} />
-                    </Link>
-                  </motion.div>
-
-                  <motion.div custom={2} variants={linkVariants} className="pt-4">
-                    <Link 
-                      href="/sobre" 
-                      className="flex items-center gap-4 text-2xl font-display font-bold text-white hover:text-[var(--color-gold)] transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <Info className="text-[var(--color-gold)]" size={24} />
-                      {t('Sobre Nós', 'About Us', 'Sobre Nosotros')}
-                    </Link>
-                  </motion.div>
-                </nav>
-              </div>
-
-              {/* CTA */}
-              <div className="p-8 border-t border-white/10" style={{ backgroundColor: '#0B1F3A' }}>
-                <motion.div custom={3} variants={linkVariants}>
-                  <Link 
-                    href="/solicitar-cadastro" 
-                    className="btn-premium w-full flex items-center justify-center gap-3 py-4 text-sm font-bold shadow-[0_0_30px_rgba(200,148,58,0.15)]"
+                    <span className="font-display font-bold text-white text-sm tracking-tight">MENU</span>
+                  </div>
+                  <button 
                     onClick={() => setIsMobileMenuOpen(false)}
+                    className="p-3 bg-white/5 rounded-full text-gray-300 hover:text-white border border-white/10 transition-all active:rotate-90"
+                    aria-label="Fechar menu"
                   >
-                    <UserPlus size={18} />
-                    <span>{t('Registrar Empresa', 'Register Company', 'Registrar Empresa')}</span>
-                  </Link>
-                </motion.div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Links */}
+                <div 
+                  className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar"
+                  style={{ backgroundColor: '#0B1F3A' }}
+                >
+                  <nav className="flex flex-col gap-6">
+                    <motion.div custom={0} variants={linkVariants}>
+                      <Link 
+                        href="/" 
+                        className="flex items-center gap-4 text-2xl font-display font-bold text-white hover:text-[var(--color-gold)] transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Building2 className="text-[var(--color-gold)]" size={24} />
+                        {t('Empresas', 'Companies', 'Empresas')}
+                      </Link>
+                    </motion.div>
+                    
+                    <motion.div custom={1} variants={linkVariants} className="space-y-6 pt-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[9px] font-bold text-[var(--color-gold)] uppercase tracking-[0.3em]">{t('Países Estratégicos', 'Strategic Countries', 'Países Estratégicos')}</span>
+                        <div className="flex-1 h-[1px] bg-white/10"></div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        {countries.slice(0, 10).map((country) => (
+                          <Link
+                            key={country.code}
+                            href={`/pais/${country.slug}`}
+                            className="flex items-center gap-2.5 text-[11px] text-gray-400 hover:text-white transition-all bg-white/5 p-2.5 rounded-lg border border-transparent hover:border-white/10"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            <div className="relative w-5 h-3.5 overflow-hidden rounded-sm grayscale transition-all group-hover:grayscale-0">
+                              <Image src={country.flagUrl || '/flags/EU.png'} alt={country.name} fill sizes="20px" className="object-cover" />
+                            </div>
+                            <span className="font-medium truncate">{t(country.name, country.name_en, country.name_es)}</span>
+                          </Link>
+                        ))}
+                      </div>
+                      <Link 
+                        href="/#oportunidades" 
+                        className="inline-flex items-center gap-2 text-[10px] text-[var(--color-gold)] font-bold uppercase tracking-widest bg-[var(--color-gold)]/10 px-4 py-2 rounded-full" 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {t('Explorar Mapa Completo', 'Explore Full Map', 'Explorar Mapa Completo')} 
+                        <Globe size={12} />
+                      </Link>
+                    </motion.div>
+
+                    <motion.div custom={2} variants={linkVariants} className="pt-4">
+                      <Link 
+                        href="/sobre" 
+                        className="flex items-center gap-4 text-2xl font-display font-bold text-white hover:text-[var(--color-gold)] transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Info className="text-[var(--color-gold)]" size={24} />
+                        {t('Sobre Nós', 'About Us', 'Sobre Nosotros')}
+                      </Link>
+                    </motion.div>
+                  </nav>
+                </div>
+
+                {/* CTA */}
+                <div className="p-8 border-t border-white/10" style={{ backgroundColor: '#0B1F3A' }}>
+                  <motion.div custom={3} variants={linkVariants}>
+                    <Link 
+                      href="/solicitar-cadastro" 
+                      className="btn-premium w-full flex items-center justify-center gap-3 py-4 text-sm font-bold shadow-[0_0_30px_rgba(200,148,58,0.15)]"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <UserPlus size={18} />
+                      <span>{t('Registrar Empresa', 'Register Company', 'Registrar Empresa')}</span>
+                    </Link>
+                  </motion.div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </nav>
   )
 }

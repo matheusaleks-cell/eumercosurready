@@ -21,6 +21,9 @@ import type { CountrySector } from '@/types'
 
 import { cookies } from 'next/headers'
 
+import { reportsData } from '@/lib/reports-data'
+import { countriesData } from '@/lib/countries-data'
+
 function getPrepositionForCountry(countryId: string): string {
   switch (countryId) {
     case 'BR': // Brasil
@@ -51,8 +54,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const cookieStore = await cookies()
   const language = cookieStore.get('mr-language')?.value || 'pt'
 
-  const country = await getCountryBySlug(slug)
-  if (!country) return { title: 'País não encontrado' }
+  const dbCountry = await getCountryBySlug(slug)
+  const staticCountry = countriesData.find(c => c.slug === slug || c.id === dbCountry?.code)
+  if (!dbCountry && !staticCountry) return { title: 'País não encontrado' }
 
   const t = (pt: string, en?: string | null, es?: string | null) => {
     if (language === 'en' && en) return en
@@ -60,8 +64,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return pt
   }
 
-  const name = t(country.name, country.name_en, country.name_es)
-  const desc = t(country.description || '', country.description_en, country.description_es)
+  const name = t(dbCountry?.name || staticCountry?.name || '', dbCountry?.name_en || staticCountry?.name_en, dbCountry?.name_es || staticCountry?.name_es)
+  const desc = t(dbCountry?.description || staticCountry?.description || '', dbCountry?.description_en || staticCountry?.description_en, dbCountry?.description_es || staticCountry?.description_es)
+  const flagUrl = dbCountry?.flagUrl || staticCountry?.flagPath || ''
 
   return {
     title: `${name} - ${t('Oportunidades B2B', 'B2B Opportunities', 'Oportunidades B2B')} | EU-Mercosur Ready`,
@@ -69,7 +74,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: `${name} - ${t('Plataforma de Negócios Internacionais', 'International Business Platform', 'Plataforma de Negocios Internacionales')}`,
       description: desc,
-      images: country.flagUrl ? [country.flagUrl] : [],
+      images: flagUrl ? [flagUrl] : [],
     }
   }
 }
@@ -92,36 +97,72 @@ export default async function CountryProfilePage({ params }: PageProps) {
   }
 
   // Buscar o país pelo slug (mesma query cacheada usada em generateMetadata)
-  const country = await getCountryBySlug(slug)
+  const dbCountry = await getCountryBySlug(slug)
+  const staticCountry = countriesData.find(c => c.slug === slug || c.id === dbCountry?.code)
 
-  if (!country) {
+  if (!dbCountry && !staticCountry) {
     notFound()
   }
 
-  const metrics = {
-    gdp: country.gdp,
-    growth: country.growth,
-    mainSector: country.mainSector,
-    mainSector_en: country.mainSector_en,
-    mainSector_es: country.mainSector_es,
-    taxRate: country.taxRate,
+  const countryCode = dbCountry?.code || staticCountry?.id || ''
+  const staticReport = countryCode ? reportsData[countryCode] : undefined
+
+  // Normalização com dados de fallback caso campos estejam em branco no banco
+  const country = {
+    id: dbCountry?.id || staticCountry?.id || '',
+    code: countryCode,
+    name: dbCountry?.name || staticCountry?.name || '',
+    name_en: dbCountry?.name_en || staticCountry?.name_en || null,
+    name_es: dbCountry?.name_es || staticCountry?.name_es || null,
+    slug: dbCountry?.slug || staticCountry?.slug || slug,
+    group: dbCountry?.group || (staticCountry?.region as any) || 'GUEST',
+    flagUrl: dbCountry?.flagUrl || staticCountry?.flagPath || null,
+    description: dbCountry?.description || staticCountry?.description || null,
+    description_en: dbCountry?.description_en || staticCountry?.description_en || null,
+    description_es: dbCountry?.description_es || staticCountry?.description_es || null,
+    highlight: dbCountry?.highlight || staticCountry?.highlight || null,
+    highlight_en: dbCountry?.highlight_en || staticCountry?.highlight_en || null,
+    highlight_es: dbCountry?.highlight_es || staticCountry?.highlight_es || null,
+    ctaTitle: dbCountry?.ctaTitle || staticCountry?.ctaTitle || null,
+    ctaTitle_en: dbCountry?.ctaTitle_en || staticCountry?.ctaTitle_en || null,
+    ctaTitle_es: dbCountry?.ctaTitle_es || staticCountry?.ctaTitle_es || null,
+    ctaDescription: dbCountry?.ctaDescription || staticCountry?.ctaDescription || null,
+    ctaDescription_en: dbCountry?.ctaDescription_en || staticCountry?.ctaDescription_en || null,
+    ctaDescription_es: dbCountry?.ctaDescription_es || staticCountry?.ctaDescription_es || null,
   }
 
-  const sectors = (country.sectors as unknown as CountrySector[] | null) || []
-  const report = sectors.length > 0 ? {
-    sectors,
-    naturalRiches: country.naturalRiches,
-    naturalRiches_en: country.naturalRiches_en,
-    naturalRiches_es: country.naturalRiches_es,
+  const metrics = {
+    gdp: dbCountry?.gdp || staticCountry?.metrics?.gdp || null,
+    growth: dbCountry?.growth || staticCountry?.metrics?.growth || null,
+    mainSector: dbCountry?.mainSector || staticCountry?.metrics?.mainSector || null,
+    mainSector_en: dbCountry?.mainSector_en || staticCountry?.metrics?.mainSector_en || null,
+    mainSector_es: dbCountry?.mainSector_es || staticCountry?.metrics?.mainSector_es || null,
+    taxRate: dbCountry?.taxRate || staticCountry?.metrics?.taxRate || null,
+  }
+
+  const dbSectors = (dbCountry?.sectors as unknown as CountrySector[] | null) || []
+  const hasDbSectors = dbSectors.length > 0
+
+  const report = hasDbSectors ? {
+    sectors: dbSectors,
+    naturalRiches: (dbCountry?.naturalRiches && dbCountry.naturalRiches.length > 0) ? dbCountry.naturalRiches : (staticReport?.naturalRiches || []),
+    naturalRiches_en: (dbCountry?.naturalRiches_en && dbCountry.naturalRiches_en.length > 0) ? dbCountry.naturalRiches_en : (staticReport?.naturalRiches_en || []),
+    naturalRiches_es: (dbCountry?.naturalRiches_es && dbCountry.naturalRiches_es.length > 0) ? dbCountry.naturalRiches_es : (staticReport?.naturalRiches_es || []),
     trade: {
-      exports: country.exports,
-      exports_en: country.exports_en,
-      exports_es: country.exports_es,
-      imports: country.imports,
-      imports_en: country.imports_en,
-      imports_es: country.imports_es,
+      exports: (dbCountry?.exports && dbCountry.exports.length > 0) ? dbCountry.exports : (staticReport?.trade.exports || []),
+      exports_en: (dbCountry?.exports_en && dbCountry.exports_en.length > 0) ? dbCountry.exports_en : (staticReport?.trade.exports_en || []),
+      exports_es: (dbCountry?.exports_es && dbCountry.exports_es.length > 0) ? dbCountry.exports_es : (staticReport?.trade.exports_es || []),
+      imports: (dbCountry?.imports && dbCountry.imports.length > 0) ? dbCountry.imports : (staticReport?.trade.imports || []),
+      imports_en: (dbCountry?.imports_en && dbCountry.imports_en.length > 0) ? dbCountry.imports_en : (staticReport?.trade.imports_en || []),
+      imports_es: (dbCountry?.imports_es && dbCountry.imports_es.length > 0) ? dbCountry.imports_es : (staticReport?.trade.imports_es || []),
     },
-  } : null
+  } : (staticReport ? {
+    sectors: staticReport.sectors as unknown as CountrySector[],
+    naturalRiches: staticReport.naturalRiches,
+    naturalRiches_en: staticReport.naturalRiches_en,
+    naturalRiches_es: staticReport.naturalRiches_es,
+    trade: staticReport.trade,
+  } : null)
 
   return (
     <main className="min-h-screen bg-[var(--color-cream)] pb-20">
@@ -175,7 +216,11 @@ export default async function CountryProfilePage({ params }: PageProps) {
                 <div className="flex items-center gap-3">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest text-[var(--color-gold-light)] border border-white/20">
                     <Globe size={12} />
-                    {country.group === 'EU' ? t('União Europeia', 'European Union', 'Unión Europea') : 'Mercosul'}
+                    {country.group === 'EU'
+                      ? t('União Europeia', 'European Union', 'Unión Europea')
+                      : country.group === 'MERCOSUL'
+                        ? t('Mercosul', 'Mercosur', 'Mercosur')
+                        : t('Convidado', 'Guest', 'Invitado')}
                   </span>
                 </div>
                 

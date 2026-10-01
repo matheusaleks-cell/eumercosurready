@@ -17,16 +17,22 @@ function subscribeToResize(callback: () => void) {
   window.addEventListener('resize', callback)
   return () => window.removeEventListener('resize', callback)
 }
-const getIsMobileSnapshot = () => window.innerWidth < 768
+
+function checkIsMobileOrTouch(): boolean {
+  if (typeof window === 'undefined') return false
+  if (window.innerWidth < 1024) return true
+  const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
+  const isMobileUA = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  return isMobileUA || (isTouch && window.innerWidth < 1366)
+}
+
+const getIsMobileSnapshot = () => checkIsMobileOrTouch()
 const getIsMobileServerSnapshot = () => false
 
 export const HeroSection = () => {
   const { t } = useLanguage()
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  // useSyncExternalStore em vez de useState+useEffect: sincroniza com o
-  // navegador (hidratação e largura da janela) sem chamar setState dentro de
-  // um efeito, que causa uma renderização em cascata extra.
   const mounted = useSyncExternalStore(noopSubscribe, getIsClientSnapshot, getIsClientServerSnapshot)
   const isMobile = useSyncExternalStore(subscribeToResize, getIsMobileSnapshot, getIsMobileServerSnapshot)
   const [images, setImages] = useState<HTMLImageElement[]>([])
@@ -40,9 +46,10 @@ export const HeroSection = () => {
   const currentFrame = useTransform(scrollYProgress, [0, 1], [1, frameCount])
 
   useEffect(() => {
-    if (!mounted || isMobile) return
+    // Nunca pré-carrega frames em telas pequenas, touch ou navegadores móveis (evita crash de OOM no WebKit/Safari iOS)
+    if (!mounted || isMobile || checkIsMobileOrTouch()) return
 
-    // Preload images only on desktop to prevent mobile WebKit OOM crash
+    let isMounted = true
     const loadedImages: HTMLImageElement[] = []
     let loadedCount = 0
 
@@ -51,12 +58,21 @@ export const HeroSection = () => {
       const frameNum = i.toString().padStart(3, '0')
       img.src = `/hero-frames/Container_descending_on_trucks_202605061342_${frameNum}.jpg`
       img.onload = () => {
+        if (!isMounted) return
         loadedCount++
         if (loadedCount === frameCount) {
           setImages([...loadedImages])
         }
       }
       loadedImages.push(img)
+    }
+
+    return () => {
+      isMounted = false
+      loadedImages.forEach(img => {
+        img.onload = null
+        img.src = ''
+      })
     }
   }, [mounted, isMobile])
 
@@ -145,7 +161,7 @@ export const HeroSection = () => {
 
         {/* Conteúdo do Hero (Texto e Botões sempre visíveis no centro) */}
         {mounted && (
-          <div className="relative z-50 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white flex flex-col items-center">
+          <div className="relative z-20 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white flex flex-col items-center">
             <motion.h1 
               initial={{ opacity: 0, filter: 'blur(10px)', y: 20 }}
               animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}

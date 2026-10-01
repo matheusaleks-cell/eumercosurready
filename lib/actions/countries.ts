@@ -245,7 +245,7 @@ export async function seedInitialCountries() {
 
     let order = 0
     for (const c of countriesList) {
-      const group = c.bloc === 'Mercosul' ? 'MERCOSUL' : 'EU'
+      const group = c.bloc === 'Mercosul' ? 'MERCOSUL' : (c.bloc === 'Guest' ? 'GUEST' : 'EU')
       const slug = generateSlug(c.name)
       const flagUrl = flagByCode.get(c.code) || null
       const currentOrder = order++

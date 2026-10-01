@@ -372,5 +372,105 @@ export const reportsData: Record<string, CountryReport> = {
     naturalRiches: ['Abundância Energética (Usina de Itaipu)', 'Terras Férteis do Chaco e Região Oriental', 'Reserva de Água Doce do Aquífero Guarani'], naturalRiches_en: ['Abundant Energy (Itaipu Dam)', 'The Fertile Lands of the Chaco and the Eastern Region', 'Guarani Aquifer Freshwater Reserve'], naturalRiches_es: ['Abundancia energética (Central hidroeléctrica de Itaipú)', 'Tierras fértiles del Chaco y la región oriental', 'Reserva de agua dulce del acuífero de Guaraní'], trade: {
       exports: ['Energia Elétrica (Cessão Excedente)', 'Soja', 'Carne Bovina Resfriada', 'Farinha de Soja', 'Fios e Cabos (Autopeças)'], exports_en: ['Electricity (Surplus Supply)', 'Soy', 'Chilled Beef', 'Soybean Meal', 'Wires and Cables (Auto Parts)'], exports_es: ['Energía eléctrica (cesión de excedentes)', 'Soja', 'Carne de vacuno refrigerada', 'Harina de soja', 'Cables y cordones (recambios para automóviles)'], imports: ['Óleos Refinados', 'Aparelhos de Radiodifusão (Informática)', 'Carros de Passeio', 'Adubos Químicos', 'Máquinas Industriais'], imports_en: ['Refined Oils', 'Broadcasting Equipment (Computing)', 'Passenger Cars', 'Chemical Fertilizers', 'Industrial Machinery'], imports_es: ['Aceites refinados', 'Aparatos de radiodifusión (informática)', 'Coches de paseo', 'Fertilizantes químicos', 'Máquinas industriales']
     }
+  },
+  // ===============================
+  // CONVIDADOS (GUEST)
+  // ===============================
+  TR: {
+    id: 'TR',
+    name: 'Turquia',
+    name_en: 'Turkey',
+    name_es: 'Turquía',
+    sectors: [
+      {
+        title: 'Indústria Automotiva e Autopeças',
+        title_en: 'Automotive and Auto Parts Industry',
+        title_es: 'Industria automotriz y autopartes',
+        description: 'Um dos maiores polos fabricantes de veículos comerciais, ônibus e autopeças que abastecem a Europa e o Oriente Médio, com alta competitividade e engenharia de ponta.',
+        description_en: 'One of the largest manufacturing hubs for commercial vehicles, buses, and auto parts supplying Europe and the Middle East, with high competitiveness and advanced engineering.',
+        description_es: 'Uno de los mayores centros de fabricación de vehículos comerciales, autobuses y autopartes que abastecen a Europa y Oriente Medio, con alta competitividad e ingeniería avanzada.'
+      },
+      {
+        title: 'Polo Têxtil e Manufatura Avançada',
+        title_en: 'Textile and Advanced Manufacturing Hub',
+        title_es: 'Polo textil y manufactura avanzada',
+        description: 'Liderança global em tecidos técnicos, confecções de alto padrão e matérias-primas têxteis, garantindo entregas rápidas (nearshoring) e sustentabilidade para grandes marcas mundiais.',
+        description_en: 'Global leadership in technical fabrics, high-end apparel, and textile raw materials, ensuring fast lead times (nearshoring) and sustainability for top global brands.',
+        description_es: 'Liderazgo mundial en tejidos técnicos, confecciones de alto nivel y materias primas textiles, garantizando entregas rápidas (nearshoring) y sostenibilidad para grandes marcas mundiales.'
+      },
+      {
+        title: 'Siderurgia, Maquinário e Agroindústria',
+        title_en: 'Steel, Machinery and Agribusiness',
+        title_es: 'Siderurgia, maquinaria y agroindustria',
+        description: 'Forte capacidade em aços longos e planos, máquinas industriais e exportação de itens agroalimentares de alto valor (frutas secas, avelãs e azeites finos).',
+        description_en: 'Strong capacity in long and flat steel, industrial machinery, and exports of high-value agrifood items (dried fruits, hazelnuts, and fine olive oils).',
+        description_es: 'Fuerte capacidad en aceros largos y planos, maquinaria industrial y exportación de productos agroalimentarios de alto valor (frutos secos, avellanas y aceites finos).'
+      }
+    ],
+    naturalRiches: [
+      'Reservas Globais de Boro (Maior do Mundo)',
+      'Mármore e Rochas Ornamentais',
+      'Minério de Cromo e Cobre',
+      'Potencial Hidrelétrico e Solar',
+      'Vastas Terras Férteis da Anatólia'
+    ],
+    naturalRiches_en: [
+      'Global Boron Reserves (Largest in the World)',
+      'Marble and Ornamental Stones',
+      'Chromium and Copper Ore',
+      'Hydropower and Solar Potential',
+      'Vast Fertile Lands of Anatolia'
+    ],
+    naturalRiches_es: [
+      'Reservas mundiales de boro (las mayores del mundo)',
+      'Mármol y rocas ornamentales',
+      'Mineral de cromo y cobre',
+      'Potencial hidroeléctrico y solar',
+      'Vastas tierras fértiles de Anatolia'
+    ],
+    trade: {
+      exports: [
+        'Veículos Automotores e Peças',
+        'Máquinas e Equipamentos Mecânicos',
+        'Aço e Produtos Siderúrgicos',
+        'Artigos Têxteis e Vestuário',
+        'Produtos Químicos e Plásticos'
+      ],
+      exports_en: [
+        'Motor Vehicles and Parts',
+        'Machinery and Mechanical Equipment',
+        'Steel and Iron Products',
+        'Textile and Apparel Articles',
+        'Chemical and Plastic Products'
+      ],
+      exports_es: [
+        'Vehículos automotores y piezas',
+        'Maquinaria y equipos mecánicos',
+        'Acero y productos siderúrgicos',
+        'Artículos textiles y vestuario',
+        'Productos químicos y plásticos'
+      ],
+      imports: [
+        'Óleos e Combustíveis Minerais',
+        'Máquinas e Reatores Industriais',
+        'Ouro e Metais Preciosos',
+        'Aparelhos e Componentes Eletrônicos',
+        'Sucata de Ferro e Aço'
+      ],
+      imports_en: [
+        'Mineral Fuels and Oils',
+        'Machinery and Industrial Reactors',
+        'Gold and Precious Metals',
+        'Electronic Equipment and Components',
+        'Iron and Steel Scrap'
+      ],
+      imports_es: [
+        'Combustibles y aceites minerales',
+        'Maquinaria y reactores industriales',
+        'Oro y metales preciosos',
+        'Aparatos y componentes electrónicos',
+        'Chatarra de hierro y acero'
+      ]
+    }
   }
 }

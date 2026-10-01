@@ -5,7 +5,7 @@ export interface Country {
   name: string;
   name_en?: string;
   name_es?: string;
-  bloc: 'EU' | 'Mercosul';
+  bloc: 'EU' | 'Mercosul' | 'Guest';
   ddi: string;
 }
 
@@ -43,5 +43,8 @@ export const countriesList: Country[] = [
   { code: 'PT', name: 'Portugal', name_en: 'Portugal', name_es: 'Portugal', bloc: 'EU', ddi: '351' },
   { code: 'CZ', name: 'República Tcheca', name_en: 'Czech Republic', name_es: 'República Checa', bloc: 'EU', ddi: '420' },
   { code: 'RO', name: 'Romênia', name_en: 'Romania', name_es: 'Rumanía', bloc: 'EU', ddi: '40' },
-  { code: 'SE', name: 'Suécia', name_en: 'Sweden', name_es: 'Suecia', bloc: 'EU', ddi: '46' }
+  { code: 'SE', name: 'Suécia', name_en: 'Sweden', name_es: 'Suecia', bloc: 'EU', ddi: '46' },
+
+  // Países Convidados
+  { code: 'TR', name: 'Turquia', name_en: 'Turkey', name_es: 'Turquía', bloc: 'Guest', ddi: '90' }
 ];

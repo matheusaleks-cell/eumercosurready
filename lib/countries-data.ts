@@ -4,7 +4,7 @@ export interface CountryOpportunity {
   name: string
   name_en?: string
   name_es?: string
-  region: 'EU' | 'MERCOSUL'
+  region: 'EU' | 'MERCOSUL' | 'GUEST'
   description: string
   description_en?: string
   description_es?: string
@@ -63,4 +63,34 @@ export const countriesData: CountryOpportunity[] = [
   { id: 'AR', slug: 'argentina', name: 'Argentina', name_en: 'Argentina', name_es: 'Argentina', region: 'MERCOSUL', description: 'País com vasta riqueza de recursos. É referência em agroindústria de precisão, exportação de conhecimento e exploração não-convencional (Vaca Muerta).', description_en: 'A country with vast natural resources. It is a leader in precision agriculture, knowledge export, and unconventional exploration (Vaca Muerta).', description_es: 'Un país con una gran riqueza de recursos. Es un referente en la agroindustria de precisión, la exportación de conocimientos y la explotación no convencional (Vaca Muerta).', highlight: 'Polo de Talentos em TI e Potencial Energético Massivo', highlight_en: 'IT Talent Hub and Massive Energy Potential', highlight_es: 'Centro de talento en TI y potencial energético a gran escala', flagPath: '/flags/Argentina.png', ctaTitle: 'Talento, recursos e uma vocação exportadora que não para', ctaTitle_en: 'Talent, resources, and an unstoppable export vocation', ctaTitle_es: 'Talento, recursos y una vocación exportadora que no se detiene', ctaDescription: 'Agroalimentação de nível mundial, tecnologia, energia e manufatura. A Argentina combina recursos naturais extraordinários com capital humano altamente qualificado.', ctaDescription_en: 'World-class agribusiness, technology, energy, and manufacturing. Argentina combines extraordinary natural resources with highly qualified human capital.', ctaDescription_es: 'Agroalimentación de primer nivel mundial, tecnología, energía y manufactura. Argentina combina recursos naturales extraordinarios con capital humano altamente cualificado.', metrics: { gdp: '$480 Bilhões', growth: '+1.5%', mainSector: 'Agronegócio & Software', mainSector_en: 'Agribusiness & Software', mainSector_es: 'Agroindustria y software' } },
   { id: 'UY', slug: 'uruguai', name: 'Uruguai', name_en: 'Uruguay', name_es: 'Uruguay', region: 'MERCOSUL', description: 'Referência em estabilidade institucional e qualidade de vida na região, com um ecossistema tecnológico (startups/software) em ascensão e setor logístico estratégico.', description_en: 'A leader in institutional stability and quality of life in the region, with a thriving tech ecosystem (startups/software) and a strategic logistics sector.', description_es: 'Referente en estabilidad institucional y calidad de vida en la región, con un ecosistema tecnológico (startups/software) en auge e um setor logístico estratégico.', highlight: 'O Hub Corporativo Institucional e Tecnológico', highlight_en: 'The Corporate, Institutional, and Technology Hub', highlight_es: 'O Hub Corporativo Institucional e Tecnológico', flagPath: '/flags/Uruguai.png', ctaTitle: 'Estabilidade, confiança e qualidade no coração do Cone Sul', ctaTitle_en: 'Stability, trust, and quality in the heart of the Southern Cone', ctaTitle_es: 'Estabilidad, confianza y calidad en el corazón del Cono Sur', ctaDescription: 'Agroalimentação premium, tecnologia, logística e serviços financeiros. O Uruguai é a porta de entrada mais segura e previsível ao mercado do Mercosul.', ctaDescription_en: 'Premium agribusiness, technology, logistics, and financial services. Uruguay is the safest and most predictable gateway to the Mercosur market.', ctaDescription_es: 'Agroalimentación premium, tecnología, logística y servicios financieros. Uruguay es la puerta de entrada más segura y predecible al mercado del Mercosur.', metrics: { gdp: '$71 Bilhões', growth: '+3.5%', mainSector: 'Logística de Serviços & Agro', mainSector_en: 'Logistics for Services & Agriculture', mainSector_es: 'Logística de servicios y setor agrícola' } },
   { id: 'PY', slug: 'paraguai', name: 'Paraguai', name_en: 'Paraguay', name_es: 'Paraguay', region: 'MERCOSUL', description: 'A economia que mais cresce na região. Oferece o regime de Maquila para investidores, energia abundante de Itaipu e forte expansão do agronegócio.', description_en: 'The fastest-growing economy in the region. It offers the Maquila regime to investors, abundant energy from Itaipu, and strong growth in agribusiness.', description_es: 'La economia con maior crescimento de la região. Ofrece el régimen de maquila a los inversores, la abundante energia de Itaipú e uma forte expansão del setor agroindustrial.', highlight: 'A Plataforma de Manufatura de Baixo Custo do Mercosul', highlight_en: 'The Mercosur Low-Cost Manufacturing Platform', highlight_es: 'La Plataforma de Fabricación de Bajo Costo del Mercosur', flagPath: '/flags/Paraguai.png', ctaTitle: 'Energia, agricultura e um potencial exportador em plena expansão', ctaTitle_en: 'Energy, agriculture, and an expanding export potential', ctaTitle_es: 'Energía, agricultura y un potencial exportador en plena expansión', ctaDescription: 'Soja, carne, energia hidrelétrica e manufatura emergente. O Paraguai cresce com força e silêncio — e suas empresas estão prontas para dar o salto ao corredor transatlântico.', ctaDescription_en: 'Soy, meat, hydroelectric energy, and emerging manufacturing. Paraguay grows strongly and silently — and its companies are ready to leap to the transatlantic corridor.', ctaDescription_es: 'Soja, carne, energía hidroeléctrica y manufactura emergente. Paraguay crece con fuerza y silencio — y sus empresas están listas para dar el salto al corredor transatlántico.', metrics: { gdp: '$42 Bilhões', growth: '+4.5%', mainSector: 'Agricultura & Manufatura (Maquila)', mainSector_en: 'Agriculture & Manufacturing (Maquila)', mainSector_es: 'Agricultura y manufatura (maquila)' } },
+
+  // CONVIDADOS (GUEST)
+  {
+    id: 'TR',
+    slug: 'turquia',
+    name: 'Turquia',
+    name_en: 'Turkey',
+    name_es: 'Turquía',
+    region: 'GUEST',
+    description: 'Ponte estratégica entre a Europa e a Ásia. Potência manufatureira e logística com liderança nos setores automotivo, têxtil, siderúrgico e agroalimentar de alta precisão.',
+    description_en: 'Strategic bridge between Europe and Asia. A manufacturing and logistics powerhouse with leadership in automotive, textile, steel, and high-precision agribusiness.',
+    description_es: 'Puente estratégico entre Europa y Asia. Potencia manufacturera y logística con liderazgo en automoción, textil, siderurgia y agroalimentación de alta precisión.',
+    highlight: 'A Ponte Euro-Asiática e Potência Industrial',
+    highlight_en: 'The Euro-Asian Bridge and Industrial Powerhouse',
+    highlight_es: 'El puente euroasiático y potencia industrial',
+    flagPath: '/flags/Turquia.svg',
+    ctaTitle: 'Onde continentes e grandes negócios se encontram',
+    ctaTitle_en: 'Where continents and major business connect',
+    ctaTitle_es: 'Donde los continentes y los grandes negocios se encuentran',
+    ctaDescription: 'Com posição geográfica única conectando Europa, Ásia e Oriente Médio, a Turquia oferece cadeias integradas de suprimentos, manufatura ágil (nearshoring) e capacidade exportadora em escala global.',
+    ctaDescription_en: 'With a unique geographical position connecting Europe, Asia, and the Middle East, Turkey offers integrated supply chains, agile manufacturing (nearshoring), and global export capacity.',
+    ctaDescription_es: 'Con una posición geográfica única que conecta Europa, Asia y Oriente Medio, Turquía ofrece cadenas de suministro integradas, manufactura ágil (nearshoring) y capacidad exportadora a escala global.',
+    metrics: {
+      gdp: '$1.1 Trilhão',
+      growth: '+4.5%',
+      mainSector: 'Manufatura & Automotivo',
+      mainSector_en: 'Manufacturing & Automotive',
+      mainSector_es: 'Manufactura y automoción'
+    }
+  }
 ]
